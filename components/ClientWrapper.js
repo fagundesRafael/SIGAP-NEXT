@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
 import Header from "./Header";
 import Footer from "./Footer";
+import Sidebar from "./Sidebar";
 
 export default function ClientWrapper({ children }) {
   const pathname = usePathname();
@@ -33,7 +34,7 @@ export default function ClientWrapper({ children }) {
       } else {
         setSessionExists(true);
       }
-      
+
       setLoading(false);
     }
 
@@ -51,7 +52,12 @@ export default function ClientWrapper({ children }) {
   return (
     <>
       {!isPublic && <Header />}
-      <main className="flex-grow">{children}</main>
+      <div className="flex h-screen">
+        {!isPublic && <Sidebar />}
+        <main className="flex-grow overflow-y-auto">
+          {children}
+        </main>
+      </div>
       {!isPublic && <Footer />}
     </>
   );

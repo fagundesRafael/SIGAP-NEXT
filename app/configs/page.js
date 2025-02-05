@@ -82,7 +82,7 @@ export default function ConfigsPage() {
   };
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen rounded-md p-4 bg-customBlack_semi01 mx-1">
       <h1 className="text-2xl font-bold mb-4">Configurações de Suporte</h1>
       <form
         onSubmit={handleSubmit}

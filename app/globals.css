@@ -2,8 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* globals.css */
+.sidebar {
+  /* Estilos para a sidebar */
+}
+
+.sidebar a {
+  width: 20%;
+}
+
 :root {
-  --background: #ffffff;
+  --background: #262626;
   --foreground: #171717;
 }
 
