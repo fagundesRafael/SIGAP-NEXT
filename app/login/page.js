@@ -14,17 +14,15 @@ export default function LoginPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setErrorMsg(""); // Limpar mensagem de erro anterior
+    setErrorMsg(""); 
 
-    // Realiza a autenticação utilizando o NextAuth
     const result = await signIn("credentials", {
-      redirect: false, // impede redirecionamento automático para tratarmos o resultado
+      redirect: false, 
       email,
       password,
-      callbackUrl: "/sistem", // URL para onde o usuário será redirecionado em caso de sucesso
+      callbackUrl: "/sistem",
     });
 
-    // Se houver erro, exibe a mensagem; caso contrário, redireciona o usuário
     if (result?.error) {
       setErrorMsg("Email ou senha inválidos.");
     } else {

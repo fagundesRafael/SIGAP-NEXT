@@ -1,6 +1,6 @@
 // app/layout.js
 import './globals.css';
-import ClientWrapper from "../components/ClientWrapper"; // Componente client para lógica de exibição
+import ClientWrapper from "../components/ClientWrapper";
 
 export const metadata = {
   title: 'SIGAP',

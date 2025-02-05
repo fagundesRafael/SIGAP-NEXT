@@ -15,10 +15,8 @@ export default function SignupPage() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    // Limpar mensagem de erro anterior
     setErrorMsg("");
 
-    // Enviar os dados para a rota API
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -26,11 +24,11 @@ export default function SignupPage() {
     });
 
     if (res.ok) {
-      // Se o usuário foi criado com sucesso, redireciona para a página de login
-      alert("Usuário criado com sucesso! Redirecionando para a página de login.");
+      alert(
+        "Usuário criado com sucesso! Redirecionando para a página de login."
+      );
       router.push("/login");
     } else {
-      // Se ocorreu algum erro, mostra a mensagem
       const data = await res.json();
       setErrorMsg(data.error || "Erro ao criar usuário.");
     }
@@ -70,11 +68,7 @@ export default function SignupPage() {
           className="border p-2 rounded"
           required
         />
-        {errorMsg && (
-          <p className="text-red-500 text-sm">
-            {errorMsg}
-          </p>
-        )}
+        {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
         <button
           type="submit"
           className="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition"
