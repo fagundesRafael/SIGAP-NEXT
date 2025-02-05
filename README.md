@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# SIGAP - Integrated Procedure Management and Monitoring System
 
-## Getting Started
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/seu-usuario/sigap)
+[![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/seu-usuario/sigap/blob/main/LICENSE)
 
-First, run the development server:
+## A complete solution for procedure management
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+SIGAP is a comprehensive web system developed with Next.js, MongoDB, and JavaScript, designed to optimize the management and monitoring of procedures in various areas. With an intuitive interface and powerful features, SIGAP allows you to register, query, update, and delete information efficiently and securely.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- Registration and management of different types of objects, such as cars, motorcycles, weapons, ammunition, appliances, electronics, bicycles, narcotics, and documents.
+- User authentication system with NextAuth.js, ensuring secure and personalized access.
+- Control panel with general information, graphs, and tables for a complete view of the data.
+- Reusable interface components, such as cards, tables, and graphs, to streamline development and maintain visual consistency.
+- Intuitive and customizable data entry and editing forms for each type of object.
+- Settings page to register brands, models, and other data to support the application.
+- Fixed vertical navigation menu for easy access to different sections of the system.
+- Search and pagination features to quickly find the desired information.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Technologies
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js
+- MongoDB
+- JavaScript
+- NextAuth.js
+- Tailwind CSS
