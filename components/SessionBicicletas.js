@@ -4,12 +4,14 @@
 import { useState } from "react";
 import { IoIosAddCircle } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 export default function SessionBicicletas({ bicicletas, setBicicletas }) {
   const [marcaInput, setMarcaInput] = useState("");
   const [modeloInput, setModeloInput] = useState("");
   const [showModeloInput, setShowModeloInput] = useState(false);
   const [error, setError] = useState("");
+  const [deleteModalData, setDeleteModalData] = useState(null);
 
   function handleAddMarca() {
     if (!marcaInput.trim()) return;
@@ -44,37 +46,39 @@ export default function SessionBicicletas({ bicicletas, setBicicletas }) {
     setModeloInput("");
   }
 
-  function handleDeleteMarca(marca) {
-    if (window.confirm(`Deseja deletar a marca "${marca}" e todos os seus modelos?`)) {
-      const updated = bicicletas.filter((item) => item.marca !== marca);
-      setBicicletas(updated);
-      if (marca.toLowerCase() === marcaInput.trim().toLowerCase()) {
-        setMarcaInput("");
-        setShowModeloInput(false);
-        setModeloInput("");
-      }
-    }
+  function requestDeleteBrand(brand) {
+    setDeleteModalData({ type: "brand", brand });
   }
 
-  function handleDeleteModelo(marca, modelo) {
-    if (window.confirm(`Deseja deletar o modelo "${modelo}" da marca "${marca}"?`)) {
+  function requestDeleteModel(brand, model) {
+    setDeleteModalData({ type: "model", brand, model });
+  }
+
+  function handleConfirmDelete() {
+    if (!deleteModalData) return;
+    if (deleteModalData.type === "brand") {
+      const updated = bicicletas.filter(
+        (item) => item.marca !== deleteModalData.brand
+      );
+      setBicicletas(updated);
+    } else if (deleteModalData.type === "model") {
       const updated = bicicletas.map((item) => {
-        if (item.marca === marca) {
-          return { ...item, modelos: item.modelos.filter((m) => m !== modelo) };
+        if (item.marca === deleteModalData.brand) {
+          return { ...item, modelos: item.modelos.filter((m) => m !== deleteModalData.model) };
         }
         return item;
       });
       setBicicletas(updated);
     }
+    setDeleteModalData(null);
   }
 
-  const matchingBrand = bicicletas.find(
-    (item) =>
-      item.marca.toLowerCase() === marcaInput.trim().toLowerCase()
-  );
+  function handleCancelDelete() {
+    setDeleteModalData(null);
+  }
 
   return (
-    <div className="mb-6 p-4 border rounded bg-gray-800">
+    <div className="mb-6 p-4 border rounded bg-gray-800 relative">
       <h2 className="text-lg font-bold mb-2">Sessão Bicicletas</h2>
       <div className="flex items-center gap-2">
         <input
@@ -85,14 +89,22 @@ export default function SessionBicicletas({ bicicletas, setBicicletas }) {
           className="p-2 rounded text-black"
         />
         {marcaInput.trim() !== "" && (
-          <button type="button" onClick={handleAddMarca} className="text-green-500">
-            <IoIosAddCircle size={24} />
-          </button>
-        )}
-        {matchingBrand && (
-          <button type="button" onClick={() => handleDeleteMarca(matchingBrand.marca)} className="text-red-500">
-            <TiDeleteOutline size={24} />
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={handleAddMarca}
+              className="text-green-500"
+            >
+              <IoIosAddCircle size={24} />
+            </button>
+            <button
+              type="button"
+              onClick={() => requestDeleteBrand(marcaInput.trim())}
+              className="text-red-500"
+            >
+              <TiDeleteOutline size={20} />
+            </button>
+          </>
         )}
       </div>
       {showModeloInput && (
@@ -105,17 +117,25 @@ export default function SessionBicicletas({ bicicletas, setBicicletas }) {
             className="p-2 rounded text-black"
           />
           {modeloInput.trim() !== "" && (
-            <button type="button" onClick={handleAddModelo} className="text-green-500">
-              <IoIosAddCircle size={24} />
-            </button>
-          )}
-          {matchingBrand &&
-            modeloInput.trim() !== "" &&
-            matchingBrand.modelos.includes(modeloInput.trim()) && (
-              <button type="button" onClick={() => handleDeleteModelo(matchingBrand.marca, modeloInput.trim())} className="text-red-500">
-                <TiDeleteOutline size={24} />
+            <>
+              <button
+                type="button"
+                onClick={handleAddModelo}
+                className="text-green-500"
+              >
+                <IoIosAddCircle size={24} />
               </button>
-            )}
+              <button
+                type="button"
+                onClick={() =>
+                  requestDeleteModel(marcaInput.trim(), modeloInput.trim())
+                }
+                className="text-red-500"
+              >
+                <TiDeleteOutline size={20} />
+              </button>
+            </>
+          )}
         </div>
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
@@ -126,13 +146,43 @@ export default function SessionBicicletas({ bicicletas, setBicicletas }) {
         ) : (
           <ul>
             {bicicletas.map((item, idx) => (
-              <li key={idx}>
-                <strong>{item.marca}:</strong> {item.modelos.join(", ")}
+              <li key={idx} className="flex items-center gap-2">
+                <strong>{item.marca}</strong>
+                <button
+                  onClick={() => requestDeleteBrand(item.marca)}
+                  className="text-red-500"
+                >
+                  <TiDeleteOutline size={20} />
+                </button>
+                <span>:</span>
+                {item.modelos.map((modelo, i) => (
+                  <span key={i} className="flex items-center gap-1">
+                    {modelo}
+                    <button
+                      onClick={() => requestDeleteModel(item.marca, modelo)}
+                      className="text-red-500"
+                    >
+                      <TiDeleteOutline size={20} />
+                    </button>
+                    {i < item.modelos.length - 1 && <span>,</span>}
+                  </span>
+                ))}
               </li>
             ))}
           </ul>
         )}
       </div>
+      {deleteModalData && (
+        <ConfirmDeleteModal
+          message={
+            deleteModalData.type === "brand"
+              ? `Deseja deletar a marca "${deleteModalData.brand}" e todos os seus modelos?`
+              : `Deseja deletar o modelo "${deleteModalData.model}" da marca "${deleteModalData.brand}"?`
+          }
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
     </div>
   );
 }

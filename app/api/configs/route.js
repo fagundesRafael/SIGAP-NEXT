@@ -2,7 +2,6 @@
 import { dbConnect } from "@/lib/dbConnect";
 import Config from "@/models/Config";
 
-// GET: Busca as configurações salvas
 export async function GET() {
   try {
     await dbConnect();
@@ -17,7 +16,6 @@ export async function GET() {
   }
 }
 
-// POST: Adiciona/atualiza as configurações
 export async function POST(request) {
   try {
     await dbConnect();
@@ -26,98 +24,15 @@ export async function POST(request) {
     // Tenta buscar o documento de configuração; se não existir, cria um novo.
     let config = await Config.findOne();
     if (!config) {
-      config = new Config();
-    }
-
-    // Atualiza a seção "carros"
-    if (body.carros) {
-      // Garante que o array esteja inicializado
-      if (!config.carros) config.carros = [];
-      body.carros.forEach((novoCarro) => {
-        const marcaExistente = config.carros.find(
-          (carro) => carro.marca === novoCarro.marca
-        );
-        if (marcaExistente) {
-          // Garante que o array de modelos esteja definido
-          if (!marcaExistente.modelos) {
-            marcaExistente.modelos = [];
-          }
-          novoCarro.modelos.forEach((modelo) => {
-            if (!marcaExistente.modelos.includes(modelo)) {
-              marcaExistente.modelos.push(modelo);
-            }
-          });
-        } else {
-          // Insere uma nova marca com seus modelos
-          config.carros.push(novoCarro);
-        }
-      });
-    }
-
-    // (Opcional) Repita a lógica para as outras seções: bicicletas, motos, armas, entorpecentes
-    if (body.bicicletas) {
-      if (!config.bicicletas) config.bicicletas = [];
-      body.bicicletas.forEach((novoItem) => {
-        const marcaExistente = config.bicicletas.find(
-          (item) => item.marca === novoItem.marca
-        );
-        if (marcaExistente) {
-          novoItem.modelos.forEach((modelo) => {
-            if (!marcaExistente.modelos.includes(modelo)) {
-              marcaExistente.modelos.push(modelo);
-            }
-          });
-        } else {
-          config.bicicletas.push(novoItem);
-        }
-      });
-    }
-
-    if (body.motos) {
-      if (!config.motos) config.motos = [];
-      body.motos.forEach((novoItem) => {
-        const marcaExistente = config.motos.find(
-          (item) => item.marca === novoItem.marca
-        );
-        if (marcaExistente) {
-          novoItem.modelos.forEach((modelo) => {
-            if (!marcaExistente.modelos.includes(modelo)) {
-              marcaExistente.modelos.push(modelo);
-            }
-          });
-        } else {
-          config.motos.push(novoItem);
-        }
-      });
-    }
-
-    if (body.armas) {
-      if (!config.armas) config.armas = [];
-      body.armas.forEach((novoItem) => {
-        const marcaExistente = config.armas.find(
-          (item) => item.marca === novoItem.marca
-        );
-        if (marcaExistente) {
-          novoItem.modelos.forEach((modeloObj) => {
-            // Cada modeloObj deve ter { modelo, calibre }
-            if (
-              !marcaExistente.modelos.find(
-                (m) =>
-                  m.modelo === modeloObj.modelo &&
-                  m.calibre === modeloObj.calibre
-              )
-            ) {
-              marcaExistente.modelos.push(modeloObj);
-            }
-          });
-        } else {
-          config.armas.push(novoItem);
-        }
-      });
-    }
-
-    if (body.entorpecentes) {
-      config.entorpecentes = body.entorpecentes;
+      // Se não existir, cria um novo documento com os dados recebidos.
+      config = new Config(body);
+    } else {
+      // Atualiza (sobrescreve) cada campo com os dados enviados pelo front end.
+      if (body.carros) config.carros = body.carros;
+      if (body.bicicletas) config.bicicletas = body.bicicletas;
+      if (body.motos) config.motos = body.motos;
+      if (body.armas) config.armas = body.armas;
+      if (body.entorpecentes) config.entorpecentes = body.entorpecentes;
     }
 
     await config.save();

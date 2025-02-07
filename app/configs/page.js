@@ -16,7 +16,7 @@ export default function ConfigsPage() {
   const [armas, setArmas] = useState([]);
   const [entorpecentes, setEntorpecentes] = useState([]);
 
-  // Busca os dados já salvos no MongoDB quando a página é carregada.
+  // Busca os dados já salvos no MongoDB ao montar a página
   useEffect(() => {
     async function fetchConfigs() {
       try {
@@ -24,7 +24,7 @@ export default function ConfigsPage() {
         if (res.ok) {
           const data = await res.json();
           if (data.length > 0) {
-            const config = data[0]; // Supondo que haja um único documento de configuração
+            const config = data[0]; // Supondo que haja um único documento
             setCarros(config.carros || []);
             setBicicletas(config.bicicletas || []);
             setMotos(config.motos || []);
@@ -39,7 +39,7 @@ export default function ConfigsPage() {
     fetchConfigs();
   }, []);
 
-  // Salva as configurações enviando os dados para a API.
+  // Envia as configurações para a API (POST)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const configData = { carros, bicicletas, motos, armas, entorpecentes };
@@ -63,8 +63,8 @@ export default function ConfigsPage() {
 
   return (
     <div className="min-h-screen p-4 bg-c01_heavy_blue text-white">
-      <h1 className="text-md font-bold mb-4">Configurações de Suporte</h1>
-      <form className="flex font-mono flex-wrap gap-2" onSubmit={handleSubmit}>
+      <h1 className="text-xl font-bold mb-4">Configurações de Suporte</h1>
+      <form onSubmit={handleSubmit}>
         <SessionCarros carros={carros} setCarros={setCarros} />
         <SessionBicicletas bicicletas={bicicletas} setBicicletas={setBicicletas} />
         <SessionMotos motos={motos} setMotos={setMotos} />
@@ -73,7 +73,7 @@ export default function ConfigsPage() {
           entorpecentes={entorpecentes}
           setEntorpecentes={setEntorpecentes}
         />
-        <button type="submit" className="p-2 min-h-4 max-h-10 text-center bg-green-500 rounded">
+        <button type="submit" className="mt-4 p-2 bg-green-500 rounded">
           Salvar Configurações
         </button>
       </form>
