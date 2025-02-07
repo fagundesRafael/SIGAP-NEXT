@@ -35,9 +35,9 @@ export default function Sidebar() {
 
       <div className="my-4 border-t boder-white"></div>
 
-      <div className="flex flex-col mb-4 text-sm gap-4 text-gray-200 ">
+      <div className="flex flex-col mb-4 text-sm font-mono gap-4 text-gray-200 ">
         <ul className="space-y-2">
-          <span className="text-c03_blue font-mono font-black" >sessões:</span>
+          <span className="text-c03_blue font-black " >sessões:</span>
           <li className="flex items-center">
             <FaCar />
             <Link
