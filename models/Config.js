@@ -2,19 +2,51 @@
 import mongoose from "mongoose";
 
 const ConfigSchema = new mongoose.Schema({
-  marcaCarro: { type: String },
-  modeloCarro: { type: String },
-  marcaMoto: { type: String },
-  modeloMoto: { type: String },
-  marcaEletroDomesticos: { type: String },
-  modeloEletroDomesticos: { type: String },
-  marcaEletroEletronicos: { type: String },
-  marcaArma: { type: String },
-  modeloArma: { type: String },
-  calibreArma: { type: String },
-  marcaMunicao: { type: String },
-  modeloMunicao: { type: String },
-  calibreMunicao: { type: String },
+  carros: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  bicicletas: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  motos: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  armas: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: [
+          {
+            modelo: { type: String, required: true },
+            calibre: { type: String, required: true },
+          },
+        ],
+      },
+    ],
+    default: [],
+  },
+  entorpecentes: {
+    type: [String],
+    default: [],
+  },
 });
 
 export default mongoose.models.Config || mongoose.model("Config", ConfigSchema);

@@ -54,9 +54,7 @@ export default function ClientWrapper({ children }) {
       {!isPublic && <Header />}
       <div className="flex h-screen">
         {!isPublic && <Sidebar />}
-        <main className="flex-grow overflow-y-auto">
-          {children}
-        </main>
+        <main className="flex-grow overflow-y-auto">{children}</main>
       </div>
       {!isPublic && <Footer />}
     </>

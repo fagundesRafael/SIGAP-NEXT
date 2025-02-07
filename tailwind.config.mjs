@@ -1,3 +1,4 @@
+// tailwindcss.connfig.mjs
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
