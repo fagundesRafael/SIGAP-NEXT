@@ -33,12 +33,32 @@ const ConfigSchema = new mongoose.Schema({
     type: [
       {
         marca: { type: String, required: true },
-        modelos: [
-          {
-            modelo: { type: String, required: true },
-            calibre: { type: String, required: true },
-          },
-        ],
+        modelos: {
+          type: [
+            {
+              modelo: { type: String, required: true },
+              calibre: { type: String, required: true },
+            },
+          ],
+          default: [],
+        },
+      },
+    ],
+    default: [],
+  },
+  municoes: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: {
+          type: [
+            {
+              modelo: { type: String, required: true },
+              calibre: { type: String, required: true },
+            },
+          ],
+          default: [],
+        },
       },
     ],
     default: [],
@@ -47,6 +67,15 @@ const ConfigSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
-});
+  eletro: {
+    type: [String],
+    default: [],
+  },
+  outros: {
+    type: [String],
+    default: [],
+  },
+}, { timestamps: true });
 
+// Evita redefinição do modelo durante o hot-reload
 export default mongoose.models.Config || mongoose.model("Config", ConfigSchema);

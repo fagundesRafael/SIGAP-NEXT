@@ -44,7 +44,7 @@ export default function SessionEntorpecentes({ entorpecentes, setEntorpecentes }
 
   return (
     <div className="mb-6 p-4 border rounded bg-gray-800 relative">
-      <h2 className="text-lg font-bold mb-2">Sessão Entorpecentes</h2>
+      <h2 className="text-md underline underline-offset-2 font-bold mb-2">Seção de Entorpecentes</h2>
       <div className="flex items-center gap-2">
         <input
           type="text"
@@ -55,11 +55,7 @@ export default function SessionEntorpecentes({ entorpecentes, setEntorpecentes }
         />
         {tipoInput.trim() !== "" && (
           <>
-            <button
-              type="button"
-              onClick={handleAddTipo}
-              className="text-green-500"
-            >
+            <button type="button" onClick={handleAddTipo} className="text-green-500">
               <IoIosAddCircle size={24} />
             </button>
             <button
@@ -80,7 +76,7 @@ export default function SessionEntorpecentes({ entorpecentes, setEntorpecentes }
         ) : (
           <ul>
             {entorpecentes.map((tipo, idx) => (
-              <li key={idx} className="flex items-center gap-2">
+              <li key={idx} className="flex flex-wrap items-center gap-2">
                 {tipo}
                 <button
                   type="button"

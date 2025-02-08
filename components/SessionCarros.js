@@ -11,8 +11,6 @@ export default function SessionCarros({ carros, setCarros }) {
   const [modeloInput, setModeloInput] = useState("");
   const [showModeloInput, setShowModeloInput] = useState(false);
   const [error, setError] = useState("");
-  // Estado para o modal de confirmação:
-  // { type: "brand" | "model", brand: string, model?: string }
   const [deleteModalData, setDeleteModalData] = useState(null);
 
   function handleAddMarca() {
@@ -80,7 +78,7 @@ export default function SessionCarros({ carros, setCarros }) {
 
   return (
     <div className="mb-6 p-4 border rounded bg-gray-800 relative">
-      <h2 className="text-lg font-bold mb-2">Sessão Carros</h2>
+      <h2 className="text-md underline underline-offset-2 font-bold mb-2">Seção de Carros</h2>
       <div className="flex items-center gap-2">
         <input
           type="text"
@@ -147,7 +145,7 @@ export default function SessionCarros({ carros, setCarros }) {
         ) : (
           <ul>
             {carros.map((carro, idx) => (
-              <li key={idx} className="flex items-center gap-2">
+              <li key={idx} className="flex flex-wrap items-center gap-2">
                 <strong>{carro.marca}</strong>
                 <button
                   onClick={() => requestDeleteBrand(carro.marca)}
@@ -157,7 +155,7 @@ export default function SessionCarros({ carros, setCarros }) {
                 </button>
                 <span>:</span>
                 {carro.modelos.map((modelo, i) => (
-                  <span key={i} className="flex items-center gap-1">
+                  <span key={i} className="flex italic text-sm items-center gap-1">
                     {modelo}
                     <button
                       onClick={() => requestDeleteModel(carro.marca, modelo)}

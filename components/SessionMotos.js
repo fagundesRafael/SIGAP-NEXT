@@ -78,7 +78,7 @@ export default function SessionMotos({ motos, setMotos }) {
 
   return (
     <div className="mb-6 p-4 border rounded bg-gray-800 relative">
-      <h2 className="text-lg font-bold mb-2">Sessão Motos</h2>
+      <h2 className="text-md underline underline-offset-2 font-bold mb-2">Seção de Motos</h2>
       <div className="flex items-center gap-2">
         <input
           type="text"
@@ -143,7 +143,7 @@ export default function SessionMotos({ motos, setMotos }) {
         ) : (
           <ul>
             {motos.map((item, idx) => (
-              <li key={idx} className="flex items-center gap-2">
+              <li key={idx} className="flex flex-wrap items-center gap-2">
                 <strong>{item.marca}</strong>
                 <button
                   onClick={() => requestDeleteBrand(item.marca)}
@@ -153,7 +153,7 @@ export default function SessionMotos({ motos, setMotos }) {
                 </button>
                 <span>:</span>
                 {item.modelos.map((modelo, i) => (
-                  <span key={i} className="flex items-center gap-1">
+                  <span key={i} className="flex italic text-sm items-center gap-1">
                     {modelo}
                     <button
                       onClick={() => requestDeleteModel(item.marca, modelo)}

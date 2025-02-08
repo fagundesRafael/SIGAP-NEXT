@@ -24,7 +24,7 @@ export default function Sidebar() {
     <aside className="relative left-0 top-0 h-screen w-1/6 bg-c01_heavy_blue p-4 rounded-md mx-1">
       {session && (
         <div className="mb-4">
-          <p className="text-cyan-50">
+          <p className="text-cyan-50 text-bold text-sm">
             Bem vindo(a){" "}
             {session?.user?.nome.split(" ")[0] &&
               capitalizeFirstLetter(session.user.nome.split(" ")[0])}
@@ -33,7 +33,7 @@ export default function Sidebar() {
         </div>
       )}
 
-      <div className="my-4 border-t boder-white"></div>
+      <div className="my-1 border-t boder-white"></div>
 
       <div className="flex flex-col mb-4 text-sm font-mono gap-4 text-gray-200 ">
         <ul className="space-y-2">
@@ -118,7 +118,7 @@ export default function Sidebar() {
         </ul>
       </div>
 
-      <div className="my-4 border-t boder-white"></div>
+      <div className="my-1 border-t boder-white"></div>
 
       <div className="flex flex-col ml-2 text-sm gap-4 text-gray-200">
         <ul className="space-y-2">
@@ -157,14 +157,14 @@ export default function Sidebar() {
             </Link>
           </li>
         </ul>
-        <div className="my-4 border-t boder-white"></div>
+        <div className="my-1 border-t boder-white"></div>
       </div>
 
       {session && (
-        <div className="mt-4">
+        <div className="mt-2">
           <button
             onClick={() => signOut()}
-            className="bg-red-500 text-white p-1 rounded  ml-1 hover:underline hover:bg-red-600 transition w-full"
+            className="bg-red-500 text-white text-xs max-w-[60px] p-1 rounded mx-8 hover:bg-red-600 transition w-full"
           >
             Sair
           </button>

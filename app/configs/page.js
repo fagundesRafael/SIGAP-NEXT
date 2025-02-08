@@ -6,7 +6,10 @@ import SessionCarros from "@/components/SessionCarros";
 import SessionBicicletas from "@/components/SessionBicicletas";
 import SessionMotos from "@/components/SessionMotos";
 import SessionArmas from "@/components/SessionArmas";
+import SessionMunicao from "@/components/SessionMunicao";
 import SessionEntorpecentes from "@/components/SessionEntorpecentes";
+import SessionEletroeeletronicos from "@/components/SessionEletroeeletronicos";
+import SessionOutros from "@/components/SessionOutros";
 import DisplayConfigs from "@/components/DisplayConfigs";
 
 export default function ConfigsPage() {
@@ -14,7 +17,10 @@ export default function ConfigsPage() {
   const [bicicletas, setBicicletas] = useState([]);
   const [motos, setMotos] = useState([]);
   const [armas, setArmas] = useState([]);
+  const [municoes, setMunicoes] = useState([]);
   const [entorpecentes, setEntorpecentes] = useState([]);
+  const [eletro, setEletro] = useState([]);
+  const [outros, setOutros] = useState([]);
 
   // Busca os dados já salvos no MongoDB ao montar a página
   useEffect(() => {
@@ -29,7 +35,10 @@ export default function ConfigsPage() {
             setBicicletas(config.bicicletas || []);
             setMotos(config.motos || []);
             setArmas(config.armas || []);
+            setMunicoes(config.municoes || []);
             setEntorpecentes(config.entorpecentes || []);
+            setEletro(config.eletro || []);
+            setOutros(config.outros || []);
           }
         }
       } catch (error) {
@@ -42,7 +51,16 @@ export default function ConfigsPage() {
   // Envia as configurações para a API (POST)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const configData = { carros, bicicletas, motos, armas, entorpecentes };
+    const configData = {
+      carros,
+      bicicletas,
+      motos,
+      armas,
+      municoes,
+      entorpecentes,
+      eletro,
+      outros,
+    };
     try {
       const res = await fetch("/api/configs", {
         method: "POST",
@@ -62,20 +80,30 @@ export default function ConfigsPage() {
   };
 
   return (
-    <div className="min-h-screen p-4 bg-c01_heavy_blue text-white">
+    <div className="min-h-screen p-4 rounded-md bg-c01_heavy_blue text-white">
       <h1 className="text-xl font-bold mb-4">Configurações de Suporte</h1>
       <form onSubmit={handleSubmit}>
-        <SessionCarros carros={carros} setCarros={setCarros} />
-        <SessionBicicletas bicicletas={bicicletas} setBicicletas={setBicicletas} />
-        <SessionMotos motos={motos} setMotos={setMotos} />
-        <SessionArmas armas={armas} setArmas={setArmas} />
-        <SessionEntorpecentes
-          entorpecentes={entorpecentes}
-          setEntorpecentes={setEntorpecentes}
-        />
-        <button type="submit" className="mt-4 p-2 bg-green-500 rounded">
-          Salvar Configurações
-        </button>
+        <div className="flex flex-wrap gap-x-2 font-mono max-w-full" >
+          <SessionCarros carros={carros} setCarros={setCarros} />
+          <SessionBicicletas
+            bicicletas={bicicletas}
+            setBicicletas={setBicicletas}
+          />
+          <SessionMotos motos={motos} setMotos={setMotos} />
+          <SessionArmas armas={armas} setArmas={setArmas} />
+          <SessionMunicao municoes={municoes} setMunicoes={setMunicoes} />
+          <SessionEntorpecentes
+            entorpecentes={entorpecentes}
+            setEntorpecentes={setEntorpecentes}
+          />
+          <SessionEletroeeletronicos eletro={eletro} setEletro={setEletro} />
+          <SessionOutros outros={outros} setOutros={setOutros} />
+        </div>
+        <div>
+          <button type="submit" className="mt-4 p-2 bg-green-500 rounded hover:bg-green-600 ">
+            Salvar Configurações
+          </button>
+        </div>
       </form>
       <hr className="my-4 border-gray-300" />
       <DisplayConfigs
@@ -83,7 +111,10 @@ export default function ConfigsPage() {
         bicicletas={bicicletas}
         motos={motos}
         armas={armas}
+        municoes={municoes}
         entorpecentes={entorpecentes}
+        eletro={eletro}
+        outros={outros}
       />
     </div>
   );
