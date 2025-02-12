@@ -104,7 +104,7 @@ export default function SessionArmas({ armas, setArmas }) {
 
   return (
     <div className="mb-6 p-4 border rounded bg-gray-800 relative">
-      <h2 className="text-md underline underline-offset-2 underline-offset-2 font-bold mb-2">Seção de Armas</h2>
+      <h2 className="text-md underline underline-offset-2 font-bold mb-2">Seção de Armas</h2>
       <div className="flex items-center gap-2">
         <input
           type="text"

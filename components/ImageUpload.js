@@ -1,0 +1,70 @@
+// components/ImageUpload.js
+"use client";
+
+import { useState } from "react";
+
+export default function ImageUpload({ onUpload, setLoading }) {
+  const [preview, setPreview] = useState(null);
+
+  async function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Gerar prévia da imagem
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+
+    // Inicia o loading (exibirá o LoadingImage)
+    setLoading(true);
+
+    // Converter o arquivo para base64
+    const base64 = await fileToBase64(file);
+    // Remover o prefixo (ex: "data:image/png;base64,")
+    const base64String = base64.split(",")[1];
+
+    // Realiza o upload via API
+    const res = await fetch("/api/upload-image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        file: base64String,
+        fileName: file.name,
+        folder: "veiculos",
+      }),
+    });
+    // Encerra o loading
+    setLoading(false);
+
+    if (res.ok) {
+      const data = await res.json();
+      onUpload(data.url);
+    } else {
+      console.error("Upload failed");
+    }
+  }
+
+  return (
+    <div>
+      <input type="file" accept="image/*" onChange={handleFileChange} />
+      {preview && (
+        <img
+          src={preview}
+          alt="Preview"
+          className="w-32 h-32 object-cover mt-2"
+        />
+      )}
+    </div>
+  );
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+}
