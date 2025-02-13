@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import Link from "next/link";
 
+
 export default function CarrosEMotosPage() {
   const [veiculos, setVeiculos] = useState([]);
   const [total, setTotal] = useState(0);
@@ -232,7 +233,11 @@ export default function CarrosEMotosPage() {
                     className="w-10 h-10 object-cover"
                   />
                 ) : (
-                  "Sem imagem"
+                  <img
+                    src="/no-image.jpg"
+                    alt="Sem imagem"
+                    className="w-10 h-10 object-cover"
+                  />
                 )}
               </td>
               <td className="border border-gray-600 text-center p-1">

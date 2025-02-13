@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import ImageUpload from "@/components/ImageUpload";
 import LoadingImage from "@/components/LoadingImage";
 
+
 export default function RegistrarVeiculo() {
   const router = useRouter();
   const { data: session } = useSession();
@@ -91,8 +92,8 @@ export default function RegistrarVeiculo() {
       numero,
       marca,
       modelo,
-      placa,    // Se estiver vazia, a API a removerá
-      chassi,   // Se estiver vazia, a API a removerá
+      placa, // Se estiver vazia, a API a removerá
+      chassi, // Se estiver vazia, a API a removerá
       tipo,
       cor,
       chaves,
@@ -131,262 +132,273 @@ export default function RegistrarVeiculo() {
   }
 
   return (
-    <div className="min-h-screen p-4">
-      <h1 className="text-2xl font-bold mb-4">Registrar Novo Veículo</h1>
+    <div className="min-h-screen bg-c01_heavy_blue p-2 rounded-md">
+      <h1 className="text-white font-bold my-2 mx-6">Registrar Novo Veículo:</h1>
       {errorMsg && <p className="text-red-500 mb-4">{errorMsg}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Campos do formulário (procedimento, número, tipo, marca, modelo, etc.) */}
-        <div>
-          <label className="block font-medium">Procedimento:</label>
-          <div className="flex gap-2">
-            {procedimentoOptions.map((opt) => (
-              <label key={opt}>
-                <input
-                  required
-                  type="radio"
-                  name="procedimento"
-                  value={opt}
-                  checked={procedimento === opt}
-                  onChange={() => setProcedimento(opt)}
-                />{" "}
-                {opt}
-              </label>
-            ))}
-          </div>
-        </div>
+      <form onSubmit={handleSubmit} className="flex justify-around text-xs">
+        <div className="flex flex-col gap-4 w-[45%]">
+          {/* Campo Procedimento como SELECT */}
 
-        <div>
-          <label className="block font-medium">Número:</label>
-          <input
-            required
-            type="text"
-            value={numero}
-            onChange={(e) => setNumero(e.target.value)}
-            className="border p-2 rounded w-full"
-            placeholder="Apenas números, '.', '/' e '-'"
-          />
-        </div>
+          <div className="flex gap-4">
+            <div>
+              <label className="block font-medium">Procedimento:</label>
+              <select
+                required
+                value={procedimento}
+                onChange={(e) => setProcedimento(e.target.value)}
+                className="border p-1 rounded w-full"
+              >
+                <option value="">Selecione o procedimento</option>
+                {procedimentoOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div>
-          <label className="block font-medium">Tipo:</label>
-          <div className="flex gap-2">
-            <label>
+            <div>
+              <label className="block font-medium">Número / ano:</label>
               <input
-                type="radio"
-                name="tipo"
-                value="carro"
-                checked={tipo === "carro"}
-                onChange={() => setTipo("carro")}
-              />{" "}
-              Carro
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="tipo"
-                value="moto"
-                checked={tipo === "moto"}
-                onChange={() => setTipo("moto")}
-              />{" "}
-              Moto
-            </label>
+                required
+                type="text"
+                value={numero}
+                onChange={(e) => setNumero(e.target.value)}
+                className="border p-1 rounded w-[300px]"
+                placeholder="Apenas números e caracteres específicos"
+              />
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label className="block font-medium">Marca:</label>
-          <select
-            value={marca}
-            onChange={(e) => setMarca(e.target.value)}
-            className="border p-2 rounded w-full"
-          >
-            <option value="">Selecione a marca</option>
-            {marcasDisponiveis.map((m, idx) => (
-              <option key={idx} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="flex justify-between gap-4">
+            <div>
+              <label className="block font-medium">Marca:</label>
+              <select
+                value={marca}
+                onChange={(e) => setMarca(e.target.value)}
+                className="border p-1 rounded w-full"
+              >
+                <option value="">Selecione a marca</option>
+                {marcasDisponiveis.map((m, idx) => (
+                  <option key={idx} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div>
-          <label className="block font-medium">Modelo:</label>
-          <select
-            value={modelo}
-            onChange={(e) => setModelo(e.target.value)}
-            className="border p-2 rounded w-full"
-          >
-            <option value="">Selecione o modelo</option>
-            {modelosDisponiveis.map((m, idx) => (
-              <option key={idx} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block font-medium">Placa:</label>
-          <input
-            type="text"
-            value={placa}
-            onChange={(e) => setPlaca(e.target.value.toUpperCase())}
-            className="border p-2 rounded w-full"
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium">Chassi:</label>
-          <input
-            type="text"
-            value={chassi}
-            onChange={(e) => setChassi(e.target.value.toUpperCase())}
-            className="border p-2 rounded w-full"
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium">Cor:</label>
-          <select
-            required
-            value={cor}
-            onChange={(e) => setCor(e.target.value)}
-            className="border p-2 rounded w-full"
-          >
-            <option value="">Selecione a cor</option>
-            {cores.map((c, idx) => (
-              <option key={idx} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block font-medium">Chaves:</label>
-          <div className="flex gap-2">
-            <label>
-              <input
-                type="radio"
-                name="chaves"
-                value="true"
-                checked={chaves === true}
-                onChange={() => setChaves(true)}
-              />{" "}
-              Sim
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="chaves"
-                value="false"
-                checked={chaves === false}
-                onChange={() => setChaves(false)}
-              />{" "}
-              Não
-            </label>
+            <div>
+              <label className="block font-medium">Modelo:</label>
+              <select
+                value={modelo}
+                onChange={(e) => setModelo(e.target.value)}
+                className="border p-1 rounded w-full"
+              >
+                <option value="">Selecione o modelo</option>
+                {modelosDisponiveis.map((m, idx) => (
+                  <option key={idx} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block font-medium">Cor:</label>
+              <select
+                required
+                value={cor}
+                onChange={(e) => setCor(e.target.value)}
+                className="border p-1 rounded w-full"
+              >
+                <option value="">Selecione a cor</option>
+                {cores.map((c, idx) => (
+                  <option key={idx} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label className="block font-medium">Status:</label>
-          <div className="flex gap-2">
-            {statusOptions.map((opt) => (
-              <label key={opt}>
-                <input
-                  required
-                  type="radio"
-                  name="status"
-                  value={opt}
-                  checked={status === opt}
-                  onChange={() => setStatus(opt)}
-                />{" "}
-                {opt}
-              </label>
-            ))}
+          <div className="flex justify-between gap-4">
+            <div>
+              <label className="block font-medium">Placa:</label>
+              <input
+                type="text"
+                value={placa}
+                onChange={(e) => setPlaca(e.target.value.toUpperCase())}
+                className="border p-1 rounded w-full"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium">Chassi:</label>
+              <input
+                type="text"
+                value={chassi}
+                onChange={(e) => setChassi(e.target.value.toUpperCase())}
+                className="border p-1 rounded w-full"
+              />
+            </div>
+            <div>
+              <label className="block font-medium">Data do registro:</label>
+              <input
+                type="date"
+                value={dataField}
+                onChange={(e) => setDataField(e.target.value)}
+                className="border p-1 rounded w-full"
+              />
+            </div>
           </div>
-        </div>
 
-        {status === "apreendido" && (
           <div>
-            <label className="block font-medium">Destino:</label>
+            <label className="block font-medium">Tipo:</label>
             <div className="flex gap-2">
-              {destinoOptions.map((opt) => (
+              <label>
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="carro"
+                  checked={tipo === "carro"}
+                  onChange={() => setTipo("carro")}
+                />{" "}
+                Carro
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="moto"
+                  checked={tipo === "moto"}
+                  onChange={() => setTipo("moto")}
+                />{" "}
+                Moto
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-medium">Chaves:</label>
+            <div className="flex gap-2">
+              <label>
+                <input
+                  type="radio"
+                  name="chaves"
+                  value="true"
+                  checked={chaves === true}
+                  onChange={() => setChaves(true)}
+                />{" "}
+                Sim
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="chaves"
+                  value="false"
+                  checked={chaves === false}
+                  onChange={() => setChaves(false)}
+                />{" "}
+                Não
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-medium">Status:</label>
+            <div className="flex gap-2">
+              {statusOptions.map((opt) => (
                 <label key={opt}>
                   <input
+                    required
                     type="radio"
-                    name="destino"
+                    name="status"
                     value={opt}
-                    checked={destino === opt}
-                    onChange={() => setDestino(opt)}
+                    checked={status === opt}
+                    onChange={() => setStatus(opt)}
                   />{" "}
                   {opt}
                 </label>
               ))}
             </div>
-            {destino === "depósito" && (
-              <div className="flex gap-4 mt-2">
-                <input
-                  type="text"
-                  placeholder="Seção"
-                  value={secao}
-                  onChange={(e) => setSecao(e.target.value)}
-                  className="border p-2 rounded w-full"
-                />
-                <input
-                  type="text"
-                  placeholder="Prateleira"
-                  value={prateleira}
-                  onChange={(e) => setPrateleira(e.target.value)}
-                  className="border p-2 rounded w-full"
-                />
+          </div>
+
+          {status === "apreendido" && (
+            <div>
+              <label className="block font-medium">Destino:</label>
+              <div className="flex gap-2">
+                {destinoOptions.map((opt) => (
+                  <label key={opt}>
+                    <input
+                      type="radio"
+                      name="destino"
+                      value={opt}
+                      checked={destino === opt}
+                      onChange={() => setDestino(opt)}
+                    />{" "}
+                    {opt}
+                  </label>
+                ))}
               </div>
+              {destino === "depósito" && (
+                <div className="flex gap-4 mt-2">
+                  <input
+                    type="text"
+                    placeholder="Seção"
+                    value={secao}
+                    onChange={(e) => setSecao(e.target.value)}
+                    className="border p-1 rounded w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Prateleira"
+                    value={prateleira}
+                    onChange={(e) => setPrateleira(e.target.value)}
+                    className="border p-1 rounded w-full"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          <div>
+            <label className="block font-medium">Observações:</label>
+            <textarea
+              maxLength={380}
+              rows={8}
+              value={obs}
+              onChange={(e) => setObs(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4 w-[45%]">
+          <div>
+            <label className="block font-medium">Imagem:</label>
+            <ImageUpload
+              onUpload={(url) => setImagem(url)}
+              setLoading={setLoadingImage}
+            />
+            {loadingImage && <LoadingImage />}
+            {imagem ? (
+              <p className="text-green-500">Imagem enviada com sucesso!</p>
+            ) : (
+              <img
+                    src="/no-image.jpg"
+                    alt="Sem imagem"
+                    className="w-96 h-96 mt-3 object-cover"
+                  />
             )}
           </div>
-        )}
+          {errorMsg && <p className="text-red-500 mb-4">{errorMsg}</p>}
 
-        <div>
-          <label className="block font-medium">Observações:</label>
-          <textarea
-            maxLength={80}
-            value={obs}
-            onChange={(e) => setObs(e.target.value)}
-            className="border p-2 rounded w-full"
-          />
+          <button
+            type="submit"
+            className="bg-blue-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-blue-600 transform transition"
+          >
+            Registrar Veículo
+          </button>
         </div>
-
-        <div>
-          <label className="block font-medium">
-            Data da movimentação (registro):
-          </label>
-          <input
-            type="date"
-            value={dataField}
-            onChange={(e) => setDataField(e.target.value)}
-            className="border p-2 rounded w-full"
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium">Imagem:</label>
-          <ImageUpload
-            onUpload={(url) => setImagem(url)}
-            setLoading={setLoadingImage}
-          />
-          {loadingImage && <LoadingImage />}
-          {imagem && (
-            <p className="mt-2 text-green-500">
-              Imagem enviada com sucesso!
-            </p>
-          )}
-        </div>
-
-        <button
-          type="submit"
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-        >
-          Registrar Veículo
-        </button>
       </form>
     </div>
   );

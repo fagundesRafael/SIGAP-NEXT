@@ -10,6 +10,9 @@ export default function ImageUpload({ onUpload, setLoading }) {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Limpar a pré-visualização anterior
+    setPreview(null);
+
     // Gerar prévia da imagem
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -53,7 +56,7 @@ export default function ImageUpload({ onUpload, setLoading }) {
         <img
           src={preview}
           alt="Preview"
-          className="w-32 h-32 object-cover mt-2"
+          className="h-96 object-cover mt-2"
         />
       )}
     </div>
