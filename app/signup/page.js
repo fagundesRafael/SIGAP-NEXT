@@ -4,18 +4,27 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Loading from "@/components/Loading";
+import { set } from "mongoose";
 
 export default function SignupPage() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [Loading, setLoading] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(event) {
     event.preventDefault();
+    setLoading(true);
 
     setErrorMsg("");
+    if (password.length < 6) {
+      setLoading(false);
+      setErrorMsg("A senha deve ter no mínimo 6 caracteres.");
+      return;
+    }
 
     const res = await fetch("/api/auth/signup", {
       method: "POST",
@@ -24,11 +33,13 @@ export default function SignupPage() {
     });
 
     if (res.ok) {
+      setLoading(false);
       alert(
         "Usuário criado com sucesso! Redirecionando para a página de login."
       );
       router.push("/login");
     } else {
+      setLoading(false);
       const data = await res.json();
       setErrorMsg(data.error || "Erro ao criar usuário.");
     }
@@ -37,6 +48,7 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <h1 className="text-2xl font-bold mb-6">Criar Conta</h1>
+      {Loading && <Loading />}
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-sm flex flex-col gap-4 border p-6 rounded shadow"

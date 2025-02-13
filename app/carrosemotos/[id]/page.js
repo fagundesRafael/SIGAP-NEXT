@@ -11,6 +11,7 @@ export default function VeiculoDetalhes() {
   const [veiculo, setVeiculo] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
 
+
   useEffect(() => {
     async function fetchVeiculo() {
       try {
@@ -19,6 +20,7 @@ export default function VeiculoDetalhes() {
         if (res.ok) {
           const data = await res.json();
           setVeiculo(data);
+          console.log(data);
         } else {
           setErrorMsg("Erro ao buscar veículo");
         }
