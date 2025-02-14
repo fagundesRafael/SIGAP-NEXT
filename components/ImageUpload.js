@@ -51,7 +51,15 @@ export default function ImageUpload({ onUpload, setLoading }) {
 
   return (
     <div>
-      <input type="file" accept="image/*" onChange={handleFileChange} />
+      <label className="inline-block bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded cursor-pointer transition-colors">
+  <input
+    type="file"
+    accept="image/*"
+    onChange={handleFileChange}
+    className="hidden"
+  />
+  Escolher arquivo
+</label>
       {preview && (
         <img
           src={preview}

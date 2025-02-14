@@ -7,7 +7,6 @@ import { useSession } from "next-auth/react";
 import ImageUpload from "@/components/ImageUpload";
 import LoadingImage from "@/components/LoadingImage";
 
-
 export default function RegistrarVeiculo() {
   const router = useRouter();
   const { data: session } = useSession();
@@ -132,10 +131,13 @@ export default function RegistrarVeiculo() {
   }
 
   return (
-    <div className="min-h-screen bg-c01_heavy_blue p-2 rounded-md">
-      <h1 className="text-white font-bold my-2 mx-6">Registrar Novo Veículo:</h1>
-      {errorMsg && <p className="text-red-500 mb-4">{errorMsg}</p>}
-      <form onSubmit={handleSubmit} className="flex justify-around text-xs">
+    <div className="min-h-screen text-white bg-c_deep_black p-1 rounded-md">
+      <h1 className="font-bold mt-2 mx-4">Registrar Novo Veículo:</h1>
+      {errorMsg && <p className="text-red-500 ml-4 mb-4">{errorMsg}</p>}
+      <form
+        onSubmit={handleSubmit}
+        className="flex justify-between p-4 text-xs"
+      >
         <div className="flex flex-col gap-4 w-[45%]">
           {/* Campo Procedimento como SELECT */}
 
@@ -146,7 +148,7 @@ export default function RegistrarVeiculo() {
                 required
                 value={procedimento}
                 onChange={(e) => setProcedimento(e.target.value)}
-                className="border p-1 rounded w-full"
+                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione o procedimento</option>
                 {procedimentoOptions.map((opt) => (
@@ -164,9 +166,52 @@ export default function RegistrarVeiculo() {
                 type="text"
                 value={numero}
                 onChange={(e) => setNumero(e.target.value)}
-                className="border p-1 rounded w-[300px]"
+                className="bg-c_deep_gray_black p-1 rounded w-[300px]"
                 placeholder="Apenas números e caracteres específicos"
               />
+            </div>
+          </div>
+          <div>
+            <label className="block font-medium">Tipo:</label>
+            <div className="flex text-center gap-2">
+              <label>
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="carro"
+                  checked={tipo === "carro"}
+                  onChange={() => setTipo("carro")}
+                  className="w-2.5 h-2.5 
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                  cursor-pointer"
+                />{" "}
+                Carro
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="moto"
+                  checked={tipo === "moto"}
+                  onChange={() => setTipo("moto")}
+                  className="w-2.5 h-2.5 
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                  cursor-pointer"
+                />{" "}
+                Moto
+              </label>
             </div>
           </div>
 
@@ -176,7 +221,7 @@ export default function RegistrarVeiculo() {
               <select
                 value={marca}
                 onChange={(e) => setMarca(e.target.value)}
-                className="border p-1 rounded w-full"
+                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione a marca</option>
                 {marcasDisponiveis.map((m, idx) => (
@@ -192,7 +237,7 @@ export default function RegistrarVeiculo() {
               <select
                 value={modelo}
                 onChange={(e) => setModelo(e.target.value)}
-                className="border p-1 rounded w-full"
+                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione o modelo</option>
                 {modelosDisponiveis.map((m, idx) => (
@@ -208,7 +253,7 @@ export default function RegistrarVeiculo() {
                 required
                 value={cor}
                 onChange={(e) => setCor(e.target.value)}
-                className="border p-1 rounded w-full"
+                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione a cor</option>
                 {cores.map((c, idx) => (
@@ -227,7 +272,7 @@ export default function RegistrarVeiculo() {
                 type="text"
                 value={placa}
                 onChange={(e) => setPlaca(e.target.value.toUpperCase())}
-                className="border p-1 rounded w-full"
+                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               />
             </div>
 
@@ -237,7 +282,7 @@ export default function RegistrarVeiculo() {
                 type="text"
                 value={chassi}
                 onChange={(e) => setChassi(e.target.value.toUpperCase())}
-                className="border p-1 rounded w-full"
+                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               />
             </div>
             <div>
@@ -246,36 +291,12 @@ export default function RegistrarVeiculo() {
                 type="date"
                 value={dataField}
                 onChange={(e) => setDataField(e.target.value)}
-                className="border p-1 rounded w-full"
+                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block font-medium">Tipo:</label>
-            <div className="flex gap-2">
-              <label>
-                <input
-                  type="radio"
-                  name="tipo"
-                  value="carro"
-                  checked={tipo === "carro"}
-                  onChange={() => setTipo("carro")}
-                />{" "}
-                Carro
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="tipo"
-                  value="moto"
-                  checked={tipo === "moto"}
-                  onChange={() => setTipo("moto")}
-                />{" "}
-                Moto
-              </label>
-            </div>
-          </div>
+          
 
           <div>
             <label className="block font-medium">Chaves:</label>
@@ -287,6 +308,15 @@ export default function RegistrarVeiculo() {
                   value="true"
                   checked={chaves === true}
                   onChange={() => setChaves(true)}
+                  className="w-2.5 h-2.5 
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                  cursor-pointer"
                 />{" "}
                 Sim
               </label>
@@ -297,6 +327,15 @@ export default function RegistrarVeiculo() {
                   value="false"
                   checked={chaves === false}
                   onChange={() => setChaves(false)}
+                  className="w-2.5 h-2.5 
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                  cursor-pointer"
                 />{" "}
                 Não
               </label>
@@ -315,6 +354,15 @@ export default function RegistrarVeiculo() {
                     value={opt}
                     checked={status === opt}
                     onChange={() => setStatus(opt)}
+                    className="w-2.5 h-2.5 
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                  cursor-pointer"
                   />{" "}
                   {opt}
                 </label>
@@ -334,6 +382,15 @@ export default function RegistrarVeiculo() {
                       value={opt}
                       checked={destino === opt}
                       onChange={() => setDestino(opt)}
+                      className="w-2.5 h-2.5 
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                  cursor-pointer"
                     />{" "}
                     {opt}
                   </label>
@@ -346,14 +403,14 @@ export default function RegistrarVeiculo() {
                     placeholder="Seção"
                     value={secao}
                     onChange={(e) => setSecao(e.target.value)}
-                    className="border p-1 rounded w-full"
+                    className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
                   />
                   <input
                     type="text"
                     placeholder="Prateleira"
                     value={prateleira}
                     onChange={(e) => setPrateleira(e.target.value)}
-                    className="border p-1 rounded w-full"
+                    className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
                   />
                 </div>
               )}
@@ -364,17 +421,17 @@ export default function RegistrarVeiculo() {
             <label className="block font-medium">Observações:</label>
             <textarea
               maxLength={380}
-              rows={8}
+              rows={7}
               value={obs}
               onChange={(e) => setObs(e.target.value)}
-              className="border p-2 rounded w-full"
+              className="bg-c_deep_gray_black p-2 rounded w-full"
             />
           </div>
         </div>
 
         <div className="flex flex-col gap-4 w-[45%]">
           <div>
-            <label className="block font-medium">Imagem:</label>
+            <label className="block mb-1 text-slate-200 font-medium">Imagem (.png, .jpg, e .tiff):</label>
             <ImageUpload
               onUpload={(url) => setImagem(url)}
               setLoading={setLoadingImage}
@@ -384,10 +441,10 @@ export default function RegistrarVeiculo() {
               <p className="text-green-500">Imagem enviada com sucesso!</p>
             ) : (
               <img
-                    src="/no-image.jpg"
-                    alt="Sem imagem"
-                    className="w-96 h-96 mt-3 object-cover"
-                  />
+                src="/no-image.jpg"
+                alt="Sem imagem"
+                className="w-96 h-96 mt-3 object-cover opacity-10"
+              />
             )}
           </div>
           {errorMsg && <p className="text-red-500 mb-4">{errorMsg}</p>}

@@ -7,6 +7,7 @@ import { getSession } from "next-auth/react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
+import Loading from "./Loading";
 
 export default function ClientWrapper({ children }) {
   const pathname = usePathname();
@@ -43,9 +44,10 @@ export default function ClientWrapper({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Carregando...
-      </div>
+      // <div className="min-h-screen flex items-center justify-center">
+      //   Carregando...
+      // </div>
+      <Loading/>
     );
   }
 
@@ -53,8 +55,8 @@ export default function ClientWrapper({ children }) {
     <>
       {!isPublic && <Header />}
       <div className="flex h-screen">
-        {!isPublic && <Sidebar />}
-        <main className="flex-grow overflow-y-auto">{children}</main>
+        {!isPublic && <Sidebar className="w-1/6" />}
+        <main className="flex-grow w-5/6 overflow-y-auto">{children}</main>
       </div>
       {!isPublic && <Footer />}
     </>

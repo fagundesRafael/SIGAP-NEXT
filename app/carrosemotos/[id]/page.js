@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import ImageUpload from "@/components/ImageUpload";
 import LoadingImage from "@/components/LoadingImage";
+import Loading from "@/components/Loading"; // Componente de loading geral, se existir
 
 export default function VeiculoDetalhes() {
   const { id } = useParams();
@@ -33,7 +34,7 @@ export default function VeiculoDetalhes() {
   const [loadingImage, setLoadingImage] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  // Arrays de opções (idênticos aos da página de registro)
+  // Arrays de opções
   const procedimentoOptions = ["IPL", "BO", "TCO", "AIAI/AAI", "OUTROS"];
   const statusOptions = ["apreendido", "restituído", "incinerado", "outros"];
   const destinoOptions = ["pátio", "cartório", "depósito", "outros"];
@@ -101,8 +102,9 @@ export default function VeiculoDetalhes() {
           setSecao(data.secao || "");
           setPrateleira(data.prateleira || "");
           setObs(data.obs || "");
-          // Converter a data para formato "YYYY-MM-DD"
-          setDataField(data.data ? new Date(data.data).toISOString().split("T")[0] : "");
+          setDataField(
+            data.data ? new Date(data.data).toISOString().split("T")[0] : ""
+          );
           setImagem(data.imagem || "");
           setIsLoadingData(false);
         } else {
@@ -167,15 +169,41 @@ export default function VeiculoDetalhes() {
     }
   }
 
-  if (isLoadingData) return <p className="p-4">Carregando...</p>;
+  async function handleDelete() {
+    if (confirm("Deseja realmente excluir este veículo?")) {
+      try {
+        const res = await fetch(`/api/carrosemotos/${id}`, {
+          method: "DELETE",
+        });
+        if (res.ok) {
+          alert("Veículo excluído com sucesso!");
+          router.push("/carrosemotos");
+        } else {
+          const data = await res.json();
+          setErrorMsg(data.error || "Erro ao excluir veículo");
+        }
+      } catch (error) {
+        console.error("Erro ao excluir veículo:", error);
+        setErrorMsg("Erro ao excluir veículo");
+      }
+    }
+  }
+
+  if (isLoadingData) return <Loading />;
   if (errorMsg) return <p className="p-4 text-red-500">{errorMsg}</p>;
 
   return (
-    <div className="min-h-screen bg-c01_heavy_blue p-2 rounded-md">
-      <h1 className="text-white font-bold my-2 mx-6">
-        Detalhes e Atualização do Veículo:
-      </h1>
-      <form onSubmit={handleUpdate} className="flex justify-around text-xs">
+    <div className="min-h-screen bg-c_deep_black text-white p-2 rounded-md">
+      <div className="flex">
+        <h1 className="font-bold mt-2 mx-4">
+          Detalhes e Atualização do Veículo:
+        </h1>
+        
+      </div>
+      <form
+        onSubmit={handleUpdate}
+        className="flex justify-between p-4 text-xs"
+      >
         {/* Coluna Esquerda com os campos do formulário */}
         <div className="flex flex-col gap-4 w-[45%]">
           {/* Procedimento como SELECT */}
@@ -186,7 +214,7 @@ export default function VeiculoDetalhes() {
                 required
                 value={procedimento}
                 onChange={(e) => setProcedimento(e.target.value)}
-                className="border p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione o procedimento</option>
                 {procedimentoOptions.map((opt) => (
@@ -203,7 +231,7 @@ export default function VeiculoDetalhes() {
                 type="text"
                 value={numero}
                 onChange={(e) => setNumero(e.target.value)}
-                className="border p-1 rounded w-[300px]"
+                className="bg-c_deep_gray_black p-1 rounded w-[300px]"
                 placeholder="Apenas números e caracteres específicos"
               />
             </div>
@@ -215,7 +243,7 @@ export default function VeiculoDetalhes() {
               <select
                 value={marca}
                 onChange={(e) => setMarca(e.target.value)}
-                className="border p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione a marca</option>
                 {marcasDisponiveis.map((m, idx) => (
@@ -230,7 +258,7 @@ export default function VeiculoDetalhes() {
               <select
                 value={modelo}
                 onChange={(e) => setModelo(e.target.value)}
-                className="border p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione o modelo</option>
                 {modelosDisponiveis.map((m, idx) => (
@@ -246,7 +274,7 @@ export default function VeiculoDetalhes() {
                 required
                 value={cor}
                 onChange={(e) => setCor(e.target.value)}
-                className="border p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione a cor</option>
                 {cores.map((c, idx) => (
@@ -265,7 +293,7 @@ export default function VeiculoDetalhes() {
                 type="text"
                 value={placa}
                 onChange={(e) => setPlaca(e.target.value.toUpperCase())}
-                className="border p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               />
             </div>
             <div>
@@ -274,7 +302,7 @@ export default function VeiculoDetalhes() {
                 type="text"
                 value={chassi}
                 onChange={(e) => setChassi(e.target.value.toUpperCase())}
-                className="border p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               />
             </div>
             <div>
@@ -283,7 +311,7 @@ export default function VeiculoDetalhes() {
                 type="date"
                 value={dataField}
                 onChange={(e) => setDataField(e.target.value)}
-                className="border p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               />
             </div>
           </div>
@@ -298,6 +326,7 @@ export default function VeiculoDetalhes() {
                   value="carro"
                   checked={tipo === "carro"}
                   onChange={() => setTipo("carro")}
+                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                 />{" "}
                 Carro
               </label>
@@ -308,6 +337,7 @@ export default function VeiculoDetalhes() {
                   value="moto"
                   checked={tipo === "moto"}
                   onChange={() => setTipo("moto")}
+                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                 />{" "}
                 Moto
               </label>
@@ -324,6 +354,7 @@ export default function VeiculoDetalhes() {
                   value="true"
                   checked={chaves === true}
                   onChange={() => setChaves(true)}
+                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                 />{" "}
                 Sim
               </label>
@@ -334,6 +365,7 @@ export default function VeiculoDetalhes() {
                   value="false"
                   checked={chaves === false}
                   onChange={() => setChaves(false)}
+                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                 />{" "}
                 Não
               </label>
@@ -352,6 +384,7 @@ export default function VeiculoDetalhes() {
                     value={opt}
                     checked={status === opt}
                     onChange={() => setStatus(opt)}
+                    className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                   />{" "}
                   {opt}
                 </label>
@@ -371,6 +404,7 @@ export default function VeiculoDetalhes() {
                       value={opt}
                       checked={destino === opt}
                       onChange={() => setDestino(opt)}
+                      className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                     />{" "}
                     {opt}
                   </label>
@@ -383,14 +417,14 @@ export default function VeiculoDetalhes() {
                     placeholder="Seção"
                     value={secao}
                     onChange={(e) => setSecao(e.target.value)}
-                    className="border p-1 rounded w-full"
+                    className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
                   />
                   <input
                     type="text"
                     placeholder="Prateleira"
                     value={prateleira}
                     onChange={(e) => setPrateleira(e.target.value)}
-                    className="border p-1 rounded w-full"
+                    className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
                   />
                 </div>
               )}
@@ -401,37 +435,35 @@ export default function VeiculoDetalhes() {
             <label className="block font-medium">Observações:</label>
             <textarea
               maxLength={380}
-              rows={8}
+              rows={12}
               value={obs}
               onChange={(e) => setObs(e.target.value)}
-              className="border p-2 rounded w-full"
+              className="bg-c_deep_gray_black p-2 rounded w-full"
             />
           </div>
         </div>
 
-        {/* Coluna Direita com imagem e botão */}
+        {/* Coluna Direita com imagem e botões */}
         <div className="flex flex-col gap-4 w-[45%]">
           <div>
             <label className="block font-medium">Imagem:</label>
             <ImageUpload
               onUpload={(url) => setImagem(url)}
               setLoading={setLoadingImage}
+              uploaded={!!imagem}
             />
             {loadingImage && <LoadingImage />}
             {imagem ? (
-              <>
               <img
                 src={imagem}
                 alt="Imagem do veículo"
                 className="w-96 h-96 mt-3 object-cover"
-                />
-              {/* <p className="text-green-500">Imagem atualizada com sucesso!</p> */}
-              </>
+              />
             ) : (
               <img
                 src="/no-image.jpg"
                 alt="Sem imagem"
-                className="w-96 h-96 mt-3 object-cover"
+                className="w-96 h-96 mt-3 opacity-10 object-cover"
               />
             )}
           </div>
@@ -443,14 +475,20 @@ export default function VeiculoDetalhes() {
           >
             Atualizar Veículo
           </button>
+          <button
+          onClick={handleDelete}
+          className="bg-red-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-red-600 transform transition"
+        >
+          Excluir Veículo
+        </button>
+        <button
+          onClick={() => router.back()}
+          className="bg-gray-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-gray-600 transition-colors"
+        >
+          Cancelar e Voltar
+        </button>
         </div>
       </form>
-      <button
-        onClick={() => router.back()}
-        className="mt-4 bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
-      >
-        Voltar
-      </button>
-    </div>
+            </div>
   );
 }

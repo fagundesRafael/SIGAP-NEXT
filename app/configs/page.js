@@ -80,7 +80,7 @@ export default function ConfigsPage() {
   };
 
   return (
-    <div className="min-h-screen p-4 rounded-md bg-c01_heavy_blue text-white">
+    <div className="min-h-screen p-2 rounded-md bgc_deep_gray_black text-white">
       <h1 className="text-xl font-bold mb-4">Configurações de Suporte</h1>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-wrap gap-x-2 font-mono max-w-full" >

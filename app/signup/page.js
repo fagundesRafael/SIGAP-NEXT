@@ -5,14 +5,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
-import { set } from "mongoose";
 
 export default function SignupPage() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const [Loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [checked, setChecked] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(event) {
@@ -23,6 +23,14 @@ export default function SignupPage() {
     if (password.length < 6) {
       setLoading(false);
       setErrorMsg("A senha deve ter no mínimo 6 caracteres.");
+      return;
+    }
+
+    if (checked === false) {
+      setLoading(false);
+      setErrorMsg(
+        "Você deve aceitar os termos de uso e política de privacidade."
+      );
       return;
     }
 
@@ -47,53 +55,71 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <h1 className="text-2xl font-bold mb-6">Criar Conta</h1>
-      {Loading && <Loading />}
+      {loading && <Loading />}
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm flex flex-col gap-4 border p-6 rounded shadow"
+        className="w-[35%] flex flex-col bg-c_deep_gray_black border p-6 rounded-xl border-gray-500 shadow"
       >
+        <h1 className="text-2xl text-white font-mono mx-auto mb-2">
+          Crie sua conta:
+        </h1>
+        <img
+          className="mx-auto w-24 animate-glow"
+          src="/sigap_full-logo.png"
+          alt="full-logo"
+        />
+        <label className="text-white">Nome:</label>
         <input
           type="text"
           name="nome"
-          placeholder="Nome"
           value={nome}
           onChange={(e) => setNome(e.target.value)}
-          className="border p-2 rounded"
+          className="border text-white mb-4 border-gray-500 p-2 rounded bg-c_deep_gray_black"
           required
         />
+        <label className="text-white">Email:</label>
         <input
           type="email"
           name="email"
-          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border p-2 rounded"
+          className="border text-white mb-4 border-gray-500 p-2 rounded bg-c_deep_gray_black"
           required
         />
+        <label className="text-white">Senha:</label>
         <input
           type="password"
           name="password"
-          placeholder="Senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 rounded"
+          className="border text-white mb-4 border-gray-500 p-2 rounded bg-c_deep_gray_black"
           required
         />
-        {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
+        {errorMsg && <p className="text-red-500 mx-auto text-sm">{errorMsg}</p>}
+        <div className="flex mx-auto gap-1 text-white text-xs items-center">
+          {/* Checkbox */}
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={(e) => setChecked(e.target.checked)}
+            className="border border-gray-500 rounded"
+          ></input>
+          <p>Eu li e aceito os termos de uso e política de privacidade</p>
+        </div>
         <button
           type="submit"
-          className="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition"
+          className="bg-green-500 text-white p-2 rounded-2xl mt-4 hover:bg-green-600 transition"
         >
           Criar Conta
         </button>
+        <p className="mt-4 mx-auto flex flex-col text-slate-300 ">
+          Já possui conta?{" "}
+          <Link href="/login" className="text-blue-500 hover:underline mx-auto">
+            Faça o Login
+          </Link>
+          <img className="w-6 mx-auto" src="/sigap_padlock.png" alt="padlock" />
+        </p>
       </form>
-      <p className="mt-4">
-        Já possui conta?{" "}
-        <Link href="/login" className="text-blue-500 hover:underline">
-          Fazer Login
-        </Link>
-      </p>
     </div>
   );
 }

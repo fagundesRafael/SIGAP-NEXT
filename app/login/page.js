@@ -17,10 +17,10 @@ export default function LoginPage() {
   async function handleSubmit(event) {
     event.preventDefault();
     setLoading(true);
-    setErrorMsg(""); 
+    setErrorMsg("");
 
     const result = await signIn("credentials", {
-      redirect: false, 
+      redirect: false,
       email,
       password,
       callbackUrl: "/sistem",
@@ -37,48 +37,52 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <h1 className="text-2xl font-bold mb-6">Login</h1>
       {loading && <Loading />}
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm flex flex-col gap-4 border p-6 rounded shadow"
+        className="w-[35%] flex flex-col bg-c_deep_gray_black border p-6 rounded-xl border-gray-500 shadow"
       >
+        <h1 className="text-2xl text-white font-mono mx-auto mb-2">
+          Faça Login na sua conta:
+        </h1>
+        <img
+          className="mx-auto w-24 animate-glow"
+          src="/sigap_full-logo.png"
+          alt="full-logo"
+        />
+        <label className="text-white">Email:</label>
         <input
           type="email"
           name="email"
-          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border p-2 rounded"
+          className="border text-white mb-4 border-gray-500 p-2 rounded bg-c_deep_gray_black"
           required
         />
+        <label className="text-white">Senha:</label>
         <input
           type="password"
           name="password"
-          placeholder="Senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 rounded"
+          className="border text-white mb-4 border-gray-500 p-2 rounded bg-c_deep_gray_black"
           required
         />
-        {errorMsg && (
-          <p className="text-red-500 text-sm">
-            {errorMsg}
-          </p>
-        )}
+        {errorMsg && <p className="text-red-500 mx-auto text-sm">{errorMsg}</p>}
         <button
           type="submit"
-          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition"
+          className=" bg-c_common_red text-white p-2 rounded-2xl mt-4 hover:bg-red-600 transition-all "
         >
           Entrar
         </button>
+        <p className="flex flex-col items-center mt-4 text-white">
+          Não tem uma conta?{" "}
+          <Link href="/signup" className="text-blue-500 hover:underline">
+            Cadastre-se aqui!
+          </Link>
+          <img className="w-6" src="/sigap_padlock.png" alt="padlock" />
+        </p>
       </form>
-      <p className="mt-4">
-        Não possui conta?{" "}
-        <Link href="/signup" className="text-blue-500 hover:underline">
-          Criar conta
-        </Link>
-      </p>
     </div>
   );
 }

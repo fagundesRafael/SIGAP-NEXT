@@ -53,3 +53,22 @@ export async function PUT(request, { params }) {
     return new Response(JSON.stringify({ error: "Erro interno ao atualizar veículo" }), { status: 500 });
   }
 }
+
+// DELETE: Exclui o veículo com o ID informado
+export async function DELETE(request, { params }) {
+  try {
+    await dbConnect();
+    const { id } = params;
+    const deleted = await Veiculo.findByIdAndDelete(id);
+    if (!deleted) {
+      return new Response(JSON.stringify({ error: "Veículo não encontrado" }), { status: 404 });
+    }
+    return new Response(JSON.stringify({ message: "Veículo excluído com sucesso" }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Erro ao excluir veículo:", error);
+    return new Response(JSON.stringify({ error: "Erro interno ao excluir veículo" }), { status: 500 });
+  }
+}
