@@ -78,11 +78,10 @@ export default function SectionCarros({ carros, setCarros }) {
 
   return (
     <div className="mb-6 p-4 rounded bg-c_deep_gray_black relative">
-      {/* <h2 className="text-md underline underline-offset-2 font-bold mb-2">Seção de Carros</h2> */}
       <div className="flex items-center gap-2">
         <input
           type="text"
-          placeholder="inserir marca do carro"
+          placeholder="Inserir marca do carro"
           value={marcaInput}
           onChange={(e) => setMarcaInput(e.target.value)}
           className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"

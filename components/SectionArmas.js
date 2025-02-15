@@ -48,25 +48,29 @@ export default function SessionArmas({ armas, setArmas }) {
       setError("Marca não encontrada.");
       return;
     }
-    if (
-      armas[index].modelos.find(
-        (m) => m.modelo.toLowerCase() === modeloInput.trim().toLowerCase()
-      )
-    ) {
-      setError("Modelo já existe para essa marca.");
-      return;
-    }
-    setError("");
-    const updated = [...armas];
-    updated[index].modelos.push({
-      modelo: modeloInput.trim(),
-      calibre: calibreInput.trim(),
-    });
-    setArmas(updated);
-    setModeloInput("");
-    setCalibreInput("");
-    setShowCalibreInput(false);
+    // Verifica se já existe o mesmo calibre para este modelo
+  const hasDuplicateCalibre = armas[index].modelos.some(
+    (m) =>
+      m.modelo.toLowerCase() === modeloInput.trim().toLowerCase() &&
+      m.calibre.toLowerCase() === calibreInput.trim().toLowerCase()
+  );
+
+  if (hasDuplicateCalibre) {
+    setError("Calibre já mencionado para este modelo");
+    return;
   }
+
+  setError("");
+  const updated = [...armas];
+  updated[index].modelos.push({
+    modelo: modeloInput.trim(),
+    calibre: calibreInput.trim(),
+  });
+  setArmas(updated);
+  setModeloInput("");
+  setCalibreInput("");
+  setShowCalibreInput(false);
+}
 
   function requestDeleteBrand(brand) {
     setDeleteModalData({ type: "brand", brand });
@@ -103,15 +107,14 @@ export default function SessionArmas({ armas, setArmas }) {
   }
 
   return (
-    <div className="mb-6 p-4 border rounded bg-gray-800 relative">
-      <h2 className="text-md underline underline-offset-2 font-bold mb-2">Seção de Armas</h2>
+    <div className="mb-6 p-4 rounded bg-c_deep_gray_black relative">
       <div className="flex items-center gap-2">
         <input
           type="text"
-          placeholder="Marca da arma"
+          placeholder="Inserir marca da arma"
           value={marcaInput}
           onChange={(e) => setMarcaInput(e.target.value)}
-          className="p-2 rounded text-black"
+          className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
         />
         {marcaInput.trim() !== "" && (
           <>
@@ -140,7 +143,7 @@ export default function SessionArmas({ armas, setArmas }) {
               placeholder="Modelo da arma"
               value={modeloInput}
               onChange={(e) => setModeloInput(e.target.value)}
-              className="p-2 rounded text-black"
+              className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
             />
             {modeloInput.trim() !== "" && (
               <>
@@ -168,7 +171,7 @@ export default function SessionArmas({ armas, setArmas }) {
                 placeholder="Calibre da arma"
                 value={calibreInput}
                 onChange={(e) => setCalibreInput(e.target.value)}
-                className="p-2 rounded text-black"
+                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
               />
               {calibreInput.trim() !== "" && (
                 <button

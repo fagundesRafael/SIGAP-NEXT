@@ -7,6 +7,7 @@ export default function ConfirmDeleteModal({ message, onConfirm, onCancel }) {
       <div className="bg-white p-6 rounded shadow-lg">
         <p className="mb-4 text-black">{message}</p>
         <div className="flex justify-end gap-4">
+          <img className="w-10 h-10 animate-glow" src="/sigap_full-padlock.png" alt="padlock" />
           <button onClick={onCancel} className="px-4 py-2 bg-gray-300 rounded">
             Cancelar
           </button>

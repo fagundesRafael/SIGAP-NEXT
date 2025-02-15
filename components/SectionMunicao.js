@@ -47,25 +47,30 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
       setError("Marca não encontrada.");
       return;
     }
-    if (
-      municoes[index].modelos.find(
-        (m) => m.modelo.toLowerCase() === modeloInput.trim().toLowerCase()
-      )
-    ) {
-      setError("Modelo já existe para essa marca.");
-      return;
-    }
-    setError("");
-    const updated = [...municoes];
-    updated[index].modelos.push({
-      modelo: modeloInput.trim(),
-      calibre: calibreInput.trim(),
-    });
-    setMunicoes(updated);
-    setModeloInput("");
-    setCalibreInput("");
-    setShowCalibreInput(false);
+
+    // Verifica se já existe o mesmo calibre para este modelo
+  const hasDuplicateCalibre = municoes[index].modelos.some(
+    (m) =>
+      m.modelo.toLowerCase() === modeloInput.trim().toLowerCase() &&
+      m.calibre.toLowerCase() === calibreInput.trim().toLowerCase()
+  );
+
+  if (hasDuplicateCalibre) {
+    setError("Calibre já mencionado para este modelo");
+    return;
   }
+
+  setError("");
+  const updated = [...municoes];
+  updated[index].modelos.push({
+    modelo: modeloInput.trim(),
+    calibre: calibreInput.trim(),
+  });
+  setMunicoes(updated);
+  setModeloInput("");
+  setCalibreInput("");
+  setShowCalibreInput(false);
+}
 
   function requestDeleteBrand(brand) {
     setDeleteModalData({ type: "brand", brand });
@@ -85,7 +90,12 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
     } else if (deleteModalData.type === "model") {
       const updated = municoes.map((item) => {
         if (item.marca === deleteModalData.brand) {
-          return { ...item, modelos: item.modelos.filter((m) => m.modelo !== deleteModalData.model) };
+          return {
+            ...item,
+            modelos: item.modelos.filter(
+              (m) => m.modelo !== deleteModalData.model
+            ),
+          };
         }
         return item;
       });
@@ -99,22 +109,29 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
   }
 
   return (
-    <div className="mb-6 p-4 border rounded bg-gray-800 relative">
-      <h2 className="text-md underline underline-offset-2 font-bold mb-2">Seção de Munições</h2>
+    <div className="mb-6 p-4 rounded bg-c_deep_gray_black relative">
       <div className="flex items-center gap-2">
         <input
           type="text"
-          placeholder="Marca da munição"
+          placeholder="Inserir marca da munição"
           value={marcaInput}
           onChange={(e) => setMarcaInput(e.target.value)}
-          className="p-2 rounded text-black"
+          className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
         />
         {marcaInput.trim() !== "" && (
           <>
-            <button type="button" onClick={handleAddMarca} className="text-green-500">
+            <button
+              type="button"
+              onClick={handleAddMarca}
+              className="text-green-500"
+            >
               <IoIosAddCircle size={24} />
             </button>
-            <button type="button" onClick={() => requestDeleteBrand(marcaInput.trim())} className="text-red-500">
+            <button
+              type="button"
+              onClick={() => requestDeleteBrand(marcaInput.trim())}
+              className="text-red-500"
+            >
               <TiDeleteOutline size={20} />
             </button>
           </>
@@ -128,14 +145,24 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
               placeholder="Modelo da munição"
               value={modeloInput}
               onChange={(e) => setModeloInput(e.target.value)}
-              className="p-2 rounded text-black"
+              className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
             />
             {modeloInput.trim() !== "" && (
               <>
-                <button type="button" onClick={handleAddModelo} className="text-green-500">
+                <button
+                  type="button"
+                  onClick={handleAddModelo}
+                  className="text-green-500"
+                >
                   <IoIosAddCircle size={24} />
                 </button>
-                <button type="button" onClick={() => requestDeleteModel(marcaInput.trim(), modeloInput.trim())} className="text-red-500">
+                <button
+                  type="button"
+                  onClick={() =>
+                    requestDeleteModel(marcaInput.trim(), modeloInput.trim())
+                  }
+                  className="text-red-500"
+                >
                   <TiDeleteOutline size={20} />
                 </button>
               </>
@@ -148,10 +175,14 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
                 placeholder="Calibre da munição"
                 value={calibreInput}
                 onChange={(e) => setCalibreInput(e.target.value)}
-                className="p-2 rounded text-black"
+                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
               />
               {calibreInput.trim() !== "" && (
-                <button type="button" onClick={handleAddCalibre} className="text-green-500">
+                <button
+                  type="button"
+                  onClick={handleAddCalibre}
+                  className="text-green-500"
+                >
                   <IoIosAddCircle size={24} />
                 </button>
               )}
@@ -169,14 +200,23 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
             {municoes.map((item, idx) => (
               <li key={idx} className="flex flex-wrap items-center gap-2">
                 <strong>{item.marca}</strong>
-                <button onClick={() => requestDeleteBrand(item.marca)} className="text-red-500">
+                <button
+                  onClick={() => requestDeleteBrand(item.marca)}
+                  className="text-red-500"
+                >
                   <TiDeleteOutline size={20} />
                 </button>
                 <span>:</span>
                 {item.modelos.map((m, i) => (
-                  <span key={i} className="flex italic text-sm items-center gap-1">
+                  <span
+                    key={i}
+                    className="flex italic text-sm items-center gap-1"
+                  >
                     {m.modelo} (Calibre: {m.calibre})
-                    <button onClick={() => requestDeleteModel(item.marca, m.modelo)} className="text-red-500">
+                    <button
+                      onClick={() => requestDeleteModel(item.marca, m.modelo)}
+                      className="text-red-500"
+                    >
                       <TiDeleteOutline size={20} />
                     </button>
                     {i < item.modelos.length - 1 && <span>,</span>}

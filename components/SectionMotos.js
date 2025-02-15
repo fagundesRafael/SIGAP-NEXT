@@ -77,15 +77,14 @@ export default function SessionMotos({ motos, setMotos }) {
   }
 
   return (
-    <div className="mb-6 p-4 border rounded bg-gray-800 relative">
-      <h2 className="text-md underline underline-offset-2 font-bold mb-2">Seção de Motos</h2>
+    <div className="mb-6 p-4 rounded bg-c_deep_gray_black relative">
       <div className="flex items-center gap-2">
         <input
           type="text"
-          placeholder="Marca da moto"
+          placeholder="Inserir marca da moto"
           value={marcaInput}
           onChange={(e) => setMarcaInput(e.target.value)}
-          className="p-2 rounded text-black"
+          className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
         />
         {marcaInput.trim() !== "" && (
           <>
@@ -113,7 +112,7 @@ export default function SessionMotos({ motos, setMotos }) {
             placeholder="Modelo da moto"
             value={modeloInput}
             onChange={(e) => setModeloInput(e.target.value)}
-            className="p-2 rounded text-black"
+            className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
           />
           {modeloInput.trim() !== "" && (
             <>

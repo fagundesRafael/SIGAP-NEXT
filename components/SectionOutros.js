@@ -39,15 +39,14 @@ export default function SessionOutros({ outros, setOutros }) {
   }
 
   return (
-    <div className="mb-6 p-4 border rounded bg-gray-800 relative">
-      <h2 className="text-md underline underline-offset-2 font-bold mb-2">Outros</h2>
+    <div className="mb-6 p-4 rounded bg-c_deep_gray_black relative">
       <div className="flex items-center gap-2">
         <input
           type="text"
-          placeholder="Marca de Outros"
+          placeholder="Inserir marca de Outros"
           value={brandInput}
           onChange={(e) => setBrandInput(e.target.value)}
-          className="p-2 rounded text-black"
+          className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
         />
         {brandInput.trim() !== "" && (
           <>

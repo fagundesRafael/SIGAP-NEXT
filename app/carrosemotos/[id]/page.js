@@ -6,7 +6,9 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import ImageUpload from "@/components/ImageUpload";
 import LoadingImage from "@/components/LoadingImage";
-import Loading from "@/components/Loading"; // Componente de loading geral, se existir
+import Loading from "@/components/Loading";
+import NotificationModal from "@/components/NotificationModal";
+import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 
 export default function VeiculoDetalhes() {
   const { id } = useParams();
@@ -33,6 +35,9 @@ export default function VeiculoDetalhes() {
   const [errorMsg, setErrorMsg] = useState("");
   const [loadingImage, setLoadingImage] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [showNotification, setShowNotification] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Arrays de opções
   const procedimentoOptions = ["IPL", "BO", "TCO", "AIAI/AAI", "OUTROS"];
@@ -120,6 +125,18 @@ export default function VeiculoDetalhes() {
     if (id) fetchVehicle();
   }, [id]);
 
+  // Função para mostrar notificação (mantida para outras ações, se necessário)
+  const showAlert = (message) => {
+    setNotificationMessage(message);
+    setShowNotification(true);
+  };
+
+  // Função para fechar notificação
+  const closeNotification = () => {
+    setShowNotification(false);
+    setNotificationMessage("");
+  };
+
   async function handleUpdate(e) {
     e.preventDefault();
     setErrorMsg("");
@@ -157,8 +174,10 @@ export default function VeiculoDetalhes() {
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        alert("Veículo atualizado com sucesso!");
-        router.push("/carrosemotos");
+        showAlert("Veículo atualizado com sucesso!");
+        setTimeout(() => {
+          router.push("/carrosemotos");
+        }, 2000);
       } else {
         const data = await res.json();
         setErrorMsg(data.error || "Erro ao atualizar veículo");
@@ -169,23 +188,30 @@ export default function VeiculoDetalhes() {
     }
   }
 
+  // Abre o modal de confirmação ao clicar em "Excluir Veículo"
   async function handleDelete() {
-    if (confirm("Deseja realmente excluir este veículo?")) {
-      try {
-        const res = await fetch(`/api/carrosemotos/${id}`, {
-          method: "DELETE",
-        });
-        if (res.ok) {
-          alert("Veículo excluído com sucesso!");
-          router.push("/carrosemotos");
-        } else {
-          const data = await res.json();
-          setErrorMsg(data.error || "Erro ao excluir veículo");
-        }
-      } catch (error) {
-        console.error("Erro ao excluir veículo:", error);
-        setErrorMsg("Erro ao excluir veículo");
+    setShowDeleteModal(true);
+  }
+  
+  // Executa a exclusão somente se o usuário confirmar no modal
+  async function handleConfirmDelete() {
+    try {
+      const res = await fetch(`/api/carrosemotos/${id}`, {
+        method: "DELETE",
+      });
+      
+      if (res.ok) {
+        // Redireciona imediatamente após a exclusão confirmada
+        router.push("/carrosemotos");
+      } else {
+        const data = await res.json();
+        setErrorMsg(data.error || "Erro ao excluir veículo");
       }
+    } catch (error) {
+      console.error("Erro ao excluir veículo:", error);
+      setErrorMsg("Erro ao excluir veículo");
+    } finally {
+      setShowDeleteModal(false); // Fecha o modal, independentemente do resultado
     }
   }
 
@@ -198,7 +224,6 @@ export default function VeiculoDetalhes() {
         <h1 className="font-bold mt-2 mx-4">
           Detalhes e Atualização do Veículo:
         </h1>
-        
       </div>
       <form
         onSubmit={handleUpdate}
@@ -476,19 +501,34 @@ export default function VeiculoDetalhes() {
             Atualizar Veículo
           </button>
           <button
-          onClick={handleDelete}
-          className="bg-red-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-red-600 transform transition"
-        >
-          Excluir Veículo
-        </button>
-        <button
-          onClick={() => router.back()}
-          className="bg-gray-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-gray-600 transition-colors"
-        >
-          Cancelar e Voltar
-        </button>
+          type="button"
+            onClick={handleDelete}
+            className="bg-red-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-red-600 transform transition"
+          >
+            Excluir Veículo
+          </button>
+          <button
+          type="button"
+            onClick={() => router.back()}
+            className="bg-gray-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-gray-600 transition-colors"
+          >
+            Cancelar e Voltar
+          </button>
         </div>
       </form>
-            </div>
+      {showNotification && (
+        <NotificationModal
+          message={notificationMessage}
+          onClose={closeNotification}
+        />
+      )}
+      {showDeleteModal && (
+        <ConfirmDeleteModal
+          message="Deseja realmente excluir este veículo permanentemente?"
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setShowDeleteModal(false)}
+        />
+      )}
+    </div>
   );
 }

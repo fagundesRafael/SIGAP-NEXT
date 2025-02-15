@@ -11,8 +11,11 @@ import SectionEntorpecentes from "@/components/SectionEntorpecentes";
 import SectionEletroeeletronicos from "@/components/SectionEletroeeletronicos";
 import SectionOutros from "@/components/SectionOutros";
 import DisplayConfigs from "@/components/DisplayConfigs";
+import NotificationModal from "@/components/NotificationModal";
 
 export default function ConfigsPage() {
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
   const [carros, setCarros] = useState([]);
   const [bicicletas, setBicicletas] = useState([]);
   const [motos, setMotos] = useState([]);
@@ -48,6 +51,18 @@ export default function ConfigsPage() {
     fetchConfigs();
   }, []);
 
+  // Função para mostrar notificação
+  const showAlert = (message) => {
+    setNotificationMessage(message);
+    setShowNotification(true);
+  };
+
+  // Função para fechar notificação
+  const closeNotification = () => {
+    setShowNotification(false);
+    setNotificationMessage("");
+  };
+
   // Envia as configurações para a API (POST)
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,15 +82,16 @@ export default function ConfigsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(configData),
       });
+      
       if (res.ok) {
-        alert("Configurações salvas com sucesso!");
+        showAlert("Configurações salvas com sucesso!");
       } else {
         const data = await res.json();
-        alert("Erro: " + (data.error || "Erro ao salvar configuração."));
+        showAlert("Erro: " + (data.error || "Erro ao salvar configuração."));
       }
     } catch (error) {
       console.error("Erro ao salvar configuração:", error);
-      alert("Erro ao salvar configuração.");
+      showAlert("Erro ao salvar configuração.");
     }
   };
 
@@ -116,6 +132,12 @@ export default function ConfigsPage() {
         eletro={eletro}
         outros={outros}
       />
+      {showNotification && (
+        <NotificationModal
+          message={notificationMessage}
+          onClose={closeNotification}
+        />
+      )}
     </div>
   );
 }

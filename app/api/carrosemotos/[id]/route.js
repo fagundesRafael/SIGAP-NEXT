@@ -6,17 +6,14 @@ import Veiculo from "@/models/Veiculo";
 export async function GET(request, { params }) {
   try {
     await dbConnect();
-    const { id } = params;
+    const { id } = await params; 
     const veiculo = await Veiculo.findById(id);
     if (!veiculo) {
       return new Response(JSON.stringify({ error: "Veículo não encontrado" }), { status: 404 });
     }
-    return new Response(JSON.stringify(veiculo), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify(veiculo), { status: 200 });
   } catch (error) {
-    console.error("Erro ao buscar veículo:", error);
+    console.error("Erro na rota GET:", error);
     return new Response(JSON.stringify({ error: "Erro ao buscar veículo" }), { status: 500 });
   }
 }

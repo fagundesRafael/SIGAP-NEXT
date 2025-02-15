@@ -19,12 +19,12 @@ module.exports = {
         },
         glow: {
           "0%, 100%": { filter: "brightness(1)" },
-          "50%": { filter: "brightness(2)" },
+          "50%": { filter: "brightness(3)" },
         },
       },
       animation: {
-        padlockBounce: 'padlockBounce 1s ease-in-out infinite',
-        typing: "typing 0.1s steps(22, end) forwards",
+        padlockBounce: 'padlockBounce 3s ease-in-out infinite',
+        typing: "typing 0.8s steps(22, end) forwards",
         glow: "glow 1s ease-in-out infinite",
       },
       colors: {

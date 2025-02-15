@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import ImageUpload from "@/components/ImageUpload";
 import LoadingImage from "@/components/LoadingImage";
+import NotificationModal from "@/components/NotificationModal";
 
 export default function RegistrarVeiculo() {
   const router = useRouter();
@@ -30,6 +31,8 @@ export default function RegistrarVeiculo() {
   const [imagem, setImagem] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [loadingImage, setLoadingImage] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [showNotification, setShowNotification] = useState(false);
 
   // Arrays de opções
   const procedimentoOptions = ["IPL", "BO", "TCO", "AIAI/AAI", "OUTROS"];
@@ -81,6 +84,18 @@ export default function RegistrarVeiculo() {
         : configs.motos.find((item) => item.marca === marca)?.modelos || []
       : [];
 
+  // Função para mostrar notificação
+  const showAlert = (message) => {
+    setNotificationMessage(message);
+    setShowNotification(true);
+  };
+
+  // Função para fechar notificação
+  const closeNotification = () => {
+    setShowNotification(false);
+    setNotificationMessage("");
+  };
+
   async function handleSubmit(e) {
     e.preventDefault();
     setErrorMsg("");
@@ -118,8 +133,10 @@ export default function RegistrarVeiculo() {
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        alert("Veículo criado com sucesso!");
-        router.push("/carrosemotos");
+        showAlert("Veículo criado com sucesso!");
+        setTimeout(() => {
+          router.push("/carrosemotos");
+        }, 2000);
       } else {
         const data = await res.json();
         setErrorMsg(data.error || "Erro ao criar veículo");
@@ -296,8 +313,6 @@ export default function RegistrarVeiculo() {
             </div>
           </div>
 
-          
-
           <div>
             <label className="block font-medium">Chaves:</label>
             <div className="flex gap-2">
@@ -431,7 +446,9 @@ export default function RegistrarVeiculo() {
 
         <div className="flex flex-col gap-4 w-[45%]">
           <div>
-            <label className="block mb-1 text-slate-200 font-medium">Imagem (.png, .jpg, e .tiff):</label>
+            <label className="block mb-1 text-slate-200 font-medium">
+              Imagem (.png, .jpg, e .tiff):
+            </label>
             <ImageUpload
               onUpload={(url) => setImagem(url)}
               setLoading={setLoadingImage}
@@ -457,6 +474,12 @@ export default function RegistrarVeiculo() {
           </button>
         </div>
       </form>
+      {showNotification && (
+        <NotificationModal
+          message={notificationMessage}
+          onClose={closeNotification}
+        />
+      )}
     </div>
   );
 }

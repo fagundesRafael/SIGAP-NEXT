@@ -48,7 +48,10 @@ const VeiculoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Índices parciais: aplica a restrição única somente quando os campos existem e não são nulos
+// Os índices para "placa" e "chassi" já estão definidos via as opções "unique: true" e "sparse: true" acima.
+// Para evitar duplicidade de índices (e os avisos do Mongoose), as definições manuais abaixo foram comentadas:
+
+/*
 VeiculoSchema.index(
   { placa: 1 },
   { unique: true, partialFilterExpression: { placa: { $exists: true, $ne: null } } }
@@ -57,6 +60,7 @@ VeiculoSchema.index(
   { chassi: 1 },
   { unique: true, partialFilterExpression: { chassi: { $exists: true, $ne: null } } }
 );
+*/
 
 // Evita redefinir o model durante o hot-reload
 export default mongoose.models.Veiculo || mongoose.model("Veiculo", VeiculoSchema);
