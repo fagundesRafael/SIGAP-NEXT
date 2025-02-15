@@ -7,7 +7,7 @@ import { MdOutlineTextsms } from "react-icons/md";
 
 export default function Header() {
   return (
-    <header className="w-full mx-1 rounded-md text-white bg-c_deep_black flex justify-between px-4 py-2 my-1">
+    <header className="w-full mx-1 rounded-md text-white bg-c_deep_black flex justify-between px-4 py-2 my-1  border border-gray-500 shadow">
       <Link className="flex gap-2" href="/">
         <img
           className="h-6 mb-[3px] animate-glow"

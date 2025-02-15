@@ -21,7 +21,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="relative left-0 top-0 h-screen bg-c_deep_black p-4 rounded-md mx-1">
+    <aside className="relative left-0 top-0 h-screen bg-c_deep_black p-4 rounded-md mx-1  border border-gray-500 shadow">
       {session && (
         <div className="mb-4">
           <p className="text-cyan-50 text-bold text-sm">

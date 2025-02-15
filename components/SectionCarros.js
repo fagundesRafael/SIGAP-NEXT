@@ -1,4 +1,4 @@
-// components/SessionCarros.js
+// components/SectionCarros.js
 "use client";
 
 import { useState } from "react";
@@ -6,7 +6,7 @@ import { IoIosAddCircle } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
-export default function SessionCarros({ carros, setCarros }) {
+export default function SectionCarros({ carros, setCarros }) {
   const [marcaInput, setMarcaInput] = useState("");
   const [modeloInput, setModeloInput] = useState("");
   const [showModeloInput, setShowModeloInput] = useState(false);
@@ -77,15 +77,15 @@ export default function SessionCarros({ carros, setCarros }) {
   }
 
   return (
-    <div className="mb-6 p-4 border rounded bg-gray-800 relative">
-      <h2 className="text-md underline underline-offset-2 font-bold mb-2">Seção de Carros</h2>
+    <div className="mb-6 p-4 rounded bg-c_deep_gray_black relative">
+      {/* <h2 className="text-md underline underline-offset-2 font-bold mb-2">Seção de Carros</h2> */}
       <div className="flex items-center gap-2">
         <input
           type="text"
-          placeholder="Marca do carro"
+          placeholder="inserir marca do carro"
           value={marcaInput}
           onChange={(e) => setMarcaInput(e.target.value)}
-          className="p-2 rounded text-black"
+          className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
         />
         {marcaInput.trim() !== "" && (
           <>
@@ -110,10 +110,10 @@ export default function SessionCarros({ carros, setCarros }) {
         <div className="flex items-center gap-2 mt-2">
           <input
             type="text"
-            placeholder="Modelo do carro"
+            placeholder="inserir modelo do carro"
             value={modeloInput}
             onChange={(e) => setModeloInput(e.target.value)}
-            className="p-2 rounded text-black"
+            className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
           />
           {modeloInput.trim() !== "" && (
             <>

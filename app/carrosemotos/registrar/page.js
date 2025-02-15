@@ -131,7 +131,7 @@ export default function RegistrarVeiculo() {
   }
 
   return (
-    <div className="min-h-screen text-white bg-c_deep_black p-1 rounded-md">
+    <div className="min-h-screen text-white bg-c_deep_black p-1 rounded-md border border-gray-500 shadow">
       <h1 className="font-bold mt-2 mx-4">Registrar Novo Veículo:</h1>
       {errorMsg && <p className="text-red-500 ml-4 mb-4">{errorMsg}</p>}
       <form
@@ -421,7 +421,7 @@ export default function RegistrarVeiculo() {
             <label className="block font-medium">Observações:</label>
             <textarea
               maxLength={380}
-              rows={7}
+              rows={10}
               value={obs}
               onChange={(e) => setObs(e.target.value)}
               className="bg-c_deep_gray_black p-2 rounded w-full"

@@ -55,7 +55,7 @@ export default function CarrosEMotosPage() {
   }
 
   return (
-    <div className="min-h-screen p-2 rounded-md bg-c_deep_black text-white">
+    <div className="min-h-screen p-2 rounded-md bg-c_deep_black text-white  border border-gray-500 shadow">
       <div className="flex justify-between items-center mb-2">
         <div>
           <button
@@ -82,7 +82,7 @@ export default function CarrosEMotosPage() {
         {showSearch && (
           <form
             onSubmit={handleSearchSubmit}
-            className="mb-3"
+            className="mb-3 rounded-xl"
           >
             <div className="flex justify-between mt-2">
               <div>
@@ -98,7 +98,7 @@ export default function CarrosEMotosPage() {
                       procedimento: e.target.value,
                     })
                   }
-                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black"
+                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black  border border-gray-500 shadow"
                 />
               </div>
               <div>
@@ -111,7 +111,7 @@ export default function CarrosEMotosPage() {
                   onChange={(e) =>
                     setSearchParams({ ...searchParams, numero: e.target.value })
                   }
-                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black"
+                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black  border border-gray-500 shadow"
                 />
               </div>
               <div>
@@ -124,7 +124,7 @@ export default function CarrosEMotosPage() {
                   onChange={(e) =>
                     setSearchParams({ ...searchParams, marca: e.target.value })
                   }
-                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black"
+                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black  border border-gray-500 shadow"
                 />
               </div>
               <div>
@@ -137,7 +137,7 @@ export default function CarrosEMotosPage() {
                   onChange={(e) =>
                     setSearchParams({ ...searchParams, modelo: e.target.value })
                   }
-                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black"
+                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black  border border-gray-500 shadow"
                 />
               </div>
               <div>
@@ -150,7 +150,7 @@ export default function CarrosEMotosPage() {
                   onChange={(e) =>
                     setSearchParams({ ...searchParams, placa: e.target.value })
                   }
-                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black"
+                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black  border border-gray-500 shadow"
                 />
               </div>
               <div>
@@ -163,7 +163,7 @@ export default function CarrosEMotosPage() {
                   onChange={(e) =>
                     setSearchParams({ ...searchParams, chassi: e.target.value })
                   }
-                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black"
+                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black  border border-gray-500 shadow"
                 />
               </div>
             </div>

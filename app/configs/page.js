@@ -2,14 +2,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import SessionCarros from "@/components/SessionCarros";
-import SessionBicicletas from "@/components/SessionBicicletas";
-import SessionMotos from "@/components/SessionMotos";
-import SessionArmas from "@/components/SessionArmas";
-import SessionMunicao from "@/components/SessionMunicao";
-import SessionEntorpecentes from "@/components/SessionEntorpecentes";
-import SessionEletroeeletronicos from "@/components/SessionEletroeeletronicos";
-import SessionOutros from "@/components/SessionOutros";
+import SectionCarros from "@/components/SectionCarros";
+import SectionBicicletas from "@/components/SectionBicicletas";
+import SectionMotos from "@/components/SectionMotos";
+import SectionArmas from "@/components/SectionArmas";
+import SectionMunicao from "@/components/SectionMunicao";
+import SectionEntorpecentes from "@/components/SectionEntorpecentes";
+import SectionEletroeeletronicos from "@/components/SectionEletroeeletronicos";
+import SectionOutros from "@/components/SectionOutros";
 import DisplayConfigs from "@/components/DisplayConfigs";
 
 export default function ConfigsPage() {
@@ -80,24 +80,24 @@ export default function ConfigsPage() {
   };
 
   return (
-    <div className="min-h-screen p-2 rounded-md bgc_deep_gray_black text-white">
-      <h1 className="text-xl font-bold mb-4">Configurações de Suporte</h1>
+    <div className="min-h-screen p-2 rounded-md bg-c_deep_black text-white border border-gray-500 shadow">
+      <h1 className="text-xl font-bold mb-2">Configurações de Registros</h1>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-wrap gap-x-2 font-mono max-w-full" >
-          <SessionCarros carros={carros} setCarros={setCarros} />
-          <SessionBicicletas
+          <SectionCarros carros={carros} setCarros={setCarros} />
+          <SectionBicicletas
             bicicletas={bicicletas}
             setBicicletas={setBicicletas}
           />
-          <SessionMotos motos={motos} setMotos={setMotos} />
-          <SessionArmas armas={armas} setArmas={setArmas} />
-          <SessionMunicao municoes={municoes} setMunicoes={setMunicoes} />
-          <SessionEntorpecentes
+          <SectionMotos motos={motos} setMotos={setMotos} />
+          <SectionArmas armas={armas} setArmas={setArmas} />
+          <SectionMunicao municoes={municoes} setMunicoes={setMunicoes} />
+          <SectionEntorpecentes
             entorpecentes={entorpecentes}
             setEntorpecentes={setEntorpecentes}
           />
-          <SessionEletroeeletronicos eletro={eletro} setEletro={setEletro} />
-          <SessionOutros outros={outros} setOutros={setOutros} />
+          <SectionEletroeeletronicos eletro={eletro} setEletro={setEletro} />
+          <SectionOutros outros={outros} setOutros={setOutros} />
         </div>
         <div>
           <button type="submit" className="mt-4 p-2 bg-green-500 rounded hover:bg-green-600 ">

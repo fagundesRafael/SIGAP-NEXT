@@ -23,7 +23,7 @@ export default function LoginPage() {
       redirect: false,
       email,
       password,
-      callbackUrl: "/sistem",
+      callbackUrl: "/system",
     });
 
     if (result?.error) {
@@ -31,7 +31,7 @@ export default function LoginPage() {
       setErrorMsg("Email ou senha inválidos.");
     } else {
       setLoading(false);
-      router.push(result.url || "/sistem");
+      router.push(result.url || "/system");
     }
   }
 

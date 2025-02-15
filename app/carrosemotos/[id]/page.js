@@ -193,7 +193,7 @@ export default function VeiculoDetalhes() {
   if (errorMsg) return <p className="p-4 text-red-500">{errorMsg}</p>;
 
   return (
-    <div className="min-h-screen bg-c_deep_black text-white p-2 rounded-md">
+    <div className="min-h-screen bg-c_deep_black text-white p-2 rounded-md border border-gray-500 shadow">
       <div className="flex">
         <h1 className="font-bold mt-2 mx-4">
           Detalhes e Atualização do Veículo:
