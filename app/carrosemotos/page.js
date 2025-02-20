@@ -175,7 +175,7 @@ export default function CarrosEMotosPage() {
       <table className="w-full">
         <thead className="bg-blue-900 text-white text-xs">
           <tr>
-            <th className="p-1">Procedimento</th>
+            <th className="p-1">Proced.</th>
             <th className="p-1">Número</th>
             <th className="p-1">Tipo</th>
             <th className="p-1">Marca</th>
@@ -198,7 +198,9 @@ export default function CarrosEMotosPage() {
             <tr key={v._id} className="text-xs">
               <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.procedimento}</td>
               <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.numero}</td>
-              <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1 min-w-14 ">{v.tipo}</td>
+              {v.tipo === "carro" ? (<td className="border border-c_deep_black bg-c_deep_gray_black text-blue-300 underline text-center p-1">{v.tipo}</td>)
+                 : (<td className="border border-c_deep_black bg-c_deep_gray_black text-yellow-300 underline text-center p-1">{v.tipo}</td>)
+                    }
               <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.marca}</td>
               <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.modelo}</td>
               <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.placa}</td>
@@ -209,7 +211,10 @@ export default function CarrosEMotosPage() {
               </td>
               <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.cor}</td>
               <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.chaves ? "Sim" : "Não"}</td>
-              <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.status}</td>
+              {v.status === "restituído" ? 
+              (<td className="border border-c_deep_black bg-green-500 text-center text-slate-100 p-1">{v.status}</td>)
+                :  (<td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.status}</td>)
+                  }
               <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1" title={v.createdBy}>
                 {v.createdBy.split(" ")[0]}
               </td>

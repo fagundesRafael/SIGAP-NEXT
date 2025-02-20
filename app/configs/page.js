@@ -3,29 +3,35 @@
 
 import { useState, useEffect } from "react";
 import SectionCarros from "@/components/SectionCarros";
-import SectionBicicletas from "@/components/SectionBicicletas";
 import SectionMotos from "@/components/SectionMotos";
+import SectionCaminhonetes from "@/components/SectionCaminhonetes";
+import SectionCaminhoes from "@/components/SectionCaminhoes";
+import SectionTratores from "@/components/SectionTratores";
+import SectionOutrosAutomotores from "@/components/SectionOutrosAutomotores";
+import SectionBicicletas from "@/components/SectionBicicletas";
 import SectionArmas from "@/components/SectionArmas";
 import SectionMunicao from "@/components/SectionMunicao";
 import SectionEntorpecentes from "@/components/SectionEntorpecentes";
 import SectionEletroeeletronicos from "@/components/SectionEletroeeletronicos";
 import SectionOutros from "@/components/SectionOutros";
-import DisplayConfigs from "@/components/DisplayConfigs";
 import NotificationModal from "@/components/NotificationModal";
 
 export default function ConfigsPage() {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [carros, setCarros] = useState([]);
-  const [bicicletas, setBicicletas] = useState([]);
   const [motos, setMotos] = useState([]);
-  const [armas, setArmas] = useState([]);
-  const [municoes, setMunicoes] = useState([]);
+  const [caminhonetes, setCaminhonetes] = useState([]);
+  const [caminhoes, setCaminhoes] = useState([]);
+  const [tratores, SetTratores] = useState([]);
+  const [outrosautomotores, SetOutrosAutomotores] = useState([]);
+  const [bicicletas, setBicicletas] = useState([]);
+  const [armas, setArmas] = useState([]); // Agora com {marca, modelos, calibres}
+  const [municoes, setMunicoes] = useState([]); // idem
   const [entorpecentes, setEntorpecentes] = useState([]);
   const [eletro, setEletro] = useState([]);
   const [outros, setOutros] = useState([]);
 
-  // Busca os dados já salvos no MongoDB ao montar a página
   useEffect(() => {
     async function fetchConfigs() {
       try {
@@ -33,10 +39,14 @@ export default function ConfigsPage() {
         if (res.ok) {
           const data = await res.json();
           if (data.length > 0) {
-            const config = data[0]; // Supondo que haja um único documento
+            const config = data[0];
             setCarros(config.carros || []);
-            setBicicletas(config.bicicletas || []);
             setMotos(config.motos || []);
+            setCaminhonetes(config.caminhonetes || []);
+            setCaminhoes(config.caminhoes || []);
+            SetTratores(config.tratores || []);
+            SetOutrosAutomotores(config.outrosautomotores || []);
+            setBicicletas(config.bicicletas || []);
             setArmas(config.armas || []);
             setMunicoes(config.municoes || []);
             setEntorpecentes(config.entorpecentes || []);
@@ -51,25 +61,26 @@ export default function ConfigsPage() {
     fetchConfigs();
   }, []);
 
-  // Função para mostrar notificação
   const showAlert = (message) => {
     setNotificationMessage(message);
     setShowNotification(true);
   };
 
-  // Função para fechar notificação
   const closeNotification = () => {
     setShowNotification(false);
     setNotificationMessage("");
   };
 
-  // Envia as configurações para a API (POST)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const configData = {
       carros,
-      bicicletas,
       motos,
+      caminhonetes,
+      caminhoes,
+      tratores,
+      outrosautomotores,
+      bicicletas,
       armas,
       municoes,
       entorpecentes,
@@ -82,7 +93,6 @@ export default function ConfigsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(configData),
       });
-      
       if (res.ok) {
         showAlert("Configurações salvas com sucesso!");
       } else {
@@ -97,17 +107,29 @@ export default function ConfigsPage() {
 
   return (
     <div className="min-h-screen p-2 rounded-md bg-c_deep_black text-white border border-gray-500 shadow">
-      <h1 className="text-xl font-bold mb-2">Configurações de Registros</h1>
+      <h1 className="text-sm font-bold mb-2">Configurações de Registros:</h1>
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-wrap gap-x-2 font-mono max-w-full" >
-          <SectionCarros carros={carros} setCarros={setCarros} />
+        <div className="flex flex-wrap gap-2 text-xs font-mono max-w-full">
+          <div className="mb-2 border border-slate-700 rounded p-2">
+            <label >Automotores:</label>
+            <SectionCarros carros={carros} setCarros={setCarros} />
+            <SectionMotos motos={motos} setMotos={setMotos} />
+            <SectionCaminhonetes caminhonetes={caminhonetes} setCaminhonetes={setCaminhonetes} />
+            <SectionCaminhoes caminhoes={caminhoes} setCaminhoes={setCaminhoes} />
+            <SectionTratores tratores={tratores} SetTratores={SetTratores} />
+            <SectionOutrosAutomotores outrosautomotores={outrosautomotores} setOutrosAutomotores={SetOutrosAutomotores} />
+          </div>
+
+          <div className="mb-2 border border-slate-700 rounded p-2">
+          <label>Bélicos:</label>
+            <SectionArmas armas={armas} setArmas={setArmas} />
+            <SectionMunicao municoes={municoes} setMunicoes={setMunicoes} />
+          </div>
           <SectionBicicletas
             bicicletas={bicicletas}
             setBicicletas={setBicicletas}
           />
-          <SectionMotos motos={motos} setMotos={setMotos} />
-          <SectionArmas armas={armas} setArmas={setArmas} />
-          <SectionMunicao municoes={municoes} setMunicoes={setMunicoes} />
+
           <SectionEntorpecentes
             entorpecentes={entorpecentes}
             setEntorpecentes={setEntorpecentes}
@@ -116,22 +138,15 @@ export default function ConfigsPage() {
           <SectionOutros outros={outros} setOutros={setOutros} />
         </div>
         <div>
-          <button type="submit" className="mt-4 p-2 bg-green-500 rounded hover:bg-green-600 ">
+          <button
+            type="submit"
+            className="mt-4 p-2 bg-green-500 rounded hover:bg-green-600"
+          >
             Salvar Configurações
           </button>
         </div>
       </form>
       <hr className="my-4 border-gray-300" />
-      <DisplayConfigs
-        carros={carros}
-        bicicletas={bicicletas}
-        motos={motos}
-        armas={armas}
-        municoes={municoes}
-        entorpecentes={entorpecentes}
-        eletro={eletro}
-        outros={outros}
-      />
       {showNotification && (
         <NotificationModal
           message={notificationMessage}

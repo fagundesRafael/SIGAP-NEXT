@@ -11,15 +11,6 @@ const ConfigSchema = new mongoose.Schema({
     ],
     default: [],
   },
-  bicicletas: {
-    type: [
-      {
-        marca: { type: String, required: true },
-        modelos: { type: [String], default: [] },
-      },
-    ],
-    default: [],
-  },
   motos: {
     type: [
       {
@@ -29,36 +20,69 @@ const ConfigSchema = new mongoose.Schema({
     ],
     default: [],
   },
-  armas: {
+  caminhonetes: {
     type: [
       {
         marca: { type: String, required: true },
-        modelos: {
-          type: [
-            {
-              modelo: { type: String, required: true },
-              calibre: { type: String, required: true },
-            },
-          ],
-          default: [],
-        },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  caminhoes: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  tratores: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  outrosautomotores: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  bicicletas: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  armas: {
+    // Agora, cada objeto possui arrays separados para modelos e calibres
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+        calibres: { type: [String], default: [] },
       },
     ],
     default: [],
   },
   municoes: {
+    // Estrutura similar para munições
     type: [
       {
         marca: { type: String, required: true },
-        modelos: {
-          type: [
-            {
-              modelo: { type: String, required: true },
-              calibre: { type: String, required: true },
-            },
-          ],
-          default: [],
-        },
+        modelos: { type: [String], default: [] },
+        calibres: { type: [String], default: [] },
       },
     ],
     default: [],
@@ -77,5 +101,4 @@ const ConfigSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-// Evita redefinição do modelo durante o hot-reload
 export default mongoose.models.Config || mongoose.model("Config", ConfigSchema);

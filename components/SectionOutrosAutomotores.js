@@ -1,4 +1,4 @@
-// components/SessionMotos.js
+// components/SectionOutrosAutomotores.js
 "use client";
 
 import { useState } from "react";
@@ -6,7 +6,7 @@ import { IoIosAddCircle } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
-export default function SessionMotos({ motos, setMotos }) {
+export default function SectionOutrosAutomotores({ outrosautomotores, setOutrosAutomotores }) {
   const [marcaInput, setMarcaInput] = useState("");
   const [modeloInput, setModeloInput] = useState("");
   const [showModeloInput, setShowModeloInput] = useState(false);
@@ -15,33 +15,33 @@ export default function SessionMotos({ motos, setMotos }) {
 
   function handleAddMarca() {
     if (!marcaInput.trim()) return;
-    const existing = motos.find(
-      (item) => item.marca.toLowerCase() === marcaInput.trim().toLowerCase()
+    const existing = outrosautomotores.find(
+      (automotor) =>
+        automotor.marca.toLowerCase() === marcaInput.trim().toLowerCase()
     );
     if (!existing) {
-      setMotos([...motos, { marca: marcaInput.trim(), modelos: [] }]);
+      setOutrosAutomotores([...outrosautomotores, { marca: marcaInput.trim(), modelos: [] }]);
     }
     setShowModeloInput(true);
   }
 
   function handleAddModelo() {
     if (!modeloInput.trim()) return;
-    const index = motos.findIndex(
-      (item) =>
-        item.marca.toLowerCase() === marcaInput.trim().toLowerCase()
+    const index = outrosautomotores.findIndex(
+      (automotor) => automotor.marca.toLowerCase() === marcaInput.trim().toLowerCase()
     );
     if (index === -1) {
       setError("Marca não encontrada. Adicione a marca primeiro.");
       return;
     }
-    if (motos[index].modelos.includes(modeloInput.trim())) {
+    if (outrosautomotores[index].modelos.includes(modeloInput.trim())) {
       setError("Modelo já existe para essa marca.");
       return;
     }
     setError("");
-    const updated = [...motos];
+    const updated = [...outrosautomotores];
     updated[index].modelos.push(modeloInput.trim());
-    setMotos(updated);
+    setOutrosAutomotores(updated);
     setModeloInput("");
   }
 
@@ -56,18 +56,18 @@ export default function SessionMotos({ motos, setMotos }) {
   function handleConfirmDelete() {
     if (!deleteModalData) return;
     if (deleteModalData.type === "brand") {
-      const updated = motos.filter(
-        (item) => item.marca !== deleteModalData.brand
+      const updated = outrosautomotores.filter(
+        (automotor) => automotor.marca !== deleteModalData.brand
       );
-      setMotos(updated);
+      setOutrosAutomotores(updated);
     } else if (deleteModalData.type === "model") {
-      const updated = motos.map((item) => {
-        if (item.marca === deleteModalData.brand) {
-          return { ...item, modelos: item.modelos.filter((m) => m !== deleteModalData.model) };
+      const updated = outrosautomotores.map((automotor) => {
+        if (automotor.marca === deleteModalData.brand) {
+          return { ...automotor, modelos: automotor.modelos.filter((m) => m !== deleteModalData.model) };
         }
-        return item;
+        return automotor;
       });
-      setMotos(updated);
+      setOutrosAutomotores(updated);
     }
     setDeleteModalData(null);
   }
@@ -81,7 +81,7 @@ export default function SessionMotos({ motos, setMotos }) {
       <div className="flex items-center gap-2">
         <input
           type="text"
-          placeholder="Inserir marca da moto"
+          placeholder="Inserir marca do automotor"
           value={marcaInput}
           onChange={(e) => setMarcaInput(e.target.value)}
           className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
@@ -109,7 +109,7 @@ export default function SessionMotos({ motos, setMotos }) {
         <div className="flex items-center gap-2 mt-2">
           <input
             type="text"
-            placeholder="Modelo da moto"
+            placeholder="inserir modelo do automotor"
             value={modeloInput}
             onChange={(e) => setModeloInput(e.target.value)}
             className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
@@ -125,7 +125,9 @@ export default function SessionMotos({ motos, setMotos }) {
               </button>
               <button
                 type="button"
-                onClick={() => requestDeleteModel(marcaInput.trim(), modeloInput.trim())}
+                onClick={() =>
+                  requestDeleteModel(marcaInput.trim(), modeloInput.trim())
+                }
                 className="text-red-500"
               >
                 <TiDeleteOutline size={14} />
@@ -137,30 +139,30 @@ export default function SessionMotos({ motos, setMotos }) {
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-4">
         <h3 className="font-bold">Marcas e Modelos Registrados:</h3>
-        {motos.length === 0 ? (
+        {outrosautomotores.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (
           <ul>
-            {motos.map((item, idx) => (
+            {outrosautomotores.map((automotor, idx) => (
               <li key={idx} className="flex flex-wrap items-center gap-2">
-                <strong>{item.marca}</strong>
+                <strong>{automotor.marca}</strong>
                 <button
-                  onClick={() => requestDeleteBrand(item.marca)}
+                  onClick={() => requestDeleteBrand(automotor.marca)}
                   className="text-red-500"
                 >
                   <TiDeleteOutline size={14} />
                 </button>
                 <span>:</span>
-                {item.modelos.map((modelo, i) => (
+                {automotor.modelos.map((modelo, i) => (
                   <span key={i} className="flex italic text-sm items-center gap-1">
                     {modelo}
                     <button
-                      onClick={() => requestDeleteModel(item.marca, modelo)}
+                      onClick={() => requestDeleteModel(automotor.marca, modelo)}
                       className="text-red-500"
                     >
                       <TiDeleteOutline size={14} />
                     </button>
-                    {i < item.modelos.length - 1 && <span>,</span>}
+                    {i < automotor.modelos.length - 1 && <span>,</span>}
                   </span>
                 ))}
               </li>

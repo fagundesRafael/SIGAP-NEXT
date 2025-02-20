@@ -105,17 +105,10 @@ export async function POST(request) {
     }
 
     // Se o status for "apreendido", destino é obrigatório.
-    // Se destino for "depósito", os campos secao e prateleira também devem ser informados.
     if (body.status === "apreendido") {
       if (!body.destino) {
         return new Response(
           JSON.stringify({ error: "Campo destino é obrigatório para status 'apreendido'" }),
-          { status: 400 }
-        );
-      }
-      if (body.destino === "depósito" && (!body.secao || !body.prateleira)) {
-        return new Response(
-          JSON.stringify({ error: "Campos seção e prateleira são obrigatórios para destino 'depósito'" }),
           { status: 400 }
         );
       }

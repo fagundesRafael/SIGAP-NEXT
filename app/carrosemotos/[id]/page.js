@@ -27,8 +27,6 @@ export default function VeiculoDetalhes() {
   const [chaves, setChaves] = useState(false);
   const [status, setStatus] = useState("");
   const [destino, setDestino] = useState("");
-  const [secao, setSecao] = useState("");
-  const [prateleira, setPrateleira] = useState("");
   const [obs, setObs] = useState("");
   const [dataField, setDataField] = useState("");
   const [imagem, setImagem] = useState("");
@@ -42,13 +40,15 @@ export default function VeiculoDetalhes() {
   // Arrays de opções
   const procedimentoOptions = ["IPL", "BO", "TCO", "AIAI/AAI", "OUTROS"];
   const statusOptions = ["apreendido", "restituído", "incinerado", "outros"];
-  const destinoOptions = ["pátio", "cartório", "depósito", "outros"];
+  const destinoOptions = ["pátio", "outros"];
   const cores = [
+    "Nenhuma",
     "Vermelho",
     "Azul",
     "Verde",
     "Amarelo",
     "Preto",
+    "Prata",
     "Branco",
     "Cinza",
     "Roxo",
@@ -74,18 +74,27 @@ export default function VeiculoDetalhes() {
     fetchConfigs();
   }, []);
 
-  const marcasDisponiveis = configs
-    ? tipo === "carro"
-      ? configs.carros.map((item) => item.marca)
-      : configs.motos.map((item) => item.marca)
-    : [];
-  const modelosDisponiveis =
-    configs && marca
-      ? tipo === "carro"
-        ? configs.carros.find((item) => item.marca === marca)?.modelos || []
-        : configs.motos.find((item) => item.marca === marca)?.modelos || []
+  const typeMapping = {
+    carro: "carros",
+    moto: "motos",
+    caminhonete: "caminhonetes",
+    caminhao: "caminhoes",
+    trator: "tratores",
+    outroautomotor: "outroautomotor",
+  };
+
+  const configKey = typeMapping[tipo];
+
+  const marcasDisponiveis =
+    configs && configKey
+      ? (configs[configKey] || []).map((item) => item.marca)
       : [];
 
+  const modelosDisponiveis =
+    configs && marca && configKey
+      ? (configs[configKey] || []).find((item) => item.marca === marca)
+          ?.modelos || []
+      : [];
   // Buscar os dados do veículo pelo ID
   useEffect(() => {
     async function fetchVehicle() {
@@ -104,8 +113,6 @@ export default function VeiculoDetalhes() {
           setChaves(data.chaves || false);
           setStatus(data.status || "");
           setDestino(data.destino || "");
-          setSecao(data.secao || "");
-          setPrateleira(data.prateleira || "");
           setObs(data.obs || "");
           setDataField(
             data.data ? new Date(data.data).toISOString().split("T")[0] : ""
@@ -161,10 +168,8 @@ export default function VeiculoDetalhes() {
 
     if (status === "apreendido") {
       payload.destino = destino;
-      if (destino === "depósito") {
-        payload.secao = secao;
-        payload.prateleira = prateleira;
-      }
+    } else {
+      payload.destino = "outros";
     }
 
     try {
@@ -192,14 +197,14 @@ export default function VeiculoDetalhes() {
   async function handleDelete() {
     setShowDeleteModal(true);
   }
-  
+
   // Executa a exclusão somente se o usuário confirmar no modal
   async function handleConfirmDelete() {
     try {
       const res = await fetch(`/api/carrosemotos/${id}`, {
         method: "DELETE",
       });
-      
+
       if (res.ok) {
         // Redireciona imediatamente após a exclusão confirmada
         router.push("/carrosemotos");
@@ -259,6 +264,126 @@ export default function VeiculoDetalhes() {
                 className="bg-c_deep_gray_black p-1 rounded w-[300px]"
                 placeholder="Apenas números e caracteres específicos"
               />
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-medium">Tipo:</label>
+            <div className="flex flex-wrap text-center gap-4 bg-c_deep_gray_black p-2 rounded-sm ">
+              <label className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="carro"
+                  checked={tipo === "carro"}
+                  onChange={() => setTipo("carro")}
+                  className="w-2.5 h-2.5 
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                  "
+                />{" "}
+                Carro
+              </label>
+              <label className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="moto"
+                  checked={tipo === "moto"}
+                  onChange={() => setTipo("moto")}
+                  className="w-2.5 h-2.5 
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                  "
+                />{" "}
+                Moto
+              </label>
+              <label className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="caminhonete"
+                  checked={tipo === "caminhonete"}
+                  onChange={() => setTipo("caminhonete")}
+                  className="w-2.5 h-2.5 
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                  "
+                />{" "}
+                Caminhonete
+              </label>
+              <label className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="caminhao"
+                  checked={tipo === "caminhao"}
+                  onChange={() => setTipo("caminhao")}
+                  className="w-2.5 h-2.5 
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                  "
+                />{" "}
+                Caminhão
+              </label>
+              <label className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="trator"
+                  checked={tipo === "trator"}
+                  onChange={() => setTipo("trator")}
+                  className="w-2.5 h-2.5 
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                  "
+                />{" "}
+                Trator
+              </label>
+              <label className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="outroautomotor"
+                  checked={tipo === "outroautomotor"}
+                  onChange={() => setTipo("outroautomotor")}
+                  className="w-2.5 h-2.5 
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                  "
+                />{" "}
+                Outro Veículo
+              </label>
             </div>
           </div>
 
@@ -342,55 +467,27 @@ export default function VeiculoDetalhes() {
           </div>
 
           <div>
-            <label className="block font-medium">Tipo:</label>
-            <div className="flex gap-2">
-              <label>
-                <input
-                  type="radio"
-                  name="tipo"
-                  value="carro"
-                  checked={tipo === "carro"}
-                  onChange={() => setTipo("carro")}
-                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
-                />{" "}
-                Carro
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="tipo"
-                  value="moto"
-                  checked={tipo === "moto"}
-                  onChange={() => setTipo("moto")}
-                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
-                />{" "}
-                Moto
-              </label>
-            </div>
-          </div>
-
-          <div>
             <label className="block font-medium">Chaves:</label>
             <div className="flex gap-2">
-              <label>
+              <label className="cursor-pointer">
                 <input
                   type="radio"
                   name="chaves"
                   value="true"
                   checked={chaves === true}
                   onChange={() => setChaves(true)}
-                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
+                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer "
                 />{" "}
                 Sim
               </label>
-              <label>
+              <label className="cursor-pointer">
                 <input
                   type="radio"
                   name="chaves"
                   value="false"
                   checked={chaves === false}
                   onChange={() => setChaves(false)}
-                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
+                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer "
                 />{" "}
                 Não
               </label>
@@ -401,7 +498,7 @@ export default function VeiculoDetalhes() {
             <label className="block font-medium">Status:</label>
             <div className="flex gap-2">
               {statusOptions.map((opt) => (
-                <label key={opt}>
+                <label className="cursor-pointer" key={opt}>
                   <input
                     required
                     type="radio"
@@ -409,7 +506,7 @@ export default function VeiculoDetalhes() {
                     value={opt}
                     checked={status === opt}
                     onChange={() => setStatus(opt)}
-                    className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
+                    className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer "
                   />{" "}
                   {opt}
                 </label>
@@ -422,37 +519,19 @@ export default function VeiculoDetalhes() {
               <label className="block font-medium">Destino:</label>
               <div className="flex gap-2">
                 {destinoOptions.map((opt) => (
-                  <label key={opt}>
+                  <label className="cursor-pointer" key={opt}>
                     <input
                       type="radio"
                       name="destino"
                       value={opt}
                       checked={destino === opt}
                       onChange={() => setDestino(opt)}
-                      className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
+                      className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer "
                     />{" "}
                     {opt}
                   </label>
                 ))}
               </div>
-              {destino === "depósito" && (
-                <div className="flex gap-4 mt-2">
-                  <input
-                    type="text"
-                    placeholder="Seção"
-                    value={secao}
-                    onChange={(e) => setSecao(e.target.value)}
-                    className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Prateleira"
-                    value={prateleira}
-                    onChange={(e) => setPrateleira(e.target.value)}
-                    className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
-                  />
-                </div>
-              )}
             </div>
           )}
 
@@ -501,14 +580,14 @@ export default function VeiculoDetalhes() {
             Atualizar Veículo
           </button>
           <button
-          type="button"
+            type="button"
             onClick={handleDelete}
             className="bg-red-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-red-600 transform transition"
           >
             Excluir Veículo
           </button>
           <button
-          type="button"
+            type="button"
             onClick={() => router.back()}
             className="bg-gray-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-gray-600 transition-colors"
           >

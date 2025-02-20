@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 
 const VeiculoSchema = new mongoose.Schema(
   {
+    classe: { type: String },
     procedimento: { type: String, required: true },
     numero: { type: String, required: true },
     marca: { type: String, required: true },
@@ -13,16 +14,16 @@ const VeiculoSchema = new mongoose.Schema(
       unique: true,
       sparse: true,
       // Se houver valor e não for apenas espaços, transforma em maiúsculas; caso contrário, retorna undefined
-      set: v => (v && v.trim() !== "" ? v.trim().toUpperCase() : undefined)
+      set: (v) => (v && v.trim() !== "" ? v.trim().toUpperCase() : undefined),
     },
     chassi: {
       type: String,
       required: false,
       unique: true,
       sparse: true,
-      set: v => (v && v.trim() !== "" ? v.trim().toUpperCase() : undefined)
+      set: (v) => (v && v.trim() !== "" ? v.trim().toUpperCase() : undefined),
     },
-    tipo: { type: String, enum: ["carro", "moto"], required: true },
+    tipo: { type: String, enum: ["carro", "moto", "caminhonete", "caminhao", "trator", "outroautomotor"], required: true },
     cor: { type: String, required: false },
     chaves: { type: Boolean, default: false },
     status: {
@@ -37,8 +38,6 @@ const VeiculoSchema = new mongoose.Schema(
       default: undefined,
     },
     // Se destino for "depósito", os campos abaixo devem ser preenchidos:
-    secao: { type: String },
-    prateleira: { type: String },
     createdBy: { type: String, required: true },
     updatedBy: { type: String },
     obs: { type: String, maxlength: 80 },
@@ -48,19 +47,6 @@ const VeiculoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Os índices para "placa" e "chassi" já estão definidos via as opções "unique: true" e "sparse: true" acima.
-// Para evitar duplicidade de índices (e os avisos do Mongoose), as definições manuais abaixo foram comentadas:
-
-/*
-VeiculoSchema.index(
-  { placa: 1 },
-  { unique: true, partialFilterExpression: { placa: { $exists: true, $ne: null } } }
-);
-VeiculoSchema.index(
-  { chassi: 1 },
-  { unique: true, partialFilterExpression: { chassi: { $exists: true, $ne: null } } }
-);
-*/
-
 // Evita redefinir o model durante o hot-reload
-export default mongoose.models.Veiculo || mongoose.model("Veiculo", VeiculoSchema);
+export default mongoose.models.Veiculo ||
+  mongoose.model("Veiculo", VeiculoSchema);

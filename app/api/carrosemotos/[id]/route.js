@@ -22,7 +22,7 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     // Remover "placa" e "chassi" se vazios

@@ -1,4 +1,4 @@
-// components/SessionMunicao.js
+// components/SectionMunicao.js
 "use client";
 
 import { useState } from "react";
@@ -10,20 +10,17 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
   const [marcaInput, setMarcaInput] = useState("");
   const [modeloInput, setModeloInput] = useState("");
   const [calibreInput, setCalibreInput] = useState("");
-  const [showModeloInput, setShowModeloInput] = useState(false);
-  const [showCalibreInput, setShowCalibreInput] = useState(false);
   const [error, setError] = useState("");
   const [deleteModalData, setDeleteModalData] = useState(null);
 
   function handleAddMarca() {
     if (!marcaInput.trim()) return;
-    const existing = municoes.find(
+    const existingIndex = municoes.findIndex(
       (item) => item.marca.toLowerCase() === marcaInput.trim().toLowerCase()
     );
-    if (!existing) {
-      setMunicoes([...municoes, { marca: marcaInput.trim(), modelos: [] }]);
+    if (existingIndex === -1) {
+      setMunicoes([...municoes, { marca: marcaInput.trim(), modelos: [], calibres: [] }]);
     }
-    setShowModeloInput(true);
   }
 
   function handleAddModelo() {
@@ -35,7 +32,15 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
       setError("Marca não encontrada. Adicione a marca primeiro.");
       return;
     }
-    setShowCalibreInput(true);
+    if (municoes[index].modelos.includes(modeloInput.trim())) {
+      setError("Modelo já existe para essa marca.");
+      return;
+    }
+    setError("");
+    const updated = [...municoes];
+    updated[index].modelos.push(modeloInput.trim());
+    setMunicoes(updated);
+    setModeloInput("");
   }
 
   function handleAddCalibre() {
@@ -44,58 +49,49 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
       (item) => item.marca.toLowerCase() === marcaInput.trim().toLowerCase()
     );
     if (index === -1) {
-      setError("Marca não encontrada.");
+      setError("Marca não encontrada. Adicione a marca primeiro.");
       return;
     }
-
-    // Verifica se já existe o mesmo calibre para este modelo
-  const hasDuplicateCalibre = municoes[index].modelos.some(
-    (m) =>
-      m.modelo.toLowerCase() === modeloInput.trim().toLowerCase() &&
-      m.calibre.toLowerCase() === calibreInput.trim().toLowerCase()
-  );
-
-  if (hasDuplicateCalibre) {
-    setError("Calibre já mencionado para este modelo");
-    return;
+    if (municoes[index].calibres.includes(calibreInput.trim())) {
+      setError("Calibre já existe para essa marca.");
+      return;
+    }
+    setError("");
+    const updated = [...municoes];
+    updated[index].calibres.push(calibreInput.trim());
+    setMunicoes(updated);
+    setCalibreInput("");
   }
-
-  setError("");
-  const updated = [...municoes];
-  updated[index].modelos.push({
-    modelo: modeloInput.trim(),
-    calibre: calibreInput.trim(),
-  });
-  setMunicoes(updated);
-  setModeloInput("");
-  setCalibreInput("");
-  setShowCalibreInput(false);
-}
 
   function requestDeleteBrand(brand) {
     setDeleteModalData({ type: "brand", brand });
   }
 
-  function requestDeleteModel(brand, model) {
-    setDeleteModalData({ type: "model", brand, model });
+  function requestDeleteModelo(brand, modelo) {
+    setDeleteModalData({ type: "modelo", brand, item: modelo });
+  }
+
+  function requestDeleteCalibre(brand, calibre) {
+    setDeleteModalData({ type: "calibre", brand, item: calibre });
   }
 
   function handleConfirmDelete() {
     if (!deleteModalData) return;
     if (deleteModalData.type === "brand") {
-      const updated = municoes.filter(
-        (item) => item.marca !== deleteModalData.brand
-      );
+      const updated = municoes.filter(item => item.marca !== deleteModalData.brand);
       setMunicoes(updated);
-    } else if (deleteModalData.type === "model") {
-      const updated = municoes.map((item) => {
+    } else if (deleteModalData.type === "modelo") {
+      const updated = municoes.map(item => {
         if (item.marca === deleteModalData.brand) {
-          return {
-            ...item,
-            modelos: item.modelos.filter(
-              (m) => m.modelo !== deleteModalData.model
-            ),
-          };
+          return { ...item, modelos: item.modelos.filter(m => m !== deleteModalData.item) };
+        }
+        return item;
+      });
+      setMunicoes(updated);
+    } else if (deleteModalData.type === "calibre") {
+      const updated = municoes.map(item => {
+        if (item.marca === deleteModalData.brand) {
+          return { ...item, calibres: item.calibres.filter(c => c !== deleteModalData.item) };
         }
         return item;
       });
@@ -110,89 +106,62 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
 
   return (
     <div className="mb-6 p-4 rounded bg-c_deep_gray_black relative">
+      {/* Campo de marca */}
       <div className="flex items-center gap-2">
         <input
           type="text"
           placeholder="Inserir marca da munição"
           value={marcaInput}
           onChange={(e) => setMarcaInput(e.target.value)}
-          className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
+          className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
         />
         {marcaInput.trim() !== "" && (
           <>
-            <button
-              type="button"
-              onClick={handleAddMarca}
-              className="text-green-500"
-            >
+            <button type="button" onClick={handleAddMarca} className="text-green-500">
               <IoIosAddCircle size={24} />
             </button>
-            <button
-              type="button"
-              onClick={() => requestDeleteBrand(marcaInput.trim())}
-              className="text-red-500"
-            >
+            <button type="button" onClick={() => requestDeleteBrand(marcaInput.trim())} className="text-red-500">
               <TiDeleteOutline size={20} />
             </button>
           </>
         )}
       </div>
-      {showModeloInput && (
-        <div className="flex flex-col gap-2 mt-2">
-          <div className="flex items-center gap-2">
+      {/* Renderiza campos de modelo e calibre se houver marca */}
+      {marcaInput.trim() !== "" && (
+        <>
+          <div className="flex gap-2 mt-2">
             <input
               type="text"
-              placeholder="Modelo da munição"
+              placeholder="Inserir modelo da munição"
               value={modeloInput}
               onChange={(e) => setModeloInput(e.target.value)}
-              className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
+              className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
             />
             {modeloInput.trim() !== "" && (
-              <>
-                <button
-                  type="button"
-                  onClick={handleAddModelo}
-                  className="text-green-500"
-                >
-                  <IoIosAddCircle size={24} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    requestDeleteModel(marcaInput.trim(), modeloInput.trim())
-                  }
-                  className="text-red-500"
-                >
-                  <TiDeleteOutline size={20} />
-                </button>
-              </>
+              <button type="button" onClick={handleAddModelo} className="text-green-500">
+                <IoIosAddCircle size={24} />
+              </button>
             )}
           </div>
-          {showCalibreInput && (
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                placeholder="Calibre da munição"
-                value={calibreInput}
-                onChange={(e) => setCalibreInput(e.target.value)}
-                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
-              />
-              {calibreInput.trim() !== "" && (
-                <button
-                  type="button"
-                  onClick={handleAddCalibre}
-                  className="text-green-500"
-                >
-                  <IoIosAddCircle size={24} />
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+          <div className="flex gap-2 mt-2">
+            <input
+              type="text"
+              placeholder="Inserir calibre da munição"
+              value={calibreInput}
+              onChange={(e) => setCalibreInput(e.target.value)}
+              className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
+            />
+            {calibreInput.trim() !== "" && (
+              <button type="button" onClick={handleAddCalibre} className="text-green-500">
+                <IoIosAddCircle size={24} />
+              </button>
+            )}
+          </div>
+        </>
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-4">
-        <h3 className="font-bold">Marcas e Modelos Registrados (Munições):</h3>
+        <h3 className="font-bold">Marcas Registradas:</h3>
         {municoes.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (
@@ -200,28 +169,43 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
             {municoes.map((item, idx) => (
               <li key={idx} className="flex flex-wrap items-center gap-2">
                 <strong>{item.marca}</strong>
-                <button
-                  onClick={() => requestDeleteBrand(item.marca)}
-                  className="text-red-500"
-                >
+                <button onClick={() => requestDeleteBrand(item.marca)} className="text-red-500 ml-2">
                   <TiDeleteOutline size={20} />
                 </button>
-                <span>:</span>
-                {item.modelos.map((m, i) => (
-                  <span
-                    key={i}
-                    className="flex italic text-sm items-center gap-1"
-                  >
-                    {m.modelo} (Calibre: {m.calibre})
-                    <button
-                      onClick={() => requestDeleteModel(item.marca, m.modelo)}
-                      className="text-red-500"
-                    >
-                      <TiDeleteOutline size={20} />
-                    </button>
-                    {i < item.modelos.length - 1 && <span>,</span>}
-                  </span>
-                ))}
+                <div className="ml-4">
+                  <span className="underline">Modelos:</span>
+                  {item.modelos.length === 0 ? (
+                    <span> Nenhum</span>
+                  ) : (
+                    <ul className="list-disc ml-4">
+                      {item.modelos.map((m, i) => (
+                        <li key={i} className="inline-flex items-center gap-1">
+                          {m}
+                          <button onClick={() => requestDeleteModelo(item.marca, m)} className="text-red-500">
+                            <TiDeleteOutline size={16} />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <div className="ml-4">
+                  <span className="underline">Calibres:</span>
+                  {(item.calibres?.length || 0) === 0 ? (
+                    <span> Nenhum</span>
+                  ) : (
+                    <ul className="list-disc ml-4">
+                      {(item.calibres || []).map((c, i) => (
+                        <li key={i} className="inline-flex items-center gap-1">
+                          {c}
+                          <button onClick={() => requestDeleteCalibre(item.marca, c)} className="text-red-500">
+                            <TiDeleteOutline size={16} />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
@@ -231,8 +215,8 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
         <ConfirmDeleteModal
           message={
             deleteModalData.type === "brand"
-              ? `Deseja deletar a marca "${deleteModalData.brand}" e todos os seus modelos?`
-              : `Deseja deletar o modelo "${deleteModalData.model}" da marca "${deleteModalData.brand}"?`
+              ? `Deseja deletar a marca "${deleteModalData.brand}" e todos os seus modelos e calibres?`
+              : `Deseja deletar o item "${deleteModalData.item}" da marca "${deleteModalData.brand}"?`
           }
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}

@@ -1,4 +1,4 @@
-// components/SessionArmas.js
+// components/SectionArmas.js
 "use client";
 
 import { useState } from "react";
@@ -10,21 +10,19 @@ export default function SessionArmas({ armas, setArmas }) {
   const [marcaInput, setMarcaInput] = useState("");
   const [modeloInput, setModeloInput] = useState("");
   const [calibreInput, setCalibreInput] = useState("");
-  const [showModeloInput, setShowModeloInput] = useState(false);
-  const [showCalibreInput, setShowCalibreInput] = useState(false);
   const [error, setError] = useState("");
   const [deleteModalData, setDeleteModalData] = useState(null);
 
+  // Adiciona ou atualiza a marca
   function handleAddMarca() {
     if (!marcaInput.trim()) return;
-    const existing = armas.find(
-      (item) =>
-        item.marca.toLowerCase() === marcaInput.trim().toLowerCase()
+    const existingIndex = armas.findIndex(
+      (item) => item.marca.toLowerCase() === marcaInput.trim().toLowerCase()
     );
-    if (!existing) {
-      setArmas([...armas, { marca: marcaInput.trim(), modelos: [] }]);
+    if (existingIndex === -1) {
+      // Adiciona nova marca com arrays vazios
+      setArmas([...armas, { marca: marcaInput.trim(), modelos: [], calibres: [] }]);
     }
-    setShowModeloInput(true);
   }
 
   function handleAddModelo() {
@@ -36,7 +34,15 @@ export default function SessionArmas({ armas, setArmas }) {
       setError("Marca não encontrada. Adicione a marca primeiro.");
       return;
     }
-    setShowCalibreInput(true);
+    if (armas[index].modelos.includes(modeloInput.trim())) {
+      setError("Modelo já existe para essa marca.");
+      return;
+    }
+    setError("");
+    const updated = [...armas];
+    updated[index].modelos.push(modeloInput.trim());
+    setArmas(updated);
+    setModeloInput("");
   }
 
   function handleAddCalibre() {
@@ -45,55 +51,50 @@ export default function SessionArmas({ armas, setArmas }) {
       (item) => item.marca.toLowerCase() === marcaInput.trim().toLowerCase()
     );
     if (index === -1) {
-      setError("Marca não encontrada.");
+      setError("Marca não encontrada. Adicione a marca primeiro.");
       return;
     }
-    // Verifica se já existe o mesmo calibre para este modelo
-  const hasDuplicateCalibre = armas[index].modelos.some(
-    (m) =>
-      m.modelo.toLowerCase() === modeloInput.trim().toLowerCase() &&
-      m.calibre.toLowerCase() === calibreInput.trim().toLowerCase()
-  );
-
-  if (hasDuplicateCalibre) {
-    setError("Calibre já mencionado para este modelo");
-    return;
+    if (armas[index].calibres.includes(calibreInput.trim())) {
+      setError("Calibre já existe para essa marca.");
+      return;
+    }
+    setError("");
+    const updated = [...armas];
+    updated[index].calibres.push(calibreInput.trim());
+    setArmas(updated);
+    setCalibreInput("");
   }
 
-  setError("");
-  const updated = [...armas];
-  updated[index].modelos.push({
-    modelo: modeloInput.trim(),
-    calibre: calibreInput.trim(),
-  });
-  setArmas(updated);
-  setModeloInput("");
-  setCalibreInput("");
-  setShowCalibreInput(false);
-}
-
+  // Solicita deleção – pode ser de marca, modelo ou calibre
   function requestDeleteBrand(brand) {
     setDeleteModalData({ type: "brand", brand });
   }
 
-  function requestDeleteModel(brand, model) {
-    setDeleteModalData({ type: "model", brand, model });
+  function requestDeleteModelo(brand, modelo) {
+    setDeleteModalData({ type: "modelo", brand, item: modelo });
+  }
+
+  function requestDeleteCalibre(brand, calibre) {
+    setDeleteModalData({ type: "calibre", brand, item: calibre });
   }
 
   function handleConfirmDelete() {
     if (!deleteModalData) return;
     if (deleteModalData.type === "brand") {
-      const updated = armas.filter(
-        (item) => item.marca !== deleteModalData.brand
-      );
+      const updated = armas.filter((item) => item.marca !== deleteModalData.brand);
       setArmas(updated);
-    } else if (deleteModalData.type === "model") {
+    } else if (deleteModalData.type === "modelo") {
       const updated = armas.map((item) => {
         if (item.marca === deleteModalData.brand) {
-          return {
-            ...item,
-            modelos: item.modelos.filter((m) => m.modelo !== deleteModalData.model),
-          };
+          return { ...item, modelos: item.modelos.filter((m) => m !== deleteModalData.item) };
+        }
+        return item;
+      });
+      setArmas(updated);
+    } else if (deleteModalData.type === "calibre") {
+      const updated = armas.map((item) => {
+        if (item.marca === deleteModalData.brand) {
+          return { ...item, calibres: item.calibres.filter((c) => c !== deleteModalData.item) };
         }
         return item;
       });
@@ -108,113 +109,106 @@ export default function SessionArmas({ armas, setArmas }) {
 
   return (
     <div className="mb-6 p-4 rounded bg-c_deep_gray_black relative">
+      {/* Campo de marca */}
       <div className="flex items-center gap-2">
         <input
           type="text"
           placeholder="Inserir marca da arma"
           value={marcaInput}
           onChange={(e) => setMarcaInput(e.target.value)}
-          className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
+          className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
         />
         {marcaInput.trim() !== "" && (
           <>
-            <button
-              type="button"
-              onClick={handleAddMarca}
-              className="text-green-500"
-            >
-              <IoIosAddCircle size={24} />
+            <button type="button" onClick={handleAddMarca} className="text-green-500">
+              <IoIosAddCircle size={14} />
             </button>
-            <button
-              type="button"
-              onClick={() => requestDeleteBrand(marcaInput.trim())}
-              className="text-red-500"
-            >
-              <TiDeleteOutline size={20} />
+            <button type="button" onClick={() => requestDeleteBrand(marcaInput.trim())} className="text-red-500">
+              <TiDeleteOutline size={14} />
             </button>
           </>
         )}
       </div>
-      {showModeloInput && (
-        <div className="flex flex-col gap-2 mt-2">
-          <div className="flex items-center gap-2">
+      {/* Renderiza os campos de modelo e calibre somente se houver marca */}
+      {marcaInput.trim() !== "" && (
+        <>
+          <div className="flex gap-2 mt-2">
             <input
               type="text"
-              placeholder="Modelo da arma"
+              placeholder="Inserir modelo da arma"
               value={modeloInput}
               onChange={(e) => setModeloInput(e.target.value)}
-              className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
+              className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
             />
             {modeloInput.trim() !== "" && (
-              <>
-                <button
-                  type="button"
-                  onClick={handleAddModelo}
-                  className="text-green-500"
-                >
-                  <IoIosAddCircle size={24} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => requestDeleteModel(marcaInput.trim(), modeloInput.trim())}
-                  className="text-red-500"
-                >
-                  <TiDeleteOutline size={20} />
-                </button>
-              </>
+              <button type="button" onClick={handleAddModelo} className="text-green-500">
+                <IoIosAddCircle size={14} />
+              </button>
             )}
           </div>
-          {showCalibreInput && (
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                placeholder="Calibre da arma"
-                value={calibreInput}
-                onChange={(e) => setCalibreInput(e.target.value)}
-                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
-              />
-              {calibreInput.trim() !== "" && (
-                <button
-                  type="button"
-                  onClick={handleAddCalibre}
-                  className="text-green-500"
-                >
-                  <IoIosAddCircle size={24} />
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+          <div className="flex gap-2 mt-2">
+            <input
+              type="text"
+              placeholder="Inserir calibre da arma"
+              value={calibreInput}
+              onChange={(e) => setCalibreInput(e.target.value)}
+              className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
+            />
+            {calibreInput.trim() !== "" && (
+              <button type="button" onClick={handleAddCalibre} className="text-green-500">
+                <IoIosAddCircle size={14} />
+              </button>
+            )}
+          </div>
+        </>
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-4">
-        <h3 className="font-bold">Marcas e Modelos Registrados:</h3>
+        <h3 className="font-bold">Marcas Registradas:</h3>
         {armas.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (
           <ul>
             {armas.map((item, idx) => (
-              <li key={idx} className="flex items-center gap-2">
+              <li key={idx} className="flex flex-wrap items-center gap-2">
                 <strong>{item.marca}</strong>
-                <button
-                  onClick={() => requestDeleteBrand(item.marca)}
-                  className="text-red-500"
-                >
-                  <TiDeleteOutline size={20} />
+                <button onClick={() => requestDeleteBrand(item.marca)} className="text-red-500 ml-2">
+                  <TiDeleteOutline size={14} />
                 </button>
-                <span>:</span>
-                {item.modelos.map((m, i) => (
-                  <span key={i} className="flex italic text-sm flex-wrap items-center gap-1">
-                    {m.modelo} (Calibre: {m.calibre})
-                    <button
-                      onClick={() => requestDeleteModel(item.marca, m.modelo)}
-                      className="text-red-500"
-                    >
-                      <TiDeleteOutline size={20} />
-                    </button>
-                    {i < item.modelos.length - 1 && <span>,</span>}
-                  </span>
-                ))}
+                <div className="ml-4">
+                  <span className="underline">Modelos:</span>
+                  {item.modelos.length === 0 ? (
+                    <span> Nenhum</span>
+                  ) : (
+                    <ul className="list-disc ml-4">
+                      {item.modelos.map((m, i) => (
+                        <li key={i} className="inline-flex items-center gap-1">
+                          {m}
+                          <button onClick={() => requestDeleteModelo(item.marca, m)} className="text-red-500">
+                            <TiDeleteOutline size={14} />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <div className="ml-4">
+                  <span className="underline">Calibres:</span>
+                  {(item.calibres?.length || 0) === 0 ? (
+                    <span> Nenhum</span>
+                  ) : (
+                    <ul className="list-disc ml-4">
+                      {(item.calibres || []).map((c, i) => (
+                        <li key={i} className="inline-flex items-center gap-1">
+                          {c}
+                          <button onClick={() => requestDeleteCalibre(item.marca, c)} className="text-red-500">
+                            <TiDeleteOutline size={14} />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
@@ -224,8 +218,8 @@ export default function SessionArmas({ armas, setArmas }) {
         <ConfirmDeleteModal
           message={
             deleteModalData.type === "brand"
-              ? `Deseja deletar a marca "${deleteModalData.brand}" e todos os seus modelos?`
-              : `Deseja deletar o modelo "${deleteModalData.model}" da marca "${deleteModalData.brand}"?`
+              ? `Deseja deletar a marca "${deleteModalData.brand}" e todos os seus modelos e calibres?`
+              : `Deseja deletar o item "${deleteModalData.item}" da marca "${deleteModalData.brand}"?`
           }
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}

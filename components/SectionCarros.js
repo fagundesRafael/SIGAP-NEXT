@@ -77,7 +77,7 @@ export default function SectionCarros({ carros, setCarros }) {
   }
 
   return (
-    <div className="mb-6 p-4 rounded bg-c_deep_gray_black relative">
+    <div className="mb-2 p-4 rounded bg-c_deep_gray_black relative">
       <div className="flex items-center gap-2">
         <input
           type="text"
@@ -93,14 +93,14 @@ export default function SectionCarros({ carros, setCarros }) {
               onClick={handleAddMarca}
               className="text-green-500"
             >
-              <IoIosAddCircle size={24} />
+              <IoIosAddCircle size={14} />
             </button>
             <button
               type="button"
               onClick={() => requestDeleteBrand(marcaInput.trim())}
               className="text-red-500"
             >
-              <TiDeleteOutline size={20} />
+              <TiDeleteOutline size={14} />
             </button>
           </>
         )}
@@ -121,7 +121,7 @@ export default function SectionCarros({ carros, setCarros }) {
                 onClick={handleAddModelo}
                 className="text-green-500"
               >
-                <IoIosAddCircle size={24} />
+                <IoIosAddCircle size={14} />
               </button>
               <button
                 type="button"
@@ -130,7 +130,7 @@ export default function SectionCarros({ carros, setCarros }) {
                 }
                 className="text-red-500"
               >
-                <TiDeleteOutline size={20} />
+                <TiDeleteOutline size={14} />
               </button>
             </>
           )}
@@ -150,7 +150,7 @@ export default function SectionCarros({ carros, setCarros }) {
                   onClick={() => requestDeleteBrand(carro.marca)}
                   className="text-red-500"
                 >
-                  <TiDeleteOutline size={20} />
+                  <TiDeleteOutline size={14} />
                 </button>
                 <span>:</span>
                 {carro.modelos.map((modelo, i) => (
@@ -160,7 +160,7 @@ export default function SectionCarros({ carros, setCarros }) {
                       onClick={() => requestDeleteModel(carro.marca, modelo)}
                       className="text-red-500"
                     >
-                      <TiDeleteOutline size={20} />
+                      <TiDeleteOutline size={14} />
                     </button>
                     {i < carro.modelos.length - 1 && <span>,</span>}
                   </span>

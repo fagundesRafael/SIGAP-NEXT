@@ -24,8 +24,6 @@ export default function RegistrarVeiculo() {
   const [chaves, setChaves] = useState(false);
   const [status, setStatus] = useState("");
   const [destino, setDestino] = useState("");
-  const [secao, setSecao] = useState("");
-  const [prateleira, setPrateleira] = useState("");
   const [obs, setObs] = useState("");
   const [dataField, setDataField] = useState("");
   const [imagem, setImagem] = useState("");
@@ -37,13 +35,15 @@ export default function RegistrarVeiculo() {
   // Arrays de opções
   const procedimentoOptions = ["IPL", "BO", "TCO", "AIAI/AAI", "OUTROS"];
   const statusOptions = ["apreendido", "restituído", "incinerado", "outros"];
-  const destinoOptions = ["pátio", "cartório", "depósito", "outros"];
+  const destinoOptions = ["pátio", "outros"];
   const cores = [
+    "Nenhuma",
     "Vermelho",
     "Azul",
     "Verde",
     "Amarelo",
     "Preto",
+    "Prata",
     "Branco",
     "Cinza",
     "Roxo",
@@ -69,19 +69,26 @@ export default function RegistrarVeiculo() {
     fetchConfigs();
   }, []);
 
-  // Marcas disponíveis com base no tipo
-  const marcasDisponiveis = configs
-    ? tipo === "carro"
-      ? configs.carros.map((item) => item.marca)
-      : configs.motos.map((item) => item.marca)
-    : [];
+  const typeMapping = {
+    carro: "carros",
+    moto: "motos",
+    caminhonete: "caminhonetes",
+    caminhao: "caminhoes",
+    trator: "tratores",
+    outroautomotor: "outroautomotor",
+  };
 
-  // Modelos disponíveis com base na marca e tipo
+  const configKey = typeMapping[tipo];
+
+  const marcasDisponiveis =
+    configs && configKey
+      ? (configs[configKey] || []).map((item) => item.marca)
+      : [];
+
   const modelosDisponiveis =
-    configs && marca
-      ? tipo === "carro"
-        ? configs.carros.find((item) => item.marca === marca)?.modelos || []
-        : configs.motos.find((item) => item.marca === marca)?.modelos || []
+    configs && marca && configKey
+      ? (configs[configKey] || []).find((item) => item.marca === marca)
+          ?.modelos || []
       : [];
 
   // Função para mostrar notificação
@@ -102,6 +109,7 @@ export default function RegistrarVeiculo() {
 
     // Monta o payload para envio
     const payload = {
+      classe: "automotor",
       procedimento,
       numero,
       marca,
@@ -121,11 +129,10 @@ export default function RegistrarVeiculo() {
 
     if (status === "apreendido") {
       payload.destino = destino;
-      if (destino === "depósito") {
-        payload.secao = secao;
-        payload.prateleira = prateleira;
-      }
+    } else {
+      payload.destino = "outros";
     }
+
     try {
       const res = await fetch("/api/carrosemotos", {
         method: "POST",
@@ -190,8 +197,8 @@ export default function RegistrarVeiculo() {
           </div>
           <div>
             <label className="block font-medium">Tipo:</label>
-            <div className="flex text-center gap-2">
-              <label>
+            <div className="flex flex-wrap text-center gap-4 bg-c_deep_gray_black p-2 rounded-md">
+              <label className="cursor-pointer">
                 <input
                   type="radio"
                   name="tipo"
@@ -199,6 +206,7 @@ export default function RegistrarVeiculo() {
                   checked={tipo === "carro"}
                   onChange={() => setTipo("carro")}
                   className="w-2.5 h-2.5 
+                  cursor-pointer
                   appearance-none 
                   border-2 
                   border-gray-400 
@@ -206,11 +214,11 @@ export default function RegistrarVeiculo() {
                   checked:bg-green-600
                   checked:border-green-200
                   transition-colors
-                  cursor-pointer"
+                  "
                 />{" "}
                 Carro
               </label>
-              <label>
+              <label className="cursor-pointer">
                 <input
                   type="radio"
                   name="tipo"
@@ -218,6 +226,7 @@ export default function RegistrarVeiculo() {
                   checked={tipo === "moto"}
                   onChange={() => setTipo("moto")}
                   className="w-2.5 h-2.5 
+                  cursor-pointer
                   appearance-none 
                   border-2 
                   border-gray-400 
@@ -225,9 +234,89 @@ export default function RegistrarVeiculo() {
                   checked:bg-green-600
                   checked:border-green-200
                   transition-colors
-                  cursor-pointer"
+                 r"
                 />{" "}
                 Moto
+              </label>
+              <label className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="caminhonete"
+                  checked={tipo === "caminhonete"}
+                  onChange={() => setTipo("caminhonete")}
+                  className="w-2.5 h-2.5 
+                  cursor-pointer
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                 r"
+                />{" "}
+                Caminhonete
+              </label>
+              <label className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="caminhao"
+                  checked={tipo === "caminhao"}
+                  onChange={() => setTipo("caminhao")}
+                  className="w-2.5 h-2.5 
+                  cursor-pointer
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                 r"
+                />{" "}
+                Caminhão
+              </label>
+              <label className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="trator"
+                  checked={tipo === "trator"}
+                  onChange={() => setTipo("trator")}
+                  className="w-2.5 h-2.5 
+                  cursor-pointer
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                 r"
+                />{" "}
+                Trator
+              </label>
+              <label className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value="outroautomotor"
+                  checked={tipo === "outroautomotor"}
+                  onChange={() => setTipo("outroautomotor")}
+                  className="w-2.5 h-2.5 
+                  cursor-pointer
+                  appearance-none 
+                  border-2 
+                  border-gray-400 
+                  rounded-full 
+                  checked:bg-green-600
+                  checked:border-green-200
+                  transition-colors
+                 r"
+                />{" "}
+                Outro Veículo
               </label>
             </div>
           </div>
@@ -316,7 +405,7 @@ export default function RegistrarVeiculo() {
           <div>
             <label className="block font-medium">Chaves:</label>
             <div className="flex gap-2">
-              <label>
+              <label className="cursor-pointer">
                 <input
                   type="radio"
                   name="chaves"
@@ -335,7 +424,7 @@ export default function RegistrarVeiculo() {
                 />{" "}
                 Sim
               </label>
-              <label>
+              <label className="cursor-pointer">
                 <input
                   type="radio"
                   name="chaves"
@@ -370,14 +459,14 @@ export default function RegistrarVeiculo() {
                     checked={status === opt}
                     onChange={() => setStatus(opt)}
                     className="w-2.5 h-2.5 
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                  cursor-pointer"
+                    appearance-none 
+                    border-2 
+                   border-gray-400 
+                    rounded-full 
+                   checked:bg-green-600
+                   checked:border-green-200
+                    transition-colors
+                    cursor-pointer"
                   />{" "}
                   {opt}
                 </label>
@@ -398,37 +487,19 @@ export default function RegistrarVeiculo() {
                       checked={destino === opt}
                       onChange={() => setDestino(opt)}
                       className="w-2.5 h-2.5 
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                  cursor-pointer"
+                    appearance-none 
+                    border-2 
+                   border-gray-400 
+                    rounded-full 
+                   checked:bg-green-600
+                   checked:border-green-200
+                    transition-colors
+                    cursor-pointer"
                     />{" "}
                     {opt}
                   </label>
                 ))}
               </div>
-              {destino === "depósito" && (
-                <div className="flex gap-4 mt-2">
-                  <input
-                    type="text"
-                    placeholder="Seção"
-                    value={secao}
-                    onChange={(e) => setSecao(e.target.value)}
-                    className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Prateleira"
-                    value={prateleira}
-                    onChange={(e) => setPrateleira(e.target.value)}
-                    className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
-                  />
-                </div>
-              )}
             </div>
           )}
 
