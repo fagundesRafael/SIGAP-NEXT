@@ -160,7 +160,7 @@ export default function SessionMunicao({ municoes, setMunicoes }) {
         </>
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
-      <div className="mt-4">
+      <div className="mt-2 text-[11px]">
         <h3 className="font-bold">Marcas, modelos e calibres registrados:</h3>
         {municoes.length === 0 ? (
           <p>Nenhuma marca registrada.</p>

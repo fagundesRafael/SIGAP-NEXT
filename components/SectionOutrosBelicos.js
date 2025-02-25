@@ -115,7 +115,6 @@ export default function SectionOutrosBelicos({ outrosbelicos, setOutrosBelicos }
 
   return (
     <div className="mb-2 p-4 rounded bg-c_deep_gray_black relative">
-      {/* Campo de marca */}
       <div className="flex items-center gap-2">
         <input
           type="text"
@@ -177,8 +176,7 @@ export default function SectionOutrosBelicos({ outrosbelicos, setOutrosBelicos }
         </>
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
-      {/* Lista de marcas, modelos e calibres */}
-      <div className="mt-4">
+      <div className="mt-2 text-[11px]">
         <h3 className="font-bold">Marcas, modelos e calibres registrados:</h3>
         {outrosbelicos.length === 0 ? (
           <p>Nenhuma marca registrada.</p>

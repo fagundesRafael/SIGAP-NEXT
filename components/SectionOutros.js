@@ -60,14 +60,14 @@ export default function SessionOutros({ outros, setOutros }) {
         )}
       </div>
       {error && <p className="text-red-500 mt-2">{error}</p>}
-      <div className="mt-4">
+      <div className="mt-2 text-[11px]">
         <h3 className="font-bold">Marcas Registradas:</h3>
         {outros.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (
           <ul>
             {outros.map((brand, idx) => (
-              <li key={idx} className="flex flex-wrap underline items-center gap-2">
+              <li key={idx} className="flex flex-wrap  text-[11px] items-center gap-2">
                 {brand}
                 <button type="button" onClick={() => requestDeleteBrand(brand)} className="text-red-500">
                   <TiDeleteOutline size={20} />

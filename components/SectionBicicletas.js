@@ -136,7 +136,7 @@ export default function SessionBicicletas({ bicicletas, setBicicletas }) {
         </div>
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
-      <div className="mt-4">
+      <div className="mt-2 text-[11px]">
         <h3 className="font-bold">Marcas e Modelos Registrados:</h3>
         {bicicletas.length === 0 ? (
           <p>Nenhuma marca registrada.</p>

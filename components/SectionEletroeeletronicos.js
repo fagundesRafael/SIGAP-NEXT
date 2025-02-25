@@ -60,7 +60,7 @@ export default function SessionEletroeeletronicos({ eletro, setEletro }) {
         )}
       </div>
       {error && <p className="text-red-500 mt-2">{error}</p>}
-      <div className="mt-4">
+      <div className="mt-2 text-[11px]">
         <h3 className="font-bold">Marcas Registradas:</h3>
         {eletro.length === 0 ? (
           <p>Nenhuma marca registrada.</p>

@@ -137,7 +137,7 @@ export default function SectionOutrosAutomotores({ outrosautomotores, setOutrosA
         </div>
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
-      <div className="mt-4">
+      <div className="mt-2 text-[11px]">
         <h3 className="font-bold">Marcas e Modelos Registrados:</h3>
         {outrosautomotores.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
@@ -154,7 +154,7 @@ export default function SectionOutrosAutomotores({ outrosautomotores, setOutrosA
                 </button>
                 <span>:</span>
                 {automotor.modelos.map((modelo, i) => (
-                  <span key={i} className="flex italic text-sm items-center gap-1">
+                  <span key={i} className="flex italic text-[11px] items-center gap-1">
                     {modelo}
                     <button
                       onClick={() => requestDeleteModel(automotor.marca, modelo)}
