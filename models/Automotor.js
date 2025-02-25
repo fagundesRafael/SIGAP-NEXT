@@ -1,11 +1,13 @@
-// models/Veiculo.js
+// models/Automotor.js
 import mongoose from "mongoose";
 
-const VeiculoSchema = new mongoose.Schema(
+const AutomotorSchema = new mongoose.Schema(
   {
     classe: { type: String },
     procedimento: { type: String, required: true },
     numero: { type: String, required: true },
+    quantidade: { type: Number },
+    unidMedida: { type: String },
     marca: { type: String, required: true },
     modelo: { type: String, required: true },
     placa: {
@@ -13,7 +15,6 @@ const VeiculoSchema = new mongoose.Schema(
       required: false,
       unique: true,
       sparse: true,
-      // Se houver valor e não for apenas espaços, transforma em maiúsculas; caso contrário, retorna undefined
       set: (v) => (v && v.trim() !== "" ? v.trim().toUpperCase() : undefined),
     },
     chassi: {
@@ -23,7 +24,13 @@ const VeiculoSchema = new mongoose.Schema(
       sparse: true,
       set: (v) => (v && v.trim() !== "" ? v.trim().toUpperCase() : undefined),
     },
-    tipo: { type: String, enum: ["carro", "moto", "caminhonete", "caminhao", "trator", "outroautomotor"], required: true },
+    tipo: { 
+      type: String, 
+      enum: ["carro", "moto", "caminhonete", "caminhao", "trator", "outrosautomotores"], 
+      required: true 
+    },
+    // Novo campo para armazenar o valor customizado caso "outrosautomotores" seja selecionado
+    customTipo: { type: String },
     cor: { type: String, required: false },
     chaves: { type: Boolean, default: false },
     status: {
@@ -31,22 +38,19 @@ const VeiculoSchema = new mongoose.Schema(
       required: true,
       enum: ["apreendido", "restituído", "incinerado", "outros"],
     },
-    // Campo opcional: somente preenchido se status === "apreendido"
     destino: {
       type: String,
       enum: ["pátio", "cartório", "depósito", "outros"],
       default: undefined,
     },
-    // Se destino for "depósito", os campos abaixo devem ser preenchidos:
     createdBy: { type: String, required: true },
     updatedBy: { type: String },
     obs: { type: String, maxlength: 80 },
     data: { type: Date, default: Date.now },
     imagem: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "automotores" }
 );
 
-// Evita redefinir o model durante o hot-reload
-export default mongoose.models.Veiculo ||
-  mongoose.model("Veiculo", VeiculoSchema);
+export default mongoose.models.Automotor ||
+  mongoose.model("Automotor", AutomotorSchema);

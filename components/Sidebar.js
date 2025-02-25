@@ -39,9 +39,9 @@ export default function Sidebar() {
           <li className="flex ml-2 items-center">
             <FaCar />
             <Link
-              href="/carrosemotos"
+              href="/automotores"
               className={`block p-1 rounded ml-1 ${
-                isActive("/carrosemotos")
+                isActive("/automotores")
                   ? "bg-c_deep_gray_black py-1 text-white w-full"
                   : ""
               }`}
@@ -51,16 +51,16 @@ export default function Sidebar() {
     after:h-px after:bg-current after:w-0 after:transition-all 
     after:duration-300 after:ease-in-out hover:after:w-full"
               >
-                Carros e Motos
+                Automotores
               </span>
             </Link>
           </li>
           <li className="flex ml-2 items-center">
             <GiHeavyBullets />
             <Link
-              href="/armasemunicoes"
+              href="/belicos"
               className={`block p-1 rounded  ml-1 ${
-                isActive("/armasemunicoes")
+                isActive("/belicos")
                   ? "bg-c_deep_gray_black py-1 text-white w-full"
                   : ""
               }`}
@@ -70,7 +70,7 @@ export default function Sidebar() {
     after:h-px after:bg-current after:w-0 after:transition-all 
     after:duration-300 after:ease-in-out hover:after:w-full"
               >
-                Armas e Munições
+                Bélicos
               </span>
             </Link>
           </li>

@@ -1,13 +1,13 @@
-// app/api/armasemunicoes/[id]/route.js
+// app/api/belicos/[id]/route.js
 import { dbConnect } from "@/lib/dbConnect";
-import ArmaMunicao from "@/models/ArmaMunicao";
+import Belico from "@/models/Belico";
 
 // GET: Retorna o registro com o ID informado
 export async function GET(request, { params }) {
   try {
     await dbConnect();
     const { id } = await params;
-    const record = await ArmaMunicao.findById(id);
+    const record = await Belico.findById(id);
     if (!record) {
       return new Response(JSON.stringify({ error: "Registro não encontrado" }), { status: 404 });
     }
@@ -22,10 +22,29 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
-    const updatedRecord = await ArmaMunicao.findByIdAndUpdate(id, body, { new: true, runValidators: true });
+    if (body.status === "apreendido") {
+      if (!body.destino) {
+        return new Response(
+          JSON.stringify({
+            error: "Campo destino é obrigatório para status 'apreendido'",
+          }),
+          { status: 400 }
+        );
+      }
+      if (body.destino === "depósito" && (!body.secao || !body.prateleira)) {
+        return new Response(
+          JSON.stringify({
+            error: "Campos seção e prateleira são obrigatórios para destino 'depósito'",
+          }),
+          { status: 400 }
+        );
+      }
+    }
+
+    const updatedRecord = await Belico.findByIdAndUpdate(id, body, { new: true, runValidators: true });
     if (!updatedRecord) {
       return new Response(JSON.stringify({ error: "Registro não encontrado" }), { status: 404 });
     }
@@ -44,7 +63,7 @@ export async function DELETE(request, { params }) {
   try {
     await dbConnect();
     const { id } = await params;
-    const deleted = await ArmaMunicao.findByIdAndDelete(id);
+    const deleted = await Belico.findByIdAndDelete(id);
     if (!deleted) {
       return new Response(JSON.stringify({ error: "Registro não encontrado" }), { status: 404 });
     }

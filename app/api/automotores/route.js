@@ -1,6 +1,6 @@
-// app/api/carrosemotos/route.js
+// app/api/automotores/route.js
 import { dbConnect } from "@/lib/dbConnect";
-import Veiculo from "@/models/Veiculo";
+import Automotor from "@/models/Automotor";
 
 // GET: Listar veículos com paginação e filtros opcionais
 export async function GET(request) {
@@ -13,35 +13,47 @@ export async function GET(request) {
 
     // Monta uma query dinâmica a partir dos parâmetros opcionais
     const query = {};
-    const fields = ["procedimento", "numero", "marca", "modelo", "placa", "chassi"];
+    const fields = [
+      "procedimento",
+      "numero",
+      "marca",
+      "modelo",
+      "placa",
+      "chassi",
+    ];
+
     fields.forEach((field) => {
       const value = searchParams.get(field);
       if (value) {
-        // Busca parcial e case-insensitive
         query[field] = { $regex: value, $options: "i" };
       }
     });
 
-    const veiculos = await Veiculo.find(query)
+    // Busca "tipo" e também "customTipo" caso tenha valor maior que 1 caractere
+    const tipo = searchParams.get("tipo");
+    if (tipo) {
+      query.$or = [
+        { tipo: { $regex: tipo, $options: "i" } },
+        { customTipo: { $regex: tipo, $options: "i", $exists: true, $ne: "" } },
+      ];
+    }
+
+    const veiculos = await Automotor.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
-    const total = await Veiculo.countDocuments(query);
+    const total = await Automotor.countDocuments(query);
 
-    return new Response(
-      JSON.stringify({ veiculos, total, page }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ veiculos, total, page }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("Erro ao buscar veículos:", error);
-    return new Response(
-      JSON.stringify({ error: "Erro ao buscar veículos" }),
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ error: "Erro ao buscar veículos" }), {
+      status: 500,
+    });
   }
 }
 
@@ -62,12 +74,11 @@ export async function POST(request) {
     // Se a placa foi informada, converte para maiúsculas e verifica duplicidade
     if (body.placa) {
       const placaValue = body.placa.trim().toUpperCase();
-      const existingPlaca = await Veiculo.findOne({ placa: placaValue });
+      const existingPlaca = await Automotor.findOne({ placa: placaValue });
       if (existingPlaca) {
-        return new Response(
-          JSON.stringify({ error: "Placa já registrada" }),
-          { status: 400 }
-        );
+        return new Response(JSON.stringify({ error: "Placa já registrada" }), {
+          status: 400,
+        });
       }
       body.placa = placaValue;
     }
@@ -75,12 +86,11 @@ export async function POST(request) {
     // Se o chassi foi informado, converte para maiúsculas e verifica duplicidade
     if (body.chassi) {
       const chassiValue = body.chassi.trim().toUpperCase();
-      const existingChassi = await Veiculo.findOne({ chassi: chassiValue });
+      const existingChassi = await Automotor.findOne({ chassi: chassiValue });
       if (existingChassi) {
-        return new Response(
-          JSON.stringify({ error: "Chassi já registrado" }),
-          { status: 400 }
-        );
+        return new Response(JSON.stringify({ error: "Chassi já registrado" }), {
+          status: 400,
+        });
       }
       body.chassi = chassiValue;
     }
@@ -108,13 +118,15 @@ export async function POST(request) {
     if (body.status === "apreendido") {
       if (!body.destino) {
         return new Response(
-          JSON.stringify({ error: "Campo destino é obrigatório para status 'apreendido'" }),
+          JSON.stringify({
+            error: "Campo destino é obrigatório para status 'apreendido'",
+          }),
           { status: 400 }
         );
       }
     }
 
-    const veiculo = new Veiculo(body);
+    const veiculo = new Automotor(body);
     await veiculo.save();
     return new Response(
       JSON.stringify({ message: "Veículo criado com sucesso" }),

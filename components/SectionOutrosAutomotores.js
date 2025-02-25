@@ -81,7 +81,7 @@ export default function SectionOutrosAutomotores({ outrosautomotores, setOutrosA
       <div className="flex items-center gap-2">
         <input
           type="text"
-          placeholder="Inserir marca do automotor"
+          placeholder="Inserir marca do (outro) automotor"
           value={marcaInput}
           onChange={(e) => setMarcaInput(e.target.value)}
           className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
@@ -144,7 +144,7 @@ export default function SectionOutrosAutomotores({ outrosautomotores, setOutrosA
         ) : (
           <ul>
             {outrosautomotores.map((automotor, idx) => (
-              <li key={idx} className="flex flex-wrap items-center gap-2">
+              <li key={idx} className="flex flex-wrap items-center gap-2 border-b-[1px]">
                 <strong>{automotor.marca}</strong>
                 <button
                   onClick={() => requestDeleteBrand(automotor.marca)}

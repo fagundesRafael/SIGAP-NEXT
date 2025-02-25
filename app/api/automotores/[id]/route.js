@@ -1,17 +1,17 @@
-// app/api/carrosemotos/[id]/route.js
+// app/api/automotores/[id]/route.js
 import { dbConnect } from "@/lib/dbConnect";
-import Veiculo from "@/models/Veiculo";
+import Automotor from "@/models/Automotor";
 
 // GET: Retorna o veículo com o ID informado
 export async function GET(request, { params }) {
   try {
     await dbConnect();
     const { id } = await params; 
-    const veiculo = await Veiculo.findById(id);
-    if (!veiculo) {
+    const automotor = await Automotor.findById(id);
+    if (!automotor) {
       return new Response(JSON.stringify({ error: "Veículo não encontrado" }), { status: 404 });
     }
-    return new Response(JSON.stringify(veiculo), { status: 200 });
+    return new Response(JSON.stringify(automotor), { status: 200 });
   } catch (error) {
     console.error("Erro na rota GET:", error);
     return new Response(JSON.stringify({ error: "Erro ao buscar veículo" }), { status: 500 });
@@ -37,7 +37,7 @@ export async function PUT(request, { params }) {
 
     // É possível adicionar validações de duplicidade aqui, se necessário
 
-    const updatedVehicle = await Veiculo.findByIdAndUpdate(id, body, { new: true, runValidators: true });
+    const updatedVehicle = await Automotor.findByIdAndUpdate(id, body, { new: true, runValidators: true });
     if (!updatedVehicle) {
       return new Response(JSON.stringify({ error: "Veículo não encontrado" }), { status: 404 });
     }
@@ -56,7 +56,7 @@ export async function DELETE(request, { params }) {
   try {
     await dbConnect();
     const { id } = params;
-    const deleted = await Veiculo.findByIdAndDelete(id);
+    const deleted = await Automotor.findByIdAndDelete(id);
     if (!deleted) {
       return new Response(JSON.stringify({ error: "Veículo não encontrado" }), { status: 404 });
     }

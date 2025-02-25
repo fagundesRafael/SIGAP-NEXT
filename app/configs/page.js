@@ -14,6 +14,7 @@ import SectionMunicao from "@/components/SectionMunicao";
 import SectionEntorpecentes from "@/components/SectionEntorpecentes";
 import SectionEletroeeletronicos from "@/components/SectionEletroeeletronicos";
 import SectionOutros from "@/components/SectionOutros";
+import SectionOutrosBelicos from "@/components/SectionOutrosBelicos";
 import NotificationModal from "@/components/NotificationModal";
 
 export default function ConfigsPage() {
@@ -26,8 +27,9 @@ export default function ConfigsPage() {
   const [tratores, SetTratores] = useState([]);
   const [outrosautomotores, SetOutrosAutomotores] = useState([]);
   const [bicicletas, setBicicletas] = useState([]);
-  const [armas, setArmas] = useState([]); // Agora com {marca, modelos, calibres}
-  const [municoes, setMunicoes] = useState([]); // idem
+  const [armas, setArmas] = useState([]);
+  const [municoes, setMunicoes] = useState([]);
+  const [outrosbelicos, setOutrosBelicos] = useState([]);
   const [entorpecentes, setEntorpecentes] = useState([]);
   const [eletro, setEletro] = useState([]);
   const [outros, setOutros] = useState([]);
@@ -49,6 +51,7 @@ export default function ConfigsPage() {
             setBicicletas(config.bicicletas || []);
             setArmas(config.armas || []);
             setMunicoes(config.municoes || []);
+            setOutrosBelicos(config.outrosbelicos || []);
             setEntorpecentes(config.entorpecentes || []);
             setEletro(config.eletro || []);
             setOutros(config.outros || []);
@@ -83,6 +86,7 @@ export default function ConfigsPage() {
       bicicletas,
       armas,
       municoes,
+      outrosbelicos,
       entorpecentes,
       eletro,
       outros,
@@ -111,19 +115,29 @@ export default function ConfigsPage() {
       <form onSubmit={handleSubmit}>
         <div className="flex flex-wrap gap-2 text-xs font-mono max-w-full">
           <div className="mb-2 border border-slate-700 rounded p-2">
-            <label >Automotores:</label>
+            <label>Automotores:</label>
             <SectionCarros carros={carros} setCarros={setCarros} />
             <SectionMotos motos={motos} setMotos={setMotos} />
-            <SectionCaminhonetes caminhonetes={caminhonetes} setCaminhonetes={setCaminhonetes} />
-            <SectionCaminhoes caminhoes={caminhoes} setCaminhoes={setCaminhoes} />
+            <SectionCaminhonetes
+              caminhonetes={caminhonetes}
+              setCaminhonetes={setCaminhonetes}
+            />
+            <SectionCaminhoes
+              caminhoes={caminhoes}
+              setCaminhoes={setCaminhoes}
+            />
             <SectionTratores tratores={tratores} SetTratores={SetTratores} />
-            <SectionOutrosAutomotores outrosautomotores={outrosautomotores} setOutrosAutomotores={SetOutrosAutomotores} />
+            <SectionOutrosAutomotores
+              outrosautomotores={outrosautomotores}
+              setOutrosAutomotores={SetOutrosAutomotores}
+            />
           </div>
 
           <div className="mb-2 border border-slate-700 rounded p-2">
-          <label>Bélicos:</label>
+            <label>Bélicos:</label>
             <SectionArmas armas={armas} setArmas={setArmas} />
             <SectionMunicao municoes={municoes} setMunicoes={setMunicoes} />
+            <SectionOutrosBelicos outrosbelicos={outrosbelicos} setOutrosBelicos={setOutrosBelicos} />
           </div>
           <SectionBicicletas
             bicicletas={bicicletas}

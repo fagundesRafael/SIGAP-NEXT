@@ -1,23 +1,27 @@
-// app/armasemunicoes/registrar/page.js
+// app/belicos/[id]/page.js
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import ImageUpload from "@/components/ImageUpload";
 import LoadingImage from "@/components/LoadingImage";
+import Loading from "@/components/Loading";
 import NotificationModal from "@/components/NotificationModal";
+import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 
-export default function RegistrarArmaMunicao() {
+export default function ArmaMunicaoDetalhes() {
+  const { id } = useParams();
   const router = useRouter();
   const { data: session } = useSession();
 
-  // Estados do formulário
+  // Estados principais
   const [procedimento, setProcedimento] = useState("");
   const [numero, setNumero] = useState("");
   const [tipo, setTipo] = useState("Arma");
+  const [customTipo, setCustomTipo] = useState("");
   const [quantidade, setQuantidade] = useState("");
-  const [unidMedida, setUnidMedida] = useState("unid");
+  const [unidMedida, setUnidMedida] = useState("");
   const [cor, setCor] = useState("");
   const [marca, setMarca] = useState("");
   const [modelo, setModelo] = useState("");
@@ -32,8 +36,10 @@ export default function RegistrarArmaMunicao() {
   const [imagem, setImagem] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [loadingImage, setLoadingImage] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [showNotification, setShowNotification] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const procedimentoOptions = ["IPL", "BO", "TCO", "AIAI/AAI", "OUTROS"];
   const statusOptions = ["apreendido", "restituído", "incinerado", "outros"];
@@ -54,6 +60,7 @@ export default function RegistrarArmaMunicao() {
     "Outro",
   ];
 
+  // Estado para as configurações (para popular os selects)
   const [configs, setConfigs] = useState(null);
   useEffect(() => {
     async function fetchConfigs() {
@@ -70,24 +77,79 @@ export default function RegistrarArmaMunicao() {
     fetchConfigs();
   }, []);
 
-  const marcasDisponiveis = configs
-    ? tipo === "Arma"
-      ? configs.armas.map((item) => item.marca)
-      : configs.municoes.map((item) => item.marca)
-    : [];
-  const modelosDisponiveis =
-    configs && marca
-      ? tipo === "Arma"
-        ? configs.armas.find((item) => item.marca === marca)?.modelos || []
-        : configs.municoes.find((item) => item.marca === marca)?.modelos || []
-      : [];
+  const typeMapping = {
+    Arma: "armas",
+    Munição: "municoes",
+    Outro: "outrosbelicos",
+  };
+  const configKey = typeMapping[tipo];
 
-  const calibresDisponiveis =
-    configs && marca
-      ? tipo === "Arma"
-        ? configs.armas.find((item) => item.marca === marca)?.calibres || []
-        : configs.municoes.find((item) => item.marca === marca)?.calibres || []
-      : [];
+  const marcasDisponiveis =
+  configs && configKey
+    ? (configs[configKey] || []).map((item) => item.marca)
+    : [];
+
+const modelosDisponiveis =
+  configs && marca && configKey
+    ? (configs[configKey] || []).find((item) => item.marca === marca)
+        ?.modelos || []
+    : [];
+
+const calibresDisponiveis =
+  configs && marca && configKey
+    ? (configs[configKey] || []).find((item) => item.marca === marca)
+        ?.calibres || []
+    : [];
+
+  // Carrega os dados do registro a partir da API
+  useEffect(() => {
+    async function fetchRecord() {
+      try {
+        const res = await fetch(`/api/belicos/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          console.log(data);
+          setProcedimento(data.procedimento || "");
+          setNumero(data.numero || "");
+          setTipo(data.tipo || "Arma");
+          setQuantidade(data.quantidade);
+          setUnidMedida(data.unidMedida || "");
+          setCor(data.cor || "");
+          setMarca(data.marca || "");
+          setModelo(data.modelo || "");
+          setCalibre(data.calibre || "");
+          setAspecto(data.aspecto || "Outro");
+          setStatus(data.status || "");
+          setObs(data.obs || "");
+          setDataField(
+            data.data ? new Date(data.data).toISOString().split("T")[0] : ""
+          );
+          setImagem(data.imagem || "");
+          // Se o status for "apreendido", atualiza os campos opcionais
+          if (data.status === "apreendido") {
+            setDestino(data.destino || "");
+            setSecao(data.secao || "");
+            setPrateleira(data.prateleira || "");
+          }
+          if (data.customTipo) {
+            setTipo("Outro");
+            setCustomTipo(data.customTipo);
+          } else {
+            setTipo(data.tipo || "Arma");
+          }
+          setIsLoadingData(false);
+        } else {
+          setErrorMsg("Erro ao buscar registro");
+          setIsLoadingData(false);
+        }
+      } catch (error) {
+        console.error(error);
+        setErrorMsg("Erro ao buscar registro");
+        setIsLoadingData(false);
+      }
+    }
+    if (id) fetchRecord();
+  }, [id]);
 
   const showAlert = (message) => {
     setNotificationMessage(message);
@@ -98,23 +160,25 @@ export default function RegistrarArmaMunicao() {
     setNotificationMessage("");
   };
 
-  async function handleSubmit(e) {
+  async function handleUpdate(e) {
     e.preventDefault();
     setErrorMsg("");
 
+    // Monta o payload com a mesma lógica do registro
     const payload = {
       procedimento,
       numero,
       tipo,
+      customTipo: tipo === "Outro" ? customTipo : "",
       quantidade,
       unidMedida,
-      cor,
       marca,
       modelo,
       calibre,
+      cor,
       aspecto,
       status,
-      createdBy: session?.user?.nome,
+      updatedBy: session?.user?.nome,
       obs,
       data: dataField || new Date(),
       imagem,
@@ -142,34 +206,61 @@ export default function RegistrarArmaMunicao() {
     }
 
     try {
-      const res = await fetch("/api/armasemunicoes", {
-        method: "POST",
+      const res = await fetch(`/api/belicos/${id}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        showAlert("Registro criado com sucesso!");
+        showAlert("Registro atualizado com sucesso!");
         setTimeout(() => {
-          router.push("/armasemunicoes");
+          router.push("/belicos");
         }, 2000);
       } else {
         const data = await res.json();
-        setErrorMsg(data.error || "Erro ao criar registro");
+        setErrorMsg(data.error || "Erro ao atualizar material bélico");
       }
     } catch (error) {
-      console.error("Erro ao enviar formulário:", error);
-      setErrorMsg("Erro ao enviar formulário");
+      console.error("Erro ao atualizar material bélico:", error);
+      setErrorMsg("Erro ao atualizar material bélico");
     }
   }
 
+  async function handleDelete() {
+    setShowDeleteModal(true);
+  }
+
+  async function handleConfirmDelete() {
+    try {
+      const res = await fetch(`/api/belicos/${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        router.push("/belicos");
+      } else {
+        const data = await res.json();
+        setErrorMsg(data.error || "Erro ao excluir registro");
+      }
+    } catch (error) {
+      console.error("Erro ao excluir registro:", error);
+      setErrorMsg("Erro ao excluir registro");
+    } finally {
+      setShowDeleteModal(false);
+    }
+  }
+
+  if (isLoadingData) return <Loading />;
+  if (errorMsg) return <p className="p-4 text-red-500">{errorMsg}</p>;
+
   return (
-    <div className="min-h-screen text-white bg-c_deep_black p-1 rounded-md border border-gray-500 shadow">
-      <h1 className="font-bold mt-2 mx-4">
-        Inserir Nova(s) Arma(s) e/ou Munição(ões):
-      </h1>
-      {errorMsg && <p className="text-red-500 ml-4 mb-4">{errorMsg}</p>}
+    <div className="min-h-screen bg-c_deep_black text-white p-2 rounded-md border border-gray-500 shadow">
+      <div className="flex">
+        <h1 className="font-bold mt-2 mx-4">
+          Detalhes e atualização de material bélico:
+        </h1>
+      </div>
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleUpdate}
         className="flex justify-between p-4 text-xs"
       >
         <div className="flex flex-col gap-4 w-[45%]">
@@ -329,7 +420,6 @@ export default function RegistrarArmaMunicao() {
               </select>
             </div>
           </div>
-
           {tipo !== "Arma" && (
             <div>
               <label className="block font-medium">Aspecto:</label>
@@ -342,7 +432,7 @@ export default function RegistrarArmaMunicao() {
                       value={opt}
                       checked={aspecto === opt}
                       onChange={() => setAspecto(opt)}
-                      className="w-2.5 h-2.5 border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
+                      className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                     />{" "}
                     {opt}
                   </label>
@@ -350,7 +440,7 @@ export default function RegistrarArmaMunicao() {
               </div>
             </div>
           )}
-          <div className="flex justify-between" >
+          <div className="flex justify-between">
             <div>
               <label className="block font-medium">Status:</label>
               <div className="flex gap-2">
@@ -423,7 +513,7 @@ export default function RegistrarArmaMunicao() {
             <label className="block font-medium">Observações:</label>
             <textarea
               maxLength={380}
-              rows={10}
+              rows={12}
               value={obs}
               onChange={(e) => setObs(e.target.value)}
               className="bg-c_deep_gray_black p-2 rounded w-full"
@@ -438,15 +528,20 @@ export default function RegistrarArmaMunicao() {
             <ImageUpload
               onUpload={(url) => setImagem(url)}
               setLoading={setLoadingImage}
+              uploaded={!!imagem}
             />
             {loadingImage && <LoadingImage />}
             {imagem ? (
-              <p className="text-green-500">Imagem enviada com sucesso!</p>
+              <img
+                src={imagem}
+                alt="Imagem do registro"
+                className="w-96 h-96 mt-3 object-cover"
+              />
             ) : (
               <img
                 src="/no-image.jpg"
                 alt="Sem imagem"
-                className="w-96 h-96 mt-3 object-cover opacity-10"
+                className="w-96 h-96 mt-3 opacity-10 object-cover"
               />
             )}
           </div>
@@ -455,7 +550,21 @@ export default function RegistrarArmaMunicao() {
             type="submit"
             className="bg-blue-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-blue-600 transition"
           >
-            Registrar arma(s) e/ou munição(ões)
+            Atualizar material bélico
+          </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="bg-red-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-red-600 transition"
+          >
+            Excluir material bélico
+          </button>
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="bg-gray-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-gray-600 transition-colors"
+          >
+            Cancelar e Voltar
           </button>
         </div>
       </form>
@@ -463,6 +572,13 @@ export default function RegistrarArmaMunicao() {
         <NotificationModal
           message={notificationMessage}
           onClose={closeNotification}
+        />
+      )}
+      {showDeleteModal && (
+        <ConfirmDeleteModal
+          message="Deseja realmente excluir este registro permanentemente?"
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setShowDeleteModal(false)}
         />
       )}
     </div>

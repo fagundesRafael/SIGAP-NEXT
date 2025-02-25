@@ -26,7 +26,7 @@ export async function POST(request) {
     await dbConnect();
     const body = await request.json();
 
-    // Função auxiliar para processar itens (armas e munições)
+    // Função auxiliar para processar itens (armas, munições e outrosbélicos)
     const processarItens = (itens) => {
       return itens.map((item) => ({
         marca: item.marca,
@@ -45,7 +45,7 @@ export async function POST(request) {
 
     let config = await Config.findOne();
     if (!config) {
-      // Cria nova configuração, processando os arrays de armas e munições
+      // Cria nova configuração, processando os arrays de armas, munições e outrosbélicos
       const novoConfig = {
         ...body,
         carros: body.carros || [],
@@ -56,6 +56,7 @@ export async function POST(request) {
         outrosautomotores: body.outrosautomotores || [],
         armas: body.armas ? processarItens(body.armas) : [],
         municoes: body.municoes ? processarItens(body.municoes) : [],
+        outrosbelicos: body.outrosbelicos ? processarItens(body.outrosbelicos) : [],
         bicicletas: body.bicicletas || [],
         entorpecentes: body.entorpecentes || [],
         eletro: body.eletro || [],
@@ -63,12 +64,15 @@ export async function POST(request) {
       };
       config = new Config(novoConfig);
     } else {
-      // Atualiza os campos de armas e munições garantindo arrays corretos
+      // Atualiza os campos de armas, munições e outrosbélicos garantindo arrays corretos
       if (body.armas) {
         config.armas = processarItens(body.armas);
       }
       if (body.municoes) {
         config.municoes = processarItens(body.municoes);
+      }
+      if (body.outrosbelicos) {
+        config.outrosbelicos = processarItens(body.outrosbelicos);
       }
       // Atualiza as demais configurações
       if (body.carros) config.carros = body.carros;

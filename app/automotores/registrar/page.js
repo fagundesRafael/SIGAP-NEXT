@@ -1,4 +1,4 @@
-// app/carrosmotos/registrar/page.js
+// app/automotores/registrar/page.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -16,11 +16,14 @@ export default function RegistrarVeiculo() {
   const [procedimento, setProcedimento] = useState("");
   const [numero, setNumero] = useState("");
   const [tipo, setTipo] = useState("carro");
+  const [customTipo, setCustomTipo] = useState("");
+  const [quantidade, setQuantidade] = useState("");
+  const [unidMedida, setUnidMedida] = useState("unid");
+  const [cor, setCor] = useState("");
   const [marca, setMarca] = useState("");
   const [modelo, setModelo] = useState("");
   const [placa, setPlaca] = useState("");
   const [chassi, setChassi] = useState("");
-  const [cor, setCor] = useState("");
   const [chaves, setChaves] = useState(false);
   const [status, setStatus] = useState("");
   const [destino, setDestino] = useState("");
@@ -75,7 +78,7 @@ export default function RegistrarVeiculo() {
     caminhonete: "caminhonetes",
     caminhao: "caminhoes",
     trator: "tratores",
-    outroautomotor: "outroautomotor",
+    outrosautomotores: "outrosautomotores",
   };
 
   const configKey = typeMapping[tipo];
@@ -107,16 +110,23 @@ export default function RegistrarVeiculo() {
     e.preventDefault();
     setErrorMsg("");
 
+    // Definindo valores fixos para quantidade e unidade de medida
+    setQuantidade("01");
+    setUnidMedida("unid");
+
     // Monta o payload para envio
     const payload = {
       classe: "automotor",
       procedimento,
       numero,
+      quantidade,
+      unidMedida,
       marca,
       modelo,
-      placa, // Se estiver vazia, a API a removerá
-      chassi, // Se estiver vazia, a API a removerá
-      tipo,
+      placa,
+      chassi,
+      tipo, 
+      customTipo: tipo === "outrosautomotores" ? customTipo : "",
       cor,
       chaves,
       status,
@@ -126,15 +136,15 @@ export default function RegistrarVeiculo() {
       data: dataField || new Date(),
       imagem,
     };
-
+  
     if (status === "apreendido") {
       payload.destino = destino;
     } else {
       payload.destino = "outros";
     }
-
+  
     try {
-      const res = await fetch("/api/carrosemotos", {
+      const res = await fetch("/api/automotores", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -142,7 +152,7 @@ export default function RegistrarVeiculo() {
       if (res.ok) {
         showAlert("Veículo criado com sucesso!");
         setTimeout(() => {
-          router.push("/carrosemotos");
+          router.push("/automotores");
         }, 2000);
       } else {
         const data = await res.json();
@@ -158,13 +168,9 @@ export default function RegistrarVeiculo() {
     <div className="min-h-screen text-white bg-c_deep_black p-1 rounded-md border border-gray-500 shadow">
       <h1 className="font-bold mt-2 mx-4">Registrar Novo Veículo:</h1>
       {errorMsg && <p className="text-red-500 ml-4 mb-4">{errorMsg}</p>}
-      <form
-        onSubmit={handleSubmit}
-        className="flex justify-between p-4 text-xs"
-      >
+      <form onSubmit={handleSubmit} className="flex justify-between p-4 text-xs">
         <div className="flex flex-col gap-4 w-[45%]">
-          {/* Campo Procedimento como SELECT */}
-
+          {/* Campo Procedimento */}
           <div className="flex gap-4">
             <div>
               <label className="block font-medium">Procedimento:</label>
@@ -172,7 +178,7 @@ export default function RegistrarVeiculo() {
                 required
                 value={procedimento}
                 onChange={(e) => setProcedimento(e.target.value)}
-                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione o procedimento</option>
                 {procedimentoOptions.map((opt) => (
@@ -182,7 +188,6 @@ export default function RegistrarVeiculo() {
                 ))}
               </select>
             </div>
-
             <div>
               <label className="block font-medium">Número / ano:</label>
               <input
@@ -195,6 +200,7 @@ export default function RegistrarVeiculo() {
               />
             </div>
           </div>
+          {/* Campo Tipo */}
           <div>
             <label className="block font-medium">Tipo:</label>
             <div className="flex flex-wrap text-center gap-4 bg-c_deep_gray_black p-2 rounded-md">
@@ -204,17 +210,11 @@ export default function RegistrarVeiculo() {
                   name="tipo"
                   value="carro"
                   checked={tipo === "carro"}
-                  onChange={() => setTipo("carro")}
-                  className="w-2.5 h-2.5 
-                  cursor-pointer
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                  "
+                  onChange={() => {
+                    setTipo("carro");
+                    setCustomTipo("");
+                  }}
+                  className="w-2.5 h-2.5 cursor-pointer appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
                 />{" "}
                 Carro
               </label>
@@ -224,17 +224,11 @@ export default function RegistrarVeiculo() {
                   name="tipo"
                   value="moto"
                   checked={tipo === "moto"}
-                  onChange={() => setTipo("moto")}
-                  className="w-2.5 h-2.5 
-                  cursor-pointer
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                 r"
+                  onChange={() => {
+                    setTipo("moto");
+                    setCustomTipo("");
+                  }}
+                  className="w-2.5 h-2.5 cursor-pointer appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
                 />{" "}
                 Moto
               </label>
@@ -244,17 +238,11 @@ export default function RegistrarVeiculo() {
                   name="tipo"
                   value="caminhonete"
                   checked={tipo === "caminhonete"}
-                  onChange={() => setTipo("caminhonete")}
-                  className="w-2.5 h-2.5 
-                  cursor-pointer
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                 r"
+                  onChange={() => {
+                    setTipo("caminhonete");
+                    setCustomTipo("");
+                  }}
+                  className="w-2.5 h-2.5 cursor-pointer appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
                 />{" "}
                 Caminhonete
               </label>
@@ -264,17 +252,11 @@ export default function RegistrarVeiculo() {
                   name="tipo"
                   value="caminhao"
                   checked={tipo === "caminhao"}
-                  onChange={() => setTipo("caminhao")}
-                  className="w-2.5 h-2.5 
-                  cursor-pointer
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                 r"
+                  onChange={() => {
+                    setTipo("caminhao");
+                    setCustomTipo("");
+                  }}
+                  className="w-2.5 h-2.5 cursor-pointer appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
                 />{" "}
                 Caminhão
               </label>
@@ -284,17 +266,11 @@ export default function RegistrarVeiculo() {
                   name="tipo"
                   value="trator"
                   checked={tipo === "trator"}
-                  onChange={() => setTipo("trator")}
-                  className="w-2.5 h-2.5 
-                  cursor-pointer
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                 r"
+                  onChange={() => {
+                    setTipo("trator");
+                    setCustomTipo("");
+                  }}
+                  className="w-2.5 h-2.5 cursor-pointer appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
                 />{" "}
                 Trator
               </label>
@@ -302,23 +278,27 @@ export default function RegistrarVeiculo() {
                 <input
                   type="radio"
                   name="tipo"
-                  value="outroautomotor"
-                  checked={tipo === "outroautomotor"}
-                  onChange={() => setTipo("outroautomotor")}
-                  className="w-2.5 h-2.5 
-                  cursor-pointer
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                 r"
+                  value="outrosautomotores"
+                  checked={tipo === "outrosautomotores"}
+                  onChange={() => setTipo("outrosautomotores")}
+                  className="w-2.5 h-2.5 cursor-pointer appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
                 />{" "}
                 Outro Veículo
               </label>
             </div>
+            {/* Campo extra para tipo customizado */}
+            {tipo === "outrosautomotores" && (
+              <div className="mt-2">
+                <label className="block font-medium">Especifique o tipo:</label>
+                <input
+                  type="text"
+                  value={customTipo}
+                  onChange={(e) => setCustomTipo(e.target.value.toLowerCase())}
+                  className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
+                  placeholder="Informe o tipo do veículo"
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex justify-between gap-4">
@@ -327,7 +307,7 @@ export default function RegistrarVeiculo() {
               <select
                 value={marca}
                 onChange={(e) => setMarca(e.target.value)}
-                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione a marca</option>
                 {marcasDisponiveis.map((m, idx) => (
@@ -343,7 +323,7 @@ export default function RegistrarVeiculo() {
               <select
                 value={modelo}
                 onChange={(e) => setModelo(e.target.value)}
-                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione o modelo</option>
                 {modelosDisponiveis.map((m, idx) => (
@@ -359,7 +339,7 @@ export default function RegistrarVeiculo() {
                 required
                 value={cor}
                 onChange={(e) => setCor(e.target.value)}
-                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione a cor</option>
                 {cores.map((c, idx) => (
@@ -378,7 +358,7 @@ export default function RegistrarVeiculo() {
                 type="text"
                 value={placa}
                 onChange={(e) => setPlaca(e.target.value.toUpperCase())}
-                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               />
             </div>
 
@@ -388,7 +368,7 @@ export default function RegistrarVeiculo() {
                 type="text"
                 value={chassi}
                 onChange={(e) => setChassi(e.target.value.toUpperCase())}
-                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               />
             </div>
             <div>
@@ -397,7 +377,7 @@ export default function RegistrarVeiculo() {
                 type="date"
                 value={dataField}
                 onChange={(e) => setDataField(e.target.value)}
-                className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               />
             </div>
           </div>
@@ -412,15 +392,7 @@ export default function RegistrarVeiculo() {
                   value="true"
                   checked={chaves === true}
                   onChange={() => setChaves(true)}
-                  className="w-2.5 h-2.5 
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                  cursor-pointer"
+                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                 />{" "}
                 Sim
               </label>
@@ -431,15 +403,7 @@ export default function RegistrarVeiculo() {
                   value="false"
                   checked={chaves === false}
                   onChange={() => setChaves(false)}
-                  className="w-2.5 h-2.5 
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                  cursor-pointer"
+                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                 />{" "}
                 Não
               </label>
@@ -458,15 +422,7 @@ export default function RegistrarVeiculo() {
                     value={opt}
                     checked={status === opt}
                     onChange={() => setStatus(opt)}
-                    className="w-2.5 h-2.5 
-                    appearance-none 
-                    border-2 
-                   border-gray-400 
-                    rounded-full 
-                   checked:bg-green-600
-                   checked:border-green-200
-                    transition-colors
-                    cursor-pointer"
+                    className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                   />{" "}
                   {opt}
                 </label>
@@ -486,15 +442,7 @@ export default function RegistrarVeiculo() {
                       value={opt}
                       checked={destino === opt}
                       onChange={() => setDestino(opt)}
-                      className="w-2.5 h-2.5 
-                    appearance-none 
-                    border-2 
-                   border-gray-400 
-                    rounded-full 
-                   checked:bg-green-600
-                   checked:border-green-200
-                    transition-colors
-                    cursor-pointer"
+                      className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                     />{" "}
                     {opt}
                   </label>

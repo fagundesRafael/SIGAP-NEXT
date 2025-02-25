@@ -1,4 +1,4 @@
-// app/carrosemotos/[id]/page.js
+// app/automotores/[id]/page.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -19,6 +19,9 @@ export default function VeiculoDetalhes() {
   const [procedimento, setProcedimento] = useState("");
   const [numero, setNumero] = useState("");
   const [tipo, setTipo] = useState("carro");
+  const [customTipo, setCustomTipo] = useState(""); // Estado para tipo customizado
+  const [quantidade, setQuantidade] = useState("");
+  const [unidMedida, setUnidMedida] = useState("unid");
   const [marca, setMarca] = useState("");
   const [modelo, setModelo] = useState("");
   const [placa, setPlaca] = useState("");
@@ -57,7 +60,7 @@ export default function VeiculoDetalhes() {
     "Outro",
   ];
 
-  // Configurações para selects de marca/modelo
+  // Busca as configurações do banco para preencher os selects de marca/modelo
   const [configs, setConfigs] = useState(null);
   useEffect(() => {
     async function fetchConfigs() {
@@ -80,7 +83,7 @@ export default function VeiculoDetalhes() {
     caminhonete: "caminhonetes",
     caminhao: "caminhoes",
     trator: "tratores",
-    outroautomotor: "outroautomotor",
+    outrosautomotores: "outrosautomotores",
   };
 
   const configKey = typeMapping[tipo];
@@ -95,16 +98,24 @@ export default function VeiculoDetalhes() {
       ? (configs[configKey] || []).find((item) => item.marca === marca)
           ?.modelos || []
       : [];
+
   // Buscar os dados do veículo pelo ID
   useEffect(() => {
     async function fetchVehicle() {
       try {
-        const res = await fetch(`/api/carrosemotos/${id}`);
+        const res = await fetch(`/api/automotores/${id}`);
         if (res.ok) {
           const data = await res.json();
           setProcedimento(data.procedimento || "");
           setNumero(data.numero || "");
-          setTipo(data.tipo || "carro");
+          // Usar customTipo para determinar se o tipo é customizado
+          if (data.customTipo) {
+            setTipo("outrosautomotores");
+            setCustomTipo(data.customTipo);
+          } else {
+            setTipo(data.tipo || "carro");
+            setCustomTipo(""); // Garante que customTipo seja vazio se não for customizado
+          }
           setMarca(data.marca || "");
           setModelo(data.modelo || "");
           setPlaca(data.placa || "");
@@ -132,13 +143,11 @@ export default function VeiculoDetalhes() {
     if (id) fetchVehicle();
   }, [id]);
 
-  // Função para mostrar notificação (mantida para outras ações, se necessário)
   const showAlert = (message) => {
     setNotificationMessage(message);
     setShowNotification(true);
   };
 
-  // Função para fechar notificação
   const closeNotification = () => {
     setShowNotification(false);
     setNotificationMessage("");
@@ -148,15 +157,21 @@ export default function VeiculoDetalhes() {
     e.preventDefault();
     setErrorMsg("");
 
-    // Monta o payload de atualização; updatedBy recebe o nome do usuário logado
+    // Definindo valores fixos para quantidade e unidade de medida
+    setQuantidade("01");
+    setUnidMedida("unid");
+
     const payload = {
       procedimento,
       numero,
+      quantidade,
+      unidMedida,
       marca,
       modelo,
       placa,
       chassi,
-      tipo,
+      tipo: tipo === "outrosautomotores" ? "outrosautomotores" : tipo, // Envia o tipo correto
+      customTipo: tipo === "outrosautomotores" ? customTipo : "", // Envia customTipo se for o caso
       cor,
       chaves,
       status,
@@ -164,16 +179,10 @@ export default function VeiculoDetalhes() {
       obs,
       data: dataField || new Date(),
       imagem,
+      destino: status === "apreendido" ? destino : "outros",
     };
-
-    if (status === "apreendido") {
-      payload.destino = destino;
-    } else {
-      payload.destino = "outros";
-    }
-
     try {
-      const res = await fetch(`/api/carrosemotos/${id}`, {
+      const res = await fetch(`/api/automotores/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -181,7 +190,7 @@ export default function VeiculoDetalhes() {
       if (res.ok) {
         showAlert("Veículo atualizado com sucesso!");
         setTimeout(() => {
-          router.push("/carrosemotos");
+          router.push("/automotores");
         }, 2000);
       } else {
         const data = await res.json();
@@ -193,21 +202,17 @@ export default function VeiculoDetalhes() {
     }
   }
 
-  // Abre o modal de confirmação ao clicar em "Excluir Veículo"
   async function handleDelete() {
     setShowDeleteModal(true);
   }
 
-  // Executa a exclusão somente se o usuário confirmar no modal
   async function handleConfirmDelete() {
     try {
-      const res = await fetch(`/api/carrosemotos/${id}`, {
+      const res = await fetch(`/api/automotores/${id}`, {
         method: "DELETE",
       });
-
       if (res.ok) {
-        // Redireciona imediatamente após a exclusão confirmada
-        router.push("/carrosemotos");
+        router.push("/automotores");
       } else {
         const data = await res.json();
         setErrorMsg(data.error || "Erro ao excluir veículo");
@@ -216,7 +221,7 @@ export default function VeiculoDetalhes() {
       console.error("Erro ao excluir veículo:", error);
       setErrorMsg("Erro ao excluir veículo");
     } finally {
-      setShowDeleteModal(false); // Fecha o modal, independentemente do resultado
+      setShowDeleteModal(false);
     }
   }
 
@@ -236,7 +241,6 @@ export default function VeiculoDetalhes() {
       >
         {/* Coluna Esquerda com os campos do formulário */}
         <div className="flex flex-col gap-4 w-[45%]">
-          {/* Procedimento como SELECT */}
           <div className="flex gap-4">
             <div>
               <label className="block font-medium">Procedimento:</label>
@@ -269,23 +273,18 @@ export default function VeiculoDetalhes() {
 
           <div>
             <label className="block font-medium">Tipo:</label>
-            <div className="flex flex-wrap text-center gap-4 bg-c_deep_gray_black p-2 rounded-sm ">
+            <div className="flex flex-wrap text-center gap-4 bg-c_deep_gray_black p-2 rounded-sm">
               <label className="cursor-pointer">
                 <input
                   type="radio"
                   name="tipo"
                   value="carro"
                   checked={tipo === "carro"}
-                  onChange={() => setTipo("carro")}
-                  className="w-2.5 h-2.5 
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                  "
+                  onChange={() => {
+                    setTipo("carro");
+                    setCustomTipo("");
+                  }}
+                  className="w-2.5 h-2.5 cursor-pointer appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
                 />{" "}
                 Carro
               </label>
@@ -295,16 +294,11 @@ export default function VeiculoDetalhes() {
                   name="tipo"
                   value="moto"
                   checked={tipo === "moto"}
-                  onChange={() => setTipo("moto")}
-                  className="w-2.5 h-2.5 
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                  "
+                  onChange={() => {
+                    setTipo("moto");
+                    setCustomTipo("");
+                  }}
+                  className="w-2.5 h-2.5 cursor-pointer appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
                 />{" "}
                 Moto
               </label>
@@ -314,16 +308,11 @@ export default function VeiculoDetalhes() {
                   name="tipo"
                   value="caminhonete"
                   checked={tipo === "caminhonete"}
-                  onChange={() => setTipo("caminhonete")}
-                  className="w-2.5 h-2.5 
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                  "
+                  onChange={() => {
+                    setTipo("caminhonete");
+                    setCustomTipo("");
+                  }}
+                  className="w-2.5 h-2.5 cursor-pointer appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
                 />{" "}
                 Caminhonete
               </label>
@@ -333,16 +322,11 @@ export default function VeiculoDetalhes() {
                   name="tipo"
                   value="caminhao"
                   checked={tipo === "caminhao"}
-                  onChange={() => setTipo("caminhao")}
-                  className="w-2.5 h-2.5 
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                  "
+                  onChange={() => {
+                    setTipo("caminhao");
+                    setCustomTipo("");
+                  }}
+                  className="w-2.5 h-2.5 cursor-pointer appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
                 />{" "}
                 Caminhão
               </label>
@@ -352,16 +336,11 @@ export default function VeiculoDetalhes() {
                   name="tipo"
                   value="trator"
                   checked={tipo === "trator"}
-                  onChange={() => setTipo("trator")}
-                  className="w-2.5 h-2.5 
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                  "
+                  onChange={() => {
+                    setTipo("trator");
+                    setCustomTipo("");
+                  }}
+                  className="w-2.5 h-2.5 cursor-pointer appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
                 />{" "}
                 Trator
               </label>
@@ -369,22 +348,26 @@ export default function VeiculoDetalhes() {
                 <input
                   type="radio"
                   name="tipo"
-                  value="outroautomotor"
-                  checked={tipo === "outroautomotor"}
-                  onChange={() => setTipo("outroautomotor")}
-                  className="w-2.5 h-2.5 
-                  appearance-none 
-                  border-2 
-                  border-gray-400 
-                  rounded-full 
-                  checked:bg-green-600
-                  checked:border-green-200
-                  transition-colors
-                  "
+                  value="outrosautomotores"
+                  checked={tipo === "outrosautomotores"}
+                  onChange={() => setTipo("outrosautomotores")}
+                  className="w-2.5 h-2.5 cursor-pointer appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
                 />{" "}
                 Outro Veículo
               </label>
             </div>
+            {tipo === "outrosautomotores" && (
+              <div className="mt-2">
+                <label className="block font-medium">Especifique o tipo:</label>
+                <input
+                  type="text"
+                  value={customTipo}
+                  onChange={(e) => setCustomTipo(e.target.value.toLowerCase())}
+                  className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
+                  placeholder="Informe o tipo do veículo"
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex justify-between gap-4">
@@ -403,6 +386,7 @@ export default function VeiculoDetalhes() {
                 ))}
               </select>
             </div>
+
             <div>
               <label className="block font-medium">Modelo:</label>
               <select
@@ -476,7 +460,7 @@ export default function VeiculoDetalhes() {
                   value="true"
                   checked={chaves === true}
                   onChange={() => setChaves(true)}
-                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer "
+                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                 />{" "}
                 Sim
               </label>
@@ -487,7 +471,7 @@ export default function VeiculoDetalhes() {
                   value="false"
                   checked={chaves === false}
                   onChange={() => setChaves(false)}
-                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer "
+                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                 />{" "}
                 Não
               </label>
@@ -506,7 +490,7 @@ export default function VeiculoDetalhes() {
                     value={opt}
                     checked={status === opt}
                     onChange={() => setStatus(opt)}
-                    className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer "
+                    className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                   />{" "}
                   {opt}
                 </label>
@@ -526,7 +510,7 @@ export default function VeiculoDetalhes() {
                       value={opt}
                       checked={destino === opt}
                       onChange={() => setDestino(opt)}
-                      className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer "
+                      className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                     />{" "}
                     {opt}
                   </label>
@@ -539,7 +523,7 @@ export default function VeiculoDetalhes() {
             <label className="block font-medium">Observações:</label>
             <textarea
               maxLength={380}
-              rows={12}
+              rows={10}
               value={obs}
               onChange={(e) => setObs(e.target.value)}
               className="bg-c_deep_gray_black p-2 rounded w-full"
@@ -547,10 +531,12 @@ export default function VeiculoDetalhes() {
           </div>
         </div>
 
-        {/* Coluna Direita com imagem e botões */}
+        {/* Coluna Direita */}
         <div className="flex flex-col gap-4 w-[45%]">
           <div>
-            <label className="block font-medium">Imagem:</label>
+            <label className="block mb-1 text-slate-200 font-medium">
+              Imagem (.png, .jpg, e .tiff):
+            </label>
             <ImageUpload
               onUpload={(url) => setImagem(url)}
               setLoading={setLoadingImage}
@@ -567,7 +553,7 @@ export default function VeiculoDetalhes() {
               <img
                 src="/no-image.jpg"
                 alt="Sem imagem"
-                className="w-96 h-96 mt-3 opacity-10 object-cover"
+                className="w-96 h-96 mt-3 object-cover opacity-10"
               />
             )}
           </div>

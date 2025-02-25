@@ -87,6 +87,16 @@ const ConfigSchema = new mongoose.Schema({
     ],
     default: [],
   },
+  outrosbelicos: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+        calibres: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
   entorpecentes: {
     type: [String],
     default: [],

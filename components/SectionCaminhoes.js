@@ -138,13 +138,13 @@ export default function SectionCaminhoes({ caminhoes, setCaminhoes }) {
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-4">
-        <h3 className="font-bold">Marcas e Modelos Registrados:</h3>
+        <h3 className="font-bold">Marcas e modelos registrados:</h3>
         {caminhoes.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (
           <ul>
             {caminhoes.map((caminhao, idx) => (
-              <li key={idx} className="flex flex-wrap items-center gap-2">
+              <li key={idx} className="flex flex-wrap items-center gap-2 border-b-[1px]">
                 <strong>{caminhao.marca}</strong>
                 <button
                   onClick={() => requestDeleteBrand(caminhao.marca)}

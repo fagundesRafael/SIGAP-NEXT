@@ -35,7 +35,7 @@ export default function ImageUpload({ onUpload, setLoading }) {
       body: JSON.stringify({
         file: base64String,
         fileName: file.name,
-        folder: "veiculos",
+        folder: "sigap",
       }),
     });
     // Encerra o loading
@@ -58,7 +58,7 @@ export default function ImageUpload({ onUpload, setLoading }) {
     onChange={handleFileChange}
     className="hidden"
   />
-  Escolher arquivo
+  Escolher imagem
 </label>
       {preview && (
         <img

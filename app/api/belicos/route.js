@@ -1,6 +1,6 @@
-// app/api/armasemunicoes/route.js
+// app/api/belicos/route.js
 import { dbConnect } from "@/lib/dbConnect";
-import ArmaMunicao from "@/models/ArmaMunicao";
+import Belico from "@/models/Belico";
 
 // GET: Lista os registros com paginação e filtros (procedimento, número, tipo, marca, modelo, calibre)
 export async function GET(request) {
@@ -12,7 +12,15 @@ export async function GET(request) {
     const skip = (page - 1) * limit;
 
     const query = {};
-    const fields = ["procedimento", "numero", "tipo", "marca", "modelo", "calibre"];
+    const fields = [
+      "procedimento",
+      "numero",
+      "marca",
+      "modelo",
+      "calibre",
+    ];
+    
+    // Adiciona filtros para campos básicos
     fields.forEach((field) => {
       const value = searchParams.get(field);
       if (value) {
@@ -20,21 +28,30 @@ export async function GET(request) {
       }
     });
 
-    const records = await ArmaMunicao.find(query)
+    // Busca especial para tipo (incluindo customTipo)
+    const tipo = searchParams.get("tipo");
+    if (tipo) {
+      query.$or = [
+        { tipo: { $regex: tipo, $options: "i" } },
+        { customTipo: { $regex: tipo, $options: "i" } }, // Removidas condições extras
+      ];
+    }
+
+    const records = await Belico.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
-    const total = await ArmaMunicao.countDocuments(query);
+    const total = await Belico.countDocuments(query);
 
-    return new Response(
-      JSON.stringify({ records, total, page }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ records, total, page }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("Erro ao buscar registros:", error);
     return new Response(
-      JSON.stringify({ error: "Erro ao buscar registros de Armas e Munições" }),
+      JSON.stringify({ error: "Erro ao buscar registros de Material Bélico" }),
       { status: 500 }
     );
   }
@@ -73,20 +90,24 @@ export async function POST(request) {
     if (body.status === "apreendido") {
       if (!body.destino) {
         return new Response(
-          JSON.stringify({ error: "Campo destino é obrigatório para status 'apreendido'" }),
+          JSON.stringify({
+            error: "Campo destino é obrigatório para status 'apreendido'",
+          }),
           { status: 400 }
         );
       }
       if (body.destino === "depósito" && (!body.secao || !body.prateleira)) {
         return new Response(
-          JSON.stringify({ error: "Campos seção e prateleira são obrigatórios para destino 'depósito'" }),
+          JSON.stringify({
+            error:
+              "Campos seção e prateleira são obrigatórios para destino 'depósito'",
+          }),
           { status: 400 }
         );
       }
     }
 
-
-    const record = new ArmaMunicao(body);
+    const record = new Belico(body);
     await record.save();
     return new Response(
       JSON.stringify({ message: "Registro criado com sucesso" }),

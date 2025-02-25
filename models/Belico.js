@@ -1,15 +1,22 @@
-// models/ArmaMunicao.js
+// models/Belico.js
 import mongoose from "mongoose";
 
-const ArmaMunicaoSchema = new mongoose.Schema(
+const BelicoSchema = new mongoose.Schema(
   {
+    classe: { type: String },
     procedimento: { type: String, required: true },
     numero: { type: String, required: true },
-    tipo: { type: String, enum: ["Arma", "Munição"], required: true },
     quantidade: { type: Number, required: true},
     unidMedida: { type: String, required: true},
     marca: { type: String, required: true },
     modelo: { type: String, required: true },
+    tipo: { 
+      type: String, 
+      enum: ["Arma", "Munição", "Outro"], 
+      required: true 
+    },
+    // Novo campo para armazenar o valor customizado caso "outros" seja selecionado
+    customTipo: { type: String },
     calibre: { type: String, required: true },
     cor: { type: String },
     aspecto: {
@@ -37,9 +44,9 @@ const ArmaMunicaoSchema = new mongoose.Schema(
     data: { type: Date, default: Date.now },
     imagem: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true, collection: "belicos" }
 );
 
 // Evita redefinição do model durante hot-reload
-export default mongoose.models.ArmaMunicao ||
-  mongoose.model("ArmaMunicao", ArmaMunicaoSchema);
+export default mongoose.models.Belico ||
+  mongoose.model("Belico", BelicoSchema);
