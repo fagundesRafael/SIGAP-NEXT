@@ -9,9 +9,20 @@ module.exports = {
   theme: {
     extend: {
       keyframes: {
-        padlockBounce: {
-          '0%, 100%': { marginBottom: '-65px' },
-          '50%': { marginBottom: '-60px' },
+        lineEffect: {
+          '0%': { 
+            width: '0%',
+            right: '0' 
+          },
+          '50%': { 
+            width: '100%',
+            right: '0' 
+          },
+          '100%': { 
+            width: '0%',
+            right: 'auto',
+            left: '0' 
+          }
         },
         typing: {
           from: { width: "0%" },
@@ -21,20 +32,25 @@ module.exports = {
           "0%, 100%": { filter: "brightness(1)" },
           "50%": { filter: "brightness(3)" },
         },
+        softglow: {
+          "0%, 100%": { filter: "brightness(1)" },
+          "50%": { filter: "brightness(1.5)" },
+        },
       },
       animation: {
-        padlockBounce: 'padlockBounce 3s ease-in-out infinite',
-        typing: "typing 0.8s steps(22, end) forwards",
+        lineEffect: 'lineEffect 2s ease-in-out 1s infinite',
+        typing: "typing 0.8s steps(10, end) forwards",
         glow: "glow 1s ease-in-out infinite",
+        softglow: "softglow 1s ease-in-out infinite",
       },
       colors: {
-        c01_heavy_blue: "#2e3c4c",
-        c02_heavy_blue: "#35495e",
-        c03_blue: "#5fafe2",
-        c04_blue: "#75b8e6",
-        c05_blue: "#96c0ea",
-        c06_gray: "#ebebeb",
-        c07_orange: "#e94833",
+        // c01_heavy_blue: "#2e3c4c",
+        // c02_heavy_blue: "#35495e",
+        // c03_blue: "#5fafe2",
+        // c04_blue: "#75b8e6",
+        // c05_blue: "#96c0ea",
+        // c06_gray: "#ebebeb",
+        // c07_orange: "#e94833",
         c_deep_black: "#1d1d1b",
         c_deep_middle_black: "#1a1b1f",
         c_deep_gray_black: "#2b2e33",

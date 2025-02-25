@@ -23,8 +23,8 @@ export default function Sidebar() {
   return (
     <aside className="relative left-0 top-0 h-screen bg-c_deep_black p-4 rounded-md mx-1  border border-gray-500 shadow">
       {session && (
-        <div className="mb-4">
-          <p className="text-cyan-50 text-bold text-sm">
+        <div className="mb-2">
+          <p className="text-cyan-50 text-bold text-xs">
             Bem vindo(a){" "}
             {session?.user?.nome.split(" ")[0] &&
               capitalizeFirstLetter(session.user.nome.split(" ")[0])}
@@ -33,7 +33,7 @@ export default function Sidebar() {
         </div>
       )}
 
-      <div className="flex flex-col mb-4 text-sm font-mono gap-4 text-gray-200 ">
+      <div className="flex flex-col mb-4 text-xs font-mono gap-4 text-gray-200 ">
         <ul className="space-y-2">
           <span className="text-c_text_blue font-black">sessões:</span>
           <li className="flex ml-2 items-center">
@@ -70,7 +70,7 @@ export default function Sidebar() {
     after:h-px after:bg-current after:w-0 after:transition-all 
     after:duration-300 after:ease-in-out hover:after:w-full"
               >
-                Bélicos
+                Materiais bélicos
               </span>
             </Link>
           </li>
@@ -89,16 +89,16 @@ export default function Sidebar() {
     after:h-px after:bg-current after:w-0 after:transition-all 
     after:duration-300 after:ease-in-out hover:after:w-full"
               >
-                Eletro-Eletrônicos
+                Eletro-eletrônicos
               </span>
             </Link>
           </li>
           <li className="flex ml-2 items-center">
             <FaBicycle />
             <Link
-              href="/bicicletas"
+              href="/naomotorizados"
               className={`block p-1 rounded  ml-1 ${
-                isActive("/bicicletas")
+                isActive("/naomotorizados")
                   ? "bg-c_deep_gray_black py-1 text-white w-full"
                   : ""
               }`}
@@ -108,7 +108,7 @@ export default function Sidebar() {
     after:h-px after:bg-current after:w-0 after:transition-all 
     after:duration-300 after:ease-in-out hover:after:w-full"
               >
-                Bicicletas
+                Veículos sem motor
               </span>
             </Link>
           </li>
@@ -172,7 +172,7 @@ export default function Sidebar() {
         </ul>
       </div>
 
-      <div className="flex flex-col mb-4 text-sm font-mono gap-4 text-gray-200 ">
+      <div className="flex flex-col mb-4 text-xs font-mono gap-4 text-gray-200 ">
         <ul className="space-y-2">
           <span className="text-c_text_blue font-black">sistema:</span>
           <li className="flex ml-2 items-center">

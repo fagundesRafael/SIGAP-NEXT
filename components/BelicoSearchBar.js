@@ -6,7 +6,14 @@ import { FaSearch } from "react-icons/fa";
 
 export default function BelicoSearchBar({ searchParams, setSearchParams }) {
   const [showSearch, setShowSearch] = useState(false);
-  const fields = ["procedimento", "numero", "tipo", "marca", "modelo", "calibre"];
+  const fields = [
+    "procedimento",
+    "numero",
+    "tipo",
+    "marca",
+    "modelo",
+    "calibre",
+  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,30 +28,36 @@ export default function BelicoSearchBar({ searchParams, setSearchParams }) {
       >
         {showSearch ? "Fechar" : "Buscar"} <FaSearch />
       </button>
-      {showSearch && (
-        <form onSubmit={handleSubmit} className="mb-3 rounded-xl">
-          <div className="flex justify-between mt-2">
-            {fields.map((field) => (
-              <div key={field}>
-                <label className="block font-medium text-xs">
-                  {field.charAt(0).toUpperCase() + field.slice(1)}:
-                </label>
-                <input
-                  type="text"
-                  value={searchParams[field] || ""}
-                  onChange={(e) =>
-                    setSearchParams((prev) => ({
-                      ...prev,
-                      [field]: e.target.value,
-                    }))
-                  }
-                  className="text-slate-200 p-1 rounded max-w-[140px] min-w-[100px] h-[28px] bg-c_deep_gray_black border border-gray-500 shadow"
-                />
-              </div>
-            ))}
-          </div>
-        </form>
-      )}
+      <div
+        className={`transition-opacity duration-1000 ease-in-out transform ${
+          showSearch ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+        }`}
+      >
+        {showSearch && (
+          <form onSubmit={handleSubmit} className="mb-1 rounded-xl">
+            <div className="flex gap-10 mt-2">
+              {fields.map((field) => (
+                <div key={field}>
+                  <label className="flex font-medium text-xs">
+                    {field.charAt(0).toUpperCase() + field.slice(1)}:
+                  </label>
+                  <input
+                    type="text"
+                    value={searchParams[field] || ""}
+                    onChange={(e) =>
+                      setSearchParams((prev) => ({
+                        ...prev,
+                        [field]: e.target.value,
+                      }))
+                    }
+                    className="text-slate-200 p-1 rounded max-w-[120px] min-w-[60px] h-[28px] bg-c_deep_gray_black border border-gray-500 shadow"
+                  />
+                </div>
+              ))}
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 }

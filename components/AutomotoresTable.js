@@ -8,8 +8,7 @@ export default function AutomotoresTable({ veiculos }) {
     <table className="w-full">
       <thead className="bg-blue-900 text-white text-[10px]">
         <tr>
-          <th className="p-1">Proced.</th>
-          <th className="p-1">Número</th>
+          <th className="p-1">Proced./Num.</th>
           <th className="p-1">Tipo</th>
           <th className="p-1">Marca</th>
           <th className="p-1">Modelo</th>
@@ -27,49 +26,99 @@ export default function AutomotoresTable({ veiculos }) {
         </tr>
       </thead>
       <tbody>
-        {veiculos.map(v => (
+        {veiculos.map((v) => (
           <tr key={v._id} className="text-[10px]">
-            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.procedimento}</td>
-            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1" title={v.numero}>
-              {v.numero?.length > 9 ? `${v.numero.substring(0,9)}...` : v.numero}
+            <td
+              className="border border-c_deep_black bg-c_deep_gray_black text-center p-1"
+              title={`${v.procedimento} ${v.numero}`}
+            >
+              {v.procedimento}{" "}
+              {v.numero?.length > 8
+                ? `${v.numero.substring(0, 8)}...`
+                : v.numero}
             </td>
             {v.customTipo ? (
-              <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.customTipo}</td>
+              <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
+                {v.customTipo}
+              </td>
             ) : (
-              <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.tipo}</td>
+              <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
+                {v.tipo}
+              </td>
             )}
-            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.marca}</td>
-            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.modelo}</td>
-            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.placa}</td>
-            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1" title={v.chassi}>
-              {v.chassi?.length > 6 ? `${v.chassi.substring(0,6)}...` : v.chassi}
+            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
+              {v.marca}
             </td>
-            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.cor}</td>
-            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.chaves ? "Sim" : "Não"}</td>
+            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
+              {v.modelo}
+            </td>
+            <td
+              className="border border-c_deep_black bg-c_deep_gray_black text-center p-1"
+              title={v.placa}
+            >
+              {v.placa?.length > 6 ? `${v.placa.substring(0, 6)}...` : v.placa}
+            </td>
+            <td
+              className="border border-c_deep_black bg-c_deep_gray_black text-center p-1"
+              title={v.chassi}
+            >
+              {v.chassi?.length > 6
+                ? `${v.chassi.substring(0, 6)}...`
+                : v.chassi}
+            </td>
+            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
+              {v.cor}
+            </td>
+            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
+              {v.chaves ? "Sim" : "Não"}
+            </td>
             {v.status === "restituído" ? (
-              <td className="border border-c_deep_black bg-green-500 text-center text-slate-100 p-1">{v.status}</td>
+              <td className="border border-c_deep_black bg-green-500 text-center text-slate-100 p-1">
+                {v.status}
+              </td>
             ) : v.status === "apreendido" ? (
-              <td className="border border-c_deep_black bg-red-500 text-center text-slate-100 p-1">{v.status}</td>
+              <td className="border border-c_deep_black bg-red-500 text-center text-slate-100 p-1">
+                {v.status}
+              </td>
             ) : (
-              <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">{v.status}</td>
+              <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
+                {v.status}
+              </td>
             )}
-            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1" title={v.createdBy}>
+            <td
+              className="border border-c_deep_black bg-c_deep_gray_black text-center p-1"
+              title={v.createdBy}
+            >
               {v.createdBy.split(" ")[0]}
             </td>
-            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1" title={v.updatedBy}>
+            <td
+              className="border border-c_deep_black bg-c_deep_gray_black text-center p-1"
+              title={v.updatedBy}
+            >
               {v.updatedBy?.split(" ")[0] || ""}
             </td>
-            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1" title={v.obs}>
-              {v.obs?.length > 6 ? `${v.obs.substring(0,6)}...` : v.obs}
+            <td
+              className="border border-c_deep_black bg-c_deep_gray_black text-center p-1"
+              title={v.obs}
+            >
+              {v.obs?.length > 6 ? `${v.obs.substring(0, 6)}...` : v.obs}
             </td>
             <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
               {new Date(v.data).toLocaleDateString()}
             </td>
             <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
               {v.imagem ? (
-                <img src={v.imagem} alt="Imagem do veículo" className="w-10 h-10 object-cover" />
+                <img
+                  src={v.imagem}
+                  alt="Imagem do veículo"
+                  className="w-10 h-10 object-cover"
+                />
               ) : (
-                <img src="/no-image.jpg" alt="Sem imagem" className="w-10 h-10 object-cover" />
+                <img
+                  src="/no-image.jpg"
+                  alt="Sem imagem"
+                  className="w-10 h-10 object-cover"
+                />
               )}
             </td>
             <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">

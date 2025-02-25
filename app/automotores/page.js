@@ -46,20 +46,16 @@ export default function AutomotoresPage() {
 
   const totalPages = Math.ceil(total / limit);
 
-  function handleSearchSubmit(e) {
-    e.preventDefault();
-    setPage(1);
-  }
-
   return (
     <div className="min-h-screen p-2 rounded-md bg-c_deep_black text-white border border-gray-500 shadow">
-      <div className="flex justify-between items-center mb-2">
+      <div className="flex justify-between items-start mb-2">
         <AutomotoresSearchBar searchParams={searchParams} setSearchParams={setSearchParams} />
         <Link
           href="/automotores/registrar"
-          className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition duration-600"
+          className="bg-green-500 text-white py-1 px-10 rounded hover:bg-green-600 transition duration-600"
+          title="Registrar novo veículo automotor"
         >
-          Registrar Novo Automotor
+          +
         </Link>
       </div>
       <AutomotoresTable veiculos={veiculos} />

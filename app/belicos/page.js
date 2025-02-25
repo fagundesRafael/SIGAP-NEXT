@@ -47,13 +47,14 @@ export default function BelicosPage() {
 
   return (
     <div className="min-h-screen p-2 rounded-md bg-c_deep_black text-white border border-gray-500 shadow">
-      <div className="flex justify-between items-center mb-2">
+      <div className="flex justify-between items-start mb-2">
         <BelicoSearchBar searchParams={searchParams} setSearchParams={setSearchParams} />
         <Link
           href="/belicos/registrar"
-          className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition duration-600"
+          className="bg-green-500 text-white py-1 px-10 rounded hover:bg-green-600 transition duration-600"
+          title="Registrar novo material bélico"
         >
-          Registrar novo material bélico
+          +
         </Link>
       </div>
       <BelicoTable records={records} />

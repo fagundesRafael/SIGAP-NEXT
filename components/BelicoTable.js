@@ -9,8 +9,8 @@ export default function BelicoTable({ records }) {
       <thead className="bg-blue-900 text-white text-[10px]">
         <tr>
           {[
-            "Proced.",
-            "Número",
+            "Proced./Num.",
+            // "Número",
             "Quantid.",
             "Tipo",
             "Marca",
@@ -36,20 +36,20 @@ export default function BelicoTable({ records }) {
       <tbody>
         {records.map((r) => (
           <tr key={r._id} className="text-[10px]">
-            <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
+            {/* <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
               {r.procedimento}
-            </td>
+            </td> */}
             <td
               className="border border-c_deep_black bg-c_deep_gray_black text-center p-1"
-              title={r.numero}
+              title={`${r.procedimento} ${r.numero}`}
             >
-              {r.numero && r.numero.length > 9 ? `${r.numero.substring(0, 9)}...` : r.numero}
+              {r.procedimento} {r.numero && r.numero.length > 8 ? `${r.numero.substring(0, 8)}...` : r.numero}
             </td>
             <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
               {`${r.quantidade} ${r.unidMedida}`}
             </td>
             {r.customTipo ? (
-              <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
+              <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1" title={r.tipo !== "Outro" ? `${r.tipo}` : `${r.customTipo}`} >
                 {r.customTipo && r.customTipo.length > 9 ? `${r.customTipo.substring(0, 9)}...` : r.customTipo}
               </td>
             ) : (
