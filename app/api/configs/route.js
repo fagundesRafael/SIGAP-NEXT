@@ -58,6 +58,7 @@ export async function POST(request) {
         municoes: body.municoes ? processarItens(body.municoes) : [],
         outrosbelicos: body.outrosbelicos ? processarItens(body.outrosbelicos) : [],
         bicicletas: body.bicicletas || [],
+        outronaomotorizado: body.outronaomotorizado || [],
         entorpecentes: body.entorpecentes || [],
         eletro: body.eletro || [],
         outros: body.outros || [],
@@ -82,6 +83,7 @@ export async function POST(request) {
       if (body.tratores) config.tratores = body.tratores;
       if (body.outrosautomotores) config.outrosautomotores = body.outrosautomotores;
       if (body.bicicletas) config.bicicletas = body.bicicletas;
+      if (body.outronaomotorizado) config.outronaomotorizado = body.outronaomotorizado;
       if (body.entorpecentes) config.entorpecentes = body.entorpecentes;
       if (body.eletro) config.eletro = body.eletro;
       if (body.outros) config.outros = body.outros;

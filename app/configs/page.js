@@ -9,6 +9,7 @@ import SectionCaminhoes from "@/components/SectionCaminhoes";
 import SectionTratores from "@/components/SectionTratores";
 import SectionOutrosAutomotores from "@/components/SectionOutrosAutomotores";
 import SectionBicicletas from "@/components/SectionBicicletas";
+import SectionOutroNaoMotorizado from "@/components/SectionOutroNaoMotorizado";
 import SectionArmas from "@/components/SectionArmas";
 import SectionMunicao from "@/components/SectionMunicao";
 import SectionEntorpecentes from "@/components/SectionEntorpecentes";
@@ -27,6 +28,7 @@ export default function ConfigsPage() {
   const [tratores, SetTratores] = useState([]);
   const [outrosautomotores, SetOutrosAutomotores] = useState([]);
   const [bicicletas, setBicicletas] = useState([]);
+  const [outronaomotorizado, setOutronaomotorizado] = useState([]);
   const [armas, setArmas] = useState([]);
   const [municoes, setMunicoes] = useState([]);
   const [outrosbelicos, setOutrosBelicos] = useState([]);
@@ -49,6 +51,7 @@ export default function ConfigsPage() {
             SetTratores(config.tratores || []);
             SetOutrosAutomotores(config.outrosautomotores || []);
             setBicicletas(config.bicicletas || []);
+            setOutronaomotorizado(config.outronaomotorizado || []);
             setArmas(config.armas || []);
             setMunicoes(config.municoes || []);
             setOutrosBelicos(config.outrosbelicos || []);
@@ -84,6 +87,7 @@ export default function ConfigsPage() {
       tratores,
       outrosautomotores,
       bicicletas,
+      outronaomotorizado,
       armas,
       municoes,
       outrosbelicos,
@@ -139,10 +143,17 @@ export default function ConfigsPage() {
             <SectionMunicao municoes={municoes} setMunicoes={setMunicoes} />
             <SectionOutrosBelicos outrosbelicos={outrosbelicos} setOutrosBelicos={setOutrosBelicos} />
           </div>
+          <div className="mb-2 border border-slate-700 rounded p-2">
+            <label>Veículos não motorizados:</label>
           <SectionBicicletas
             bicicletas={bicicletas}
             setBicicletas={setBicicletas}
           />
+          <SectionOutroNaoMotorizado
+            outronaomotorizado={outronaomotorizado}
+            setOutronaomotorizado={setOutronaomotorizado}
+          />
+          </div>
 
           <SectionEntorpecentes
             entorpecentes={entorpecentes}

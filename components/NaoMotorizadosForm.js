@@ -1,4 +1,4 @@
-// components/AutomotoresForm.js
+// components/NaoMotorizadosForm.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -25,28 +25,22 @@ const CORES = [
   "Outro",
 ];
 
-// Mapeamento para acessar as configurações – conforme o tipo de veículo
+// Mapeamento para acessar as configurações de veículos não motorizados.
+// Suponha dois tipos: "bicicleta" e "outronaomotorizado".
 const TYPE_MAPPING = {
-  carro: "carros",
-  moto: "motos",
-  caminhonete: "caminhonetes",
-  caminhao: "caminhoes",
-  trator: "tratores",
-  outrosautomotores: "outrosautomotores",
+  bicicleta: "bicicletas",
+  outronaomotorizado: "outronaomotorizado",
 };
 
-export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating = false, title }) {
+export default function NaoMotorizadosForm({ initialData = {}, onSubmit, isUpdating = false, title }) {
   const [formData, setFormData] = useState({
     procedimento: "",
     numero: "",
-    tipo: "carro",
+    tipo: "bicicleta", // tipo padrão
     customTipo: "",
     marca: "",
     modelo: "",
     cor: "",
-    placa: "",
-    chassi: "",
-    chaves: false,
     status: "",
     destino: "",
     obs: "",
@@ -76,15 +70,14 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
     fetchConfigs();
   }, []);
 
-  // Se houver dados iniciais (para edição), atualiza o estado do formulário
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
-      setFormData(prev => ({ ...prev, ...initialData }));
+      setFormData((prev) => ({ ...prev, ...initialData }));
     }
   }, [initialData]);
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleInputChange = (e) => {
@@ -98,23 +91,22 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
     onSubmit(formData);
   };
 
-  // Obtém as opções dinâmicas de marca e modelo a partir do config
+  // Obter opções dinâmicas de marca/modelo com base no tipo selecionado
   const configKey = TYPE_MAPPING[formData.tipo];
-  const availableMarcas = configs && configKey
-    ? (configs[configKey] || []).map(item => item.marca) || []
-    : [];
-  const availableModelos = configs && formData.marca && configKey
-    ? (configs[configKey] || []).find(item => item.marca === formData.marca)?.modelos || []
-    : [];
+  const availableMarcas =
+    configs && configKey ? (configs[configKey] || []).map((item) => item.marca) || [] : [];
+  const availableModelos =
+    configs && formData.marca && configKey
+      ? (configs[configKey] || []).find((item) => item.marca === formData.marca)?.modelos || []
+      : [];
 
   return (
-    <div className="font-mono min-h-screen text-white bg-c_deep_black p-1 rounded-md border border-gray-500 shadow">
+    <div className="min-h-screen text-white bg-c_deep_black p-1 rounded-md border border-gray-500 shadow">
       <h1 className="font-bold mt-2 mx-4">{title}</h1>
       {errorMsg && <p className="text-red-500 ml-4 mb-4">{errorMsg}</p>}
       <form onSubmit={handleSubmit} className="flex justify-between p-4 text-xs">
-        {/* Coluna Esquerda: campos de texto e seleção */}
+        {/* Coluna Esquerda – Campos principais */}
         <div className="flex flex-col gap-4 w-[45%]">
-          {/* Procedimento e Número */}
           <div className="flex gap-4">
             <div>
               <label className="block font-medium">Procedimento:</label>
@@ -126,8 +118,10 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
                 className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
               >
                 <option value="">Selecione o procedimento</option>
-                {PROCEDIMENTO_OPTIONS.map(opt => (
-                  <option key={opt} value={opt}>{opt}</option>
+                {PROCEDIMENTO_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
                 ))}
               </select>
             </div>
@@ -144,12 +138,11 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
               />
             </div>
           </div>
-
-          {/* Tipo – com opção de customização para "outrosautomotores" */}
+          {/* Tipo – com opção de customização para "outronaomotorizado" */}
           <div>
             <label className="block font-medium">Tipo:</label>
             <div className="flex flex-wrap gap-4 bg-c_deep_gray_black p-2 rounded-md">
-              {Object.keys(TYPE_MAPPING).map(key => (
+              {Object.keys(TYPE_MAPPING).map((key) => (
                 <label key={key} className="cursor-pointer">
                   <input
                     type="radio"
@@ -161,12 +154,13 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
                       handleChange("customTipo", "");
                     }}
                     className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors"
-                  /> {key.charAt(0).toUpperCase() + key.slice(1)}
+                  />{" "}
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
                 </label>
               ))}
             </div>
           </div>
-          {formData.tipo === "outrosautomotores" && (
+          {formData.tipo === "outronaomotorizado" && (
             <div className="mt-2">
               <label className="block font-medium">Especifique o tipo:</label>
               <input
@@ -179,8 +173,6 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
               />
             </div>
           )}
-
-          {/* Campos de Marca, Modelo e Cor */}
           <div className="flex flex-wrap gap-4">
             <div>
               <label className="block font-medium">Marca:</label>
@@ -193,7 +185,9 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
               >
                 <option value="">{configs ? "Selecione a marca" : "Carregando..."}</option>
                 {availableMarcas.map((m, idx) => (
-                  <option key={idx} value={m}>{m}</option>
+                  <option key={idx} value={m}>
+                    {m}
+                  </option>
                 ))}
               </select>
             </div>
@@ -208,7 +202,9 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
               >
                 <option value="">{configs ? "Selecione o modelo" : "Carregando..."}</option>
                 {availableModelos.map((m, idx) => (
-                  <option key={idx} value={m}>{m}</option>
+                  <option key={idx} value={m}>
+                    {m}
+                  </option>
                 ))}
               </select>
             </div>
@@ -223,34 +219,14 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
               >
                 <option value="">Selecione a cor</option>
                 {CORES.map((c, idx) => (
-                  <option key={idx} value={c}>{c}</option>
+                  <option key={idx} value={c}>
+                    {c}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
-
-          {/* Placa, Chassi e Data */}
           <div className="flex flex-wrap gap-4">
-            <div>
-              <label className="block font-medium">Placa:</label>
-              <input
-                name="placa"
-                type="text"
-                value={formData.placa}
-                onChange={(e) => handleChange("placa", e.target.value.toUpperCase())}
-                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
-              />
-            </div>
-            <div>
-              <label className="block font-medium">Chassi:</label>
-              <input
-                name="chassi"
-                type="text"
-                value={formData.chassi}
-                onChange={(e) => handleChange("chassi", e.target.value.toUpperCase())}
-                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
-              />
-            </div>
             <div>
               <label className="block font-medium">Data do registro:</label>
               <input
@@ -262,40 +238,11 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
               />
             </div>
           </div>
-
-          {/* Chaves (radio) */}
-          <div>
-            <label className="block font-medium">Chaves:</label>
-            <div className="flex gap-2">
-              <label className="cursor-pointer">
-                <input
-                  type="radio"
-                  name="chaves"
-                  value="true"
-                  checked={formData.chaves === true}
-                  onChange={() => handleChange("chaves", true)}
-                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
-                /> Sim
-              </label>
-              <label className="cursor-pointer">
-                <input
-                  type="radio"
-                  name="chaves"
-                  value="false"
-                  checked={formData.chaves === false}
-                  onChange={() => handleChange("chaves", false)}
-                  className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
-                /> Não
-              </label>
-            </div>
-          </div>
-
-          {/* Status e, se for "apreendido", Destino */}
           <div>
             <label className="block font-medium">Status:</label>
             <div className="flex gap-2">
-              {STATUS_OPTIONS.map(opt => (
-                <label key={opt}>
+              {STATUS_OPTIONS.map((opt) => (
+                <label key={opt} className="cursor-pointer">
                   <input
                     type="radio"
                     name="status"
@@ -304,7 +251,8 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
                     onChange={handleInputChange}
                     className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                     required
-                  /> {opt}
+                  />{" "}
+                  {opt}
                 </label>
               ))}
             </div>
@@ -313,8 +261,8 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
             <div>
               <label className="block font-medium">Destino:</label>
               <div className="flex gap-2">
-                {DESTINO_OPTIONS.map(opt => (
-                  <label key={opt}>
+                {DESTINO_OPTIONS.map((opt) => (
+                  <label key={opt} className="cursor-pointer">
                     <input
                       type="radio"
                       name="destino"
@@ -323,14 +271,13 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
                       onChange={handleInputChange}
                       className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
                       required
-                    /> {opt}
+                    />{" "}
+                    {opt}
                   </label>
                 ))}
               </div>
             </div>
           )}
-
-          {/* Observações */}
           <div>
             <label className="block font-medium">Observações:</label>
             <textarea
@@ -343,8 +290,7 @@ export default function AutomotoresForm({ initialData = {}, onSubmit, isUpdating
             />
           </div>
         </div>
-
-        {/* Coluna Direita: Upload e pré-visualização de imagem */}
+        {/* Coluna Direita: Upload de Imagem */}
         <div className="flex flex-col gap-4 w-[45%]">
           <div>
             <label className="block mb-1 text-slate-200 font-medium">

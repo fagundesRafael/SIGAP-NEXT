@@ -1,13 +1,13 @@
-// app/automotores/page.js
+// app/naomotorizados/page.js
 "use client";
 
 import { useState, useEffect } from "react";
-import AutomotoresSearchBar from "@/components/AutomotoresSearchBar";
-import AutomotoresTable from "@/components/AutomotoresTable";
+import NaoMotorizadosSearchBar from "@/components/NaoMotorizadosSearchBar";
+import NaoMotorizadosTable from "@/components/NaoMotorizadosTable";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
 
-export default function AutomotoresPage() {
+export default function NaoMotorizadosPage() {
   const [veiculos, setVeiculos] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -17,8 +17,6 @@ export default function AutomotoresPage() {
     tipo: "",
     marca: "",
     modelo: "",
-    placa: "",
-    chassi: "",
   });
   const limit = 16;
 
@@ -28,7 +26,7 @@ export default function AutomotoresPage() {
         page: currentPage.toString(),
         ...searchObj,
       });
-      const res = await fetch(`/api/automotores?${params.toString()}`);
+      const res = await fetch(`/api/naomotorizados?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
         setVeiculos(data.veiculos);
@@ -36,7 +34,7 @@ export default function AutomotoresPage() {
         setPage(data.page);
       }
     } catch (error) {
-      console.error("Erro ao buscar veículos:", error);
+      console.error("Erro ao buscar veículos não motorizados:", error);
     }
   }
 
@@ -47,18 +45,18 @@ export default function AutomotoresPage() {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="font-mono min-h-screen p-2 rounded-md bg-c_deep_black text-white border border-gray-500 shadow">
+    <div className="min-h-screen p-2 rounded-md bg-c_deep_black text-white border border-gray-500 shadow">
       <div className="flex justify-between items-start mb-2">
-        <AutomotoresSearchBar searchParams={searchParams} setSearchParams={setSearchParams} />
+        <NaoMotorizadosSearchBar searchParams={searchParams} setSearchParams={setSearchParams} />
         <Link
-          href="/automotores/registrar"
+          href="/naomotorizados/registrar"
           className="bg-green-500 text-white py-1 px-10 rounded hover:bg-green-600 transition duration-600"
-          title="Registrar novo veículo automotor"
+          title="Registrar novo veículo não motorizado"
         >
           +
         </Link>
       </div>
-      <AutomotoresTable veiculos={veiculos} />
+      <NaoMotorizadosTable veiculos={veiculos} />
       <Pagination
         page={page}
         totalPages={totalPages}

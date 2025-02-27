@@ -1,4 +1,4 @@
-// components/SectionBicicletas.js
+// components/SectionOutroNaoMotorizado.js
 "use client";
 
 import { useState } from "react";
@@ -6,7 +6,7 @@ import { IoIosAddCircle } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
-export default function SectionBicicletas({ bicicletas, setBicicletas }) {
+export default function SectionOutroNaoMotorizado({ outronaomotorizado, setOutronaomotorizado }) {
   const [marcaInput, setMarcaInput] = useState("");
   const [modeloInput, setModeloInput] = useState("");
   const [showModeloInput, setShowModeloInput] = useState(false);
@@ -15,32 +15,32 @@ export default function SectionBicicletas({ bicicletas, setBicicletas }) {
 
   function handleAddMarca() {
     if (!marcaInput.trim()) return;
-    const existing = bicicletas.find(
+    const existing = outronaomotorizado.find(
       (item) => item.marca.toLowerCase() === marcaInput.trim().toLowerCase()
     );
     if (!existing) {
-      setBicicletas([...bicicletas, { marca: marcaInput.trim(), modelos: [] }]);
+      setOutronaomotorizado([...outronaomotorizado, { marca: marcaInput.trim(), modelos: [] }]);
     }
     setShowModeloInput(true);
   }
 
   function handleAddModelo() {
     if (!modeloInput.trim()) return;
-    const index = bicicletas.findIndex(
+    const index = outronaomotorizado.findIndex(
       (item) => item.marca.toLowerCase() === marcaInput.trim().toLowerCase()
     );
     if (index === -1) {
       setError("Marca não encontrada. Adicione a marca primeiro.");
       return;
     }
-    if (bicicletas[index].modelos.includes(modeloInput.trim())) {
+    if (outronaomotorizado[index].modelos.includes(modeloInput.trim())) {
       setError("Modelo já existe para essa marca.");
       return;
     }
     setError("");
-    const updated = [...bicicletas];
+    const updated = [...outronaomotorizado];
     updated[index].modelos.push(modeloInput.trim());
-    setBicicletas(updated);
+    setOutronaomotorizado(updated);
     setModeloInput("");
   }
 
@@ -55,18 +55,18 @@ export default function SectionBicicletas({ bicicletas, setBicicletas }) {
   function handleConfirmDelete() {
     if (!deleteModalData) return;
     if (deleteModalData.type === "brand") {
-      const updated = bicicletas.filter(
+      const updated = outronaomotorizado.filter(
         (item) => item.marca !== deleteModalData.brand
       );
-      setBicicletas(updated);
+      setOutronaomotorizado(updated);
     } else if (deleteModalData.type === "model") {
-      const updated = bicicletas.map((item) => {
+      const updated = outronaomotorizado.map((item) => {
         if (item.marca === deleteModalData.brand) {
           return { ...item, modelos: item.modelos.filter((m) => m !== deleteModalData.model) };
         }
         return item;
       });
-      setBicicletas(updated);
+      setOutronaomotorizado(updated);
     }
     setDeleteModalData(null);
   }
@@ -80,25 +80,17 @@ export default function SectionBicicletas({ bicicletas, setBicicletas }) {
       <div className="flex items-center gap-2">
         <input
           type="text"
-          placeholder="Inserir marca da bicicleta"
+          placeholder="Inserir marca do veículo não motorizado"
           value={marcaInput}
           onChange={(e) => setMarcaInput(e.target.value)}
           className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
         />
         {marcaInput.trim() !== "" && (
           <>
-            <button
-              type="button"
-              onClick={handleAddMarca}
-              className="text-green-500"
-            >
+            <button type="button" onClick={handleAddMarca} className="text-green-500">
               <IoIosAddCircle size={14} />
             </button>
-            <button
-              type="button"
-              onClick={() => requestDeleteBrand(marcaInput.trim())}
-              className="text-red-500"
-            >
+            <button type="button" onClick={() => requestDeleteBrand(marcaInput.trim())} className="text-red-500">
               <TiDeleteOutline size={14} />
             </button>
           </>
@@ -108,25 +100,17 @@ export default function SectionBicicletas({ bicicletas, setBicicletas }) {
         <div className="flex items-center gap-2 mt-2">
           <input
             type="text"
-            placeholder="Inserir modelo da bicicleta"
+            placeholder="Inserir modelo do veículo"
             value={modeloInput}
             onChange={(e) => setModeloInput(e.target.value)}
             className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
           />
           {modeloInput.trim() !== "" && (
             <>
-              <button
-                type="button"
-                onClick={handleAddModelo}
-                className="text-green-500"
-              >
+              <button type="button" onClick={handleAddModelo} className="text-green-500">
                 <IoIosAddCircle size={14} />
               </button>
-              <button
-                type="button"
-                onClick={() => requestDeleteModel(marcaInput.trim(), modeloInput.trim())}
-                className="text-red-500"
-              >
+              <button type="button" onClick={() => requestDeleteModel(marcaInput.trim(), modeloInput.trim())} className="text-red-500">
                 <TiDeleteOutline size={14} />
               </button>
             </>
@@ -136,27 +120,21 @@ export default function SectionBicicletas({ bicicletas, setBicicletas }) {
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
         <h3 className="font-bold">Marcas e Modelos Registrados:</h3>
-        {bicicletas.length === 0 ? (
+        {outronaomotorizado.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (
           <ul>
-            {bicicletas.map((item, idx) => (
+            {outronaomotorizado.map((item, idx) => (
               <li key={idx} className="flex flex-wrap items-center gap-2 border-b-[1px]">
                 <strong>{item.marca}</strong>
-                <button
-                  onClick={() => requestDeleteBrand(item.marca)}
-                  className="text-red-500"
-                >
+                <button onClick={() => requestDeleteBrand(item.marca)} className="text-red-500">
                   <TiDeleteOutline size={14} />
                 </button>
                 <span>:</span>
                 {item.modelos.map((modelo, i) => (
                   <span key={i} className="flex italic text-[11px] items-center gap-1">
                     {modelo}
-                    <button
-                      onClick={() => requestDeleteModel(item.marca, modelo)}
-                      className="text-red-500"
-                    >
+                    <button onClick={() => requestDeleteModel(item.marca, modelo)} className="text-red-500">
                       <TiDeleteOutline size={14} />
                     </button>
                     {i < item.modelos.length - 1 && <span>,</span>}

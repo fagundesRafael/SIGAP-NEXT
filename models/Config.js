@@ -65,6 +65,15 @@ const ConfigSchema = new mongoose.Schema({
     ],
     default: [],
   },
+  outronaomotorizado: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
   armas: {
     // Agora, cada objeto possui arrays separados para modelos e calibres
     type: [

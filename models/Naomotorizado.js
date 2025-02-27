@@ -1,7 +1,7 @@
-// models/Automotor.js
+// models/Naomotorizado.js
 import mongoose from "mongoose";
 
-const AutomotorSchema = new mongoose.Schema(
+const NaomotorizadoSchema = new mongoose.Schema(
   {
     classe: { type: String },
     procedimento: { type: String, required: true },
@@ -10,26 +10,12 @@ const AutomotorSchema = new mongoose.Schema(
     unidMedida: { type: String },
     marca: { type: String, required: true },
     modelo: { type: String, required: true },
-    placa: {
-      type: String,
-      required: false,
-      unique: true,
-      sparse: true,
-      set: (v) => (v && v.trim() !== "" ? v.trim().toUpperCase() : undefined),
-    },
-    chassi: {
-      type: String,
-      required: false,
-      unique: true,
-      sparse: true,
-      set: (v) => (v && v.trim() !== "" ? v.trim().toUpperCase() : undefined),
-    },
     tipo: { 
       type: String, 
-      enum: ["carro", "moto", "caminhonete", "caminhao", "trator", "outrosautomotores"], 
+      enum: ["bicicleta", "outronaomotorizado"], 
       required: true 
     },
-    // Novo campo para armazenar o valor customizado caso "outrosautomotores" seja selecionado
+    // Novo campo para armazenar o valor customizado caso "outrosnaomotorizados" seja selecionado
     customTipo: { type: String },
     cor: { type: String, required: false },
     chaves: { type: Boolean, default: false },
@@ -49,8 +35,8 @@ const AutomotorSchema = new mongoose.Schema(
     data: { type: Date, default: Date.now },
     imagem: { type: String },
   },
-  { timestamps: true, collection: "automotores" }
+  { timestamps: true, collection: "naomotorizados" }
 );
 
-export default mongoose.models.Automotor ||
-  mongoose.model("Automotor", AutomotorSchema);
+export default mongoose.models.Naomotorizado ||
+  mongoose.model("Naomotorizado", NaomotorizadoSchema);
