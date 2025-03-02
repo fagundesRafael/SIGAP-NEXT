@@ -36,7 +36,7 @@ export default function NaoMotorizadosForm({ initialData = {}, onSubmit, isUpdat
   const [formData, setFormData] = useState({
     procedimento: "",
     numero: "",
-    tipo: "bicicleta", // tipo padrão
+    tipo: "",
     customTipo: "",
     marca: "",
     modelo: "",
@@ -101,7 +101,7 @@ export default function NaoMotorizadosForm({ initialData = {}, onSubmit, isUpdat
       : [];
 
   return (
-    <div className="min-h-screen text-white bg-c_deep_black p-1 rounded-md border border-gray-500 shadow">
+    <div className="min-h-screen text-white bg-c_deep_black p-1 rounded-md border border-gray-500 shadow font-mono">
       <h1 className="font-bold mt-2 mx-4">{title}</h1>
       {errorMsg && <p className="text-red-500 ml-4 mb-4">{errorMsg}</p>}
       <form onSubmit={handleSubmit} className="flex justify-between p-4 text-xs">

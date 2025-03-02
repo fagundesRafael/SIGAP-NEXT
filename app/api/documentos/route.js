@@ -11,7 +11,7 @@ export async function GET(request) {
     const skip = (page - 1) * limit;
 
     const query = {};
-    const fields = ["procedimento", "numero", "tipo"];
+    const fields = ["procedimento", "numero", "cor", "status"];
     fields.forEach(field => {
       const value = searchParams.get(field);
       if (value) {
@@ -46,12 +46,22 @@ export async function POST(request) {
     await dbConnect();
     const body = await request.json();
 
-    const requiredFields = ["procedimento", "numero", "tipo", "createdBy"];
+    const requiredFields = ["procedimento", "numero", "tipo", "quantidade", "unidMedida", "cor", "createdBy"];
     for (const field of requiredFields) {
       if (!body[field]) {
         return new Response(JSON.stringify({ error: `Campo ${field} é obrigatório` }), { status: 400 });
       }
     }
+    
+    // Validações adicionais para status e destino
+    if (body.status === "apreendido" && !body.destino) {
+      return new Response(JSON.stringify({ error: "Campo destino é obrigatório quando status é 'apreendido'" }), { status: 400 });
+    }
+    
+    if (body.destino === "depósito" && (!body.secao || !body.prateleira)) {
+      return new Response(JSON.stringify({ error: "Campos seção e prateleira são obrigatórios quando destino é 'depósito'" }), { status: 400 });
+    }
+    
     const record = new Documentos(body);
     await record.save();
     return new Response(JSON.stringify({ message: "Registro criado com sucesso" }), { status: 201 });

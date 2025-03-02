@@ -22,6 +22,24 @@ export async function PUT(request, { params }) {
     await dbConnect();
     const { id } = params;
     const body = await request.json();
+    
+    // Validações para os campos obrigatórios
+    const requiredFields = ["procedimento", "numero", "tipo", "quantidade", "unidMedida", "cor"];
+    for (const field of requiredFields) {
+      if (!body[field]) {
+        return new Response(JSON.stringify({ error: `Campo ${field} é obrigatório` }), { status: 400 });
+      }
+    }
+    
+    // Validações adicionais para status e destino
+    if (body.status === "apreendido" && !body.destino) {
+      return new Response(JSON.stringify({ error: "Campo destino é obrigatório quando status é 'apreendido'" }), { status: 400 });
+    }
+    
+    if (body.destino === "depósito" && (!body.secao || !body.prateleira)) {
+      return new Response(JSON.stringify({ error: "Campos seção e prateleira são obrigatórios quando destino é 'depósito'" }), { status: 400 });
+    }
+    
     const updatedRecord = await Documentos.findByIdAndUpdate(id, body, { new: true, runValidators: true });
     if (!updatedRecord) {
       return new Response(JSON.stringify({ error: "Registro não encontrado" }), { status: 404 });

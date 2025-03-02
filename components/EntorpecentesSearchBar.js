@@ -1,19 +1,27 @@
 // components/EntorpecentesSearchBar.js
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 
 export default function EntorpecentesSearchBar({ searchParams, setSearchParams }) {
   const [showSearch, setShowSearch] = useState(false);
-  const fields = ["procedimento", "numero", "tipo"];
+  const [isVisible, setIsVisible] = useState(false);
+  const fields = ["procedimento", "numero", "tipo", "cor", "status"];
+
+  useEffect(() => {
+    // Ativa a animação de fade-in após o componente ser montado
+    setIsVisible(true);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
   };
 
   return (
-    <div>
+    <div className={`font-mono transition-opacity duration-300 ease-in-out ${
+      isVisible ? "opacity-100" : "opacity-0"
+    }`}>
       <button
         onClick={() => setShowSearch(!showSearch)}
         className="flex gap-2 items-center text-white py-1 px-2 rounded bg-blue-500 hover:bg-c_text_blue transition duration-300"

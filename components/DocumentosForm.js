@@ -8,13 +8,37 @@ import LoadingImage from "./LoadingImage";
 // Constantes fixas para Documentos
 const PROCEDIMENTO_OPTIONS = ["IPL", "BO", "TCO", "AIAI/AAI", "OUTROS"];
 const TIPO_OPTIONS = ["RG", "CNH", "Procuração", "Cert. de Nascimento", "Cert. de Casamento", "Outro"];
+const STATUS_OPTIONS = ["apreendido", "restituído", "incinerado", "outros"];
+const DESTINO_OPTIONS = ["cartório", "depósito", "outros"];
+const CORES = [
+  "Nenhuma",
+  "Vermelho",
+  "Azul",
+  "Verde",
+  "Amarelo",
+  "Preto",
+  "Prata",
+  "Branco",
+  "Cinza",
+  "Roxo",
+  "Marrom",
+  "Laranja",
+  "Outro",
+];
 
 export default function DocumentosForm({ initialData = {}, onSubmit, isUpdating = false, title }) {
   const [formData, setFormData] = useState({
     procedimento: "",
     numero: "",
-    tipo: "RG", // valor padrão
+    tipo: "",
     customTipo: "",
+    quantidade: "",
+    unidMedida: "",
+    cor: "",
+    status: "",
+    destino: "",
+    secao: "",
+    prateleira: "",
     obs: "",
     dataField: "",
     imagem: "",
@@ -120,6 +144,130 @@ export default function DocumentosForm({ initialData = {}, onSubmit, isUpdating 
               />
             </div>
           )}
+          {/* Quantidade, Unidade e Cor */}
+          <div className="flex flex-wrap justify-between">
+            <div>
+              <label className="block font-medium">Quantidade:</label>
+              <input
+                name="quantidade"
+                type="number"
+                required
+                value={formData.quantidade}
+                onChange={handleInputChange}
+                placeholder="Informe quantidade"
+                className="bg-c_deep_gray_black p-1 w-28 rounded"
+              />
+            </div>
+            <div>
+              <label className="block font-medium">Unid. de Medida:</label>
+              <select
+                name="unidMedida"
+                required
+                value={formData.unidMedida}
+                onChange={handleInputChange}
+                className="bg-c_deep_gray_black p-1 rounded"
+              >
+                <option value="">Selecione a unidade de medida</option>
+                <option value="unid">unidade(s)</option>
+                <option value="mm">milímetro(s)</option>
+                <option value="cm">centímetro(s)</option>
+                <option value="mt">metro(s)</option>
+                <option value="mlgr">miligrama(s)</option>
+                <option value="gr">grama(s)</option>
+                <option value="kg">kilo(s)</option>
+                <option value="porcao">porção(oes)</option>
+                <option value="caixa">caixa(s)</option>
+                <option value="pacote">pacote(s)</option>
+                <option value="resma">resma(s)</option>
+                <option value="outro">outro(s)</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-medium">Cor:</label>
+              <select
+                name="cor"
+                required
+                value={formData.cor}
+                onChange={handleInputChange}
+                className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
+              >
+                <option value="">Selecione a cor</option>
+                {CORES.map((c, idx) => (
+                  <option key={idx} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          {/* Data do registro */}
+          <div>
+            <label className="block font-medium">Data do registro:</label>
+            <input
+              name="dataField"
+              type="date"
+              value={formData.dataField}
+              onChange={handleInputChange}
+              className="text-slate-200 bg-c_deep_gray_black p-1 rounded"
+            />
+          </div>
+          {/* Status, e se status for "apreendido", exibir campo destino */}
+          <div>
+            <label className="block font-medium">Status:</label>
+            <div className="flex gap-2">
+              {STATUS_OPTIONS.map((opt) => (
+                <label key={opt} className="cursor-pointer">
+                  <input
+                    type="radio"
+                    name="status"
+                    value={opt}
+                    checked={formData.status === opt}
+                    onChange={handleInputChange}
+                    className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
+                    required
+                  /> {opt}
+                </label>
+              ))}
+            </div>
+          </div>
+          {formData.status === "apreendido" && (
+            <div>
+              <label className="block font-medium">Destino:</label>
+              <div className="flex gap-2">
+                {DESTINO_OPTIONS.map((opt) => (
+                  <label key={opt} className="cursor-pointer">
+                    <input
+                      type="radio"
+                      name="destino"
+                      value={opt}
+                      checked={formData.destino === opt}
+                      onChange={handleInputChange}
+                      className="w-2.5 h-2.5 appearance-none border-2 border-gray-400 rounded-full checked:bg-green-600 checked:border-green-200 transition-colors cursor-pointer"
+                      required
+                    /> {opt}
+                  </label>
+                ))}
+              </div>
+              {formData.destino === "depósito" && (
+                <div className="flex gap-4 mt-2">
+                  <input
+                    name="secao"
+                    type="text"
+                    placeholder="Seção"
+                    value={formData.secao}
+                    onChange={handleInputChange}
+                    className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
+                  />
+                  <input
+                    name="prateleira"
+                    type="text"
+                    placeholder="Prateleira"
+                    value={formData.prateleira}
+                    onChange={handleInputChange}
+                    className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
+                  />
+                </div>
+              )}
+            </div>
+          )}
           {/* Observações */}
           <div>
             <label className="block font-medium">Observações:</label>
@@ -132,17 +280,7 @@ export default function DocumentosForm({ initialData = {}, onSubmit, isUpdating 
               className="bg-c_deep_gray_black p-2 rounded w-full"
             />
           </div>
-          {/* Data do registro */}
-          <div>
-            <label className="block font-medium">Data do registro:</label>
-            <input
-              name="dataField"
-              type="date"
-              value={formData.dataField}
-              onChange={handleInputChange}
-              className="text-slate-200 bg-c_deep_gray_black p-1 rounded w-full"
-            />
-          </div>
+          
         </div>
         {/* Coluna Direita – Upload de Imagem */}
         <div className="flex flex-col gap-4 w-[45%]">

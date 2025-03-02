@@ -2,10 +2,34 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function BelicoTable({ records }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const [visibleRows, setVisibleRows] = useState([]);
+
+  useEffect(() => {
+    // Ativa a animação de fade-in após o componente ser montado
+    setIsVisible(true);
+
+    // Efeito cascata para as linhas da tabela
+    if (records.length > 0) {
+      // Limpa as linhas visíveis
+      setVisibleRows([]);
+      
+      // Adiciona as linhas uma por uma com um pequeno atraso
+      records.forEach((_, index) => {
+        setTimeout(() => {
+          setVisibleRows(prev => [...prev, index]);
+        }, index * (600 / records.length)); // Distribui o tempo total (600ms) entre todas as linhas
+      });
+    }
+  }, [records]);
+
   return (
-    <table className="w-full">
+    <table className={`w-full transition-opacity duration-300 ease-in-out ${
+      isVisible ? "opacity-100" : "opacity-0"
+    }`}>
       <thead className="bg-blue-900 text-white text-[10px]">
         <tr>
           {[
@@ -34,8 +58,16 @@ export default function BelicoTable({ records }) {
         </tr>
       </thead>
       <tbody>
-        {records.map((r) => (
-          <tr key={r._id} className="text-[10px]">
+        {records.map((r, index) => (
+          <tr 
+            key={r._id} 
+            className={`text-[10px] transition-all duration-300 ease-in-out ${
+              visibleRows.includes(index) ? "opacity-100" : "opacity-0"
+            }`}
+            style={{ 
+              transform: visibleRows.includes(index) ? "translateY(0)" : "translateY(-10px)"
+            }}
+          >
             {/* <td className="border border-c_deep_black bg-c_deep_gray_black text-center p-1">
               {r.procedimento}
             </td> */}

@@ -4,10 +4,20 @@
 import Link from "next/link";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { MdOutlineTextsms } from "react-icons/md";
+import { useState, useEffect } from "react";
 
 export default function Header() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Ativa a animação de fade-in após o componente ser montado
+    setIsVisible(true);
+  }, []);
+
   return (
-    <header className="w-full mx-1 rounded-md text-white bg-c_deep_black flex justify-between px-4 py-2 my-1  border border-gray-500 shadow">
+    <header className={`w-full mx-1 rounded-md text-white bg-c_deep_black flex justify-between px-4 py-2 my-1 border border-gray-500 shadow transition-opacity duration-300 ease-in-out ${
+      isVisible ? "opacity-100" : "opacity-0"
+    }`}>
       <Link className="flex gap-2" href="/">
         <img
           className="h-6 mb-[3px] animate-glow"

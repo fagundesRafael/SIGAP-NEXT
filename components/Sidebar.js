@@ -9,10 +9,17 @@ import { GiHeavyBullets, GiPowder } from "react-icons/gi";
 import { MdMonitor, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import { IoDocumentOutline, IoStatsChart } from "react-icons/io5";
 import { PiGearSixBold } from "react-icons/pi";
+import { useEffect, useState } from "react";
 
 export default function Sidebar() {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Ativa a animação de fade-in após o componente ser montado
+    setIsVisible(true);
+  }, []);
 
   const isActive = (path) => pathname === path;
 
@@ -21,7 +28,11 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="relative left-0 top-0 h-screen bg-c_deep_black p-4 rounded-md mx-1  border border-gray-500 shadow">
+    <aside 
+      className={`relative left-0 top-0 h-screen bg-c_deep_black p-4 rounded-md mx-1 border border-gray-500 shadow transition-opacity duration-300 ease-in-out ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
       {session && (
         <div className="mb-2">
           <p className="text-cyan-50 text-bold text-xs">

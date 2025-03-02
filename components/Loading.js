@@ -8,7 +8,7 @@ export default function Loading() {
         <div className="w-16">
           <img src="/sigap_padlock.png" alt="body-padlock" />
         </div>
-        <span className="mt-2 inline-block font-mono overflow-hidden whitespace-nowrap text-white text-xs animate-typing">
+        <span className="mt-2 inline-block font-mono overflow-hidden whitespace-nowrap text-white text-xs opacity-80 animate-typing">
           Aguarde um instante...
         </span>
         <div className="absolute bottom-0 right-0 h-[1px] bg-white w-0 animate-lineEffect"></div>

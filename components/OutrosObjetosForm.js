@@ -35,9 +35,8 @@ export default function OutrosObjetosForm({ initialData = {}, onSubmit, isUpdati
     tipo: TIPO_FIXO,
     customTipo: "",
     quantidade: "",
-    unidMedida: "unid",
+    unidMedida: "",
     marca: "",
-    // Não há campo "modelo" para Outros Objetos
     cor: "",
     status: "",
     destino: "",
@@ -94,7 +93,7 @@ export default function OutrosObjetosForm({ initialData = {}, onSubmit, isUpdati
   const availableMarcas = configs ? (configs.outrosobjetos || []) : [];
 
   return (
-    <div className="min-h-screen text-white bg-c_deep_black p-1 rounded-md border border-gray-500 shadow">
+    <div className="min-h-screen text-white bg-c_deep_black p-1 rounded-md border border-gray-500 shadow font-mono">
       <h1 className="font-bold mt-2 mx-4">{title}</h1>
       {errorMsg && <p className="text-red-500 ml-4 mb-4">{errorMsg}</p>}
       <form onSubmit={handleSubmit} className="flex justify-between p-4 text-xs">
@@ -179,9 +178,19 @@ export default function OutrosObjetosForm({ initialData = {}, onSubmit, isUpdati
                 onChange={handleInputChange}
                 className="bg-c_deep_gray_black p-1 rounded"
               >
+                <option value="">Selecione a unidade de medida</option>
                 <option value="unid">unidade(s)</option>
-                <option value="ml">mililitro(s)</option>
-                <option value="l">litro(s)</option>
+                <option value="mm">milímetro(s)</option>
+                <option value="cm">centímetro(s)</option>
+                <option value="mt">metro(s)</option>
+                <option value="mlgr">miligrama(s)</option>
+                <option value="gr">grama(s)</option>
+                <option value="kg">kilo(s)</option>
+                <option value="porcao">porção(oes)</option>
+                <option value="caixa">caixa(s)</option>
+                <option value="pacote">pacote(s)</option>
+                <option value="resma">resma(s)</option>
+                <option value="outro">outro(s)</option>
               </select>
             </div>
             <div>

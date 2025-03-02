@@ -1,4 +1,4 @@
-// app/documents/registrar/page.js
+// app/documentos/registrar/page.js
 "use client";
 
 import { useRouter } from "next/navigation";

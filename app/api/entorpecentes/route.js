@@ -11,13 +11,15 @@ export async function GET(request) {
     const skip = (page - 1) * limit;
 
     const query = {};
-    const fields = ["procedimento", "numero", "tipo"];
+    const fields = ["procedimento", "numero", "cor", "status"];
     fields.forEach(field => {
       const value = searchParams.get(field);
       if (value) {
         query[field] = { $regex: value, $options: "i" };
       }
     });
+    
+    // Tratamento especial para o campo tipo, buscando também em customTipo
     const tipo = searchParams.get("tipo");
     if (tipo) {
       query.$or = [
