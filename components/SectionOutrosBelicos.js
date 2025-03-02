@@ -177,7 +177,7 @@ export default function SectionOutrosBelicos({ outrosbelicos, setOutrosBelicos }
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
-        <h3 className="font-bold">Marcas, modelos e calibres registrados:</h3>
+        <h3 className="font-bold">Marcas, modelos e calibres registrados (Outros Bélicos):</h3>
         {outrosbelicos.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (

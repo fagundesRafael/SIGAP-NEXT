@@ -2,7 +2,6 @@
 import { dbConnect } from "@/lib/dbConnect";
 import Config from "@/models/Config";
 
-// GET: Retorna as configurações existentes
 export async function GET() {
   try {
     await dbConnect();
@@ -20,7 +19,6 @@ export async function GET() {
   }
 }
 
-// POST: Cria ou atualiza as configurações
 export async function POST(request) {
   try {
     await dbConnect();
@@ -30,22 +28,13 @@ export async function POST(request) {
     const processarItens = (itens) => {
       return itens.map((item) => ({
         marca: item.marca,
-        modelos: Array.isArray(item.modelos)
-          ? item.modelos
-          : item.modelos
-          ? [item.modelos]
-          : [],
-        calibres: Array.isArray(item.calibres)
-          ? item.calibres
-          : item.calibres
-          ? [item.calibres]
-          : [],
+        modelos: Array.isArray(item.modelos) ? item.modelos : item.modelos ? [item.modelos] : [],
+        calibres: Array.isArray(item.calibres) ? item.calibres : item.calibres ? [item.calibres] : [],
       }));
     };
 
     let config = await Config.findOne();
     if (!config) {
-      // Cria nova configuração, processando os arrays de armas, munições e outrosbélicos
       const novoConfig = {
         ...body,
         carros: body.carros || [],
@@ -59,23 +48,21 @@ export async function POST(request) {
         outrosbelicos: body.outrosbelicos ? processarItens(body.outrosbelicos) : [],
         bicicletas: body.bicicletas || [],
         outronaomotorizado: body.outronaomotorizado || [],
+        geladeiras: body.geladeiras || [],
+        fogoes: body.fogoes || [],
+        computadores: body.computadores || [],
+        notebooks: body.notebooks || [],
+        televisores: body.televisores || [],
+        outroeletroeletronicos: body.outroeletroeletronicos || [],
         entorpecentes: body.entorpecentes || [],
         eletro: body.eletro || [],
-        outros: body.outros || [],
+        outrosobjetos: body.outrosobjetos || [],
       };
       config = new Config(novoConfig);
     } else {
-      // Atualiza os campos de armas, munições e outrosbélicos garantindo arrays corretos
-      if (body.armas) {
-        config.armas = processarItens(body.armas);
-      }
-      if (body.municoes) {
-        config.municoes = processarItens(body.municoes);
-      }
-      if (body.outrosbelicos) {
-        config.outrosbelicos = processarItens(body.outrosbelicos);
-      }
-      // Atualiza as demais configurações
+      if (body.armas) config.armas = processarItens(body.armas);
+      if (body.municoes) config.municoes = processarItens(body.municoes);
+      if (body.outrosbelicos) config.outrosbelicos = processarItens(body.outrosbelicos);
       if (body.carros) config.carros = body.carros;
       if (body.motos) config.motos = body.motos;
       if (body.caminhonetes) config.caminhonetes = body.caminhonetes;
@@ -84,9 +71,16 @@ export async function POST(request) {
       if (body.outrosautomotores) config.outrosautomotores = body.outrosautomotores;
       if (body.bicicletas) config.bicicletas = body.bicicletas;
       if (body.outronaomotorizado) config.outronaomotorizado = body.outronaomotorizado;
+      // Novas categorias:
+      if (body.geladeiras) config.geladeiras = body.geladeiras;
+      if (body.fogoes) config.fogoes = body.fogoes;
+      if (body.computadores) config.computadores = body.computadores;
+      if (body.notebooks) config.notebooks = body.notebooks;
+      if (body.televisores) config.televisores = body.televisores;
+      if (body.outroeletroeletronicos) config.outroeletroeletronicos = body.outroeletroeletronicos;
       if (body.entorpecentes) config.entorpecentes = body.entorpecentes;
       if (body.eletro) config.eletro = body.eletro;
-      if (body.outros) config.outros = body.outros;
+      if (body.outrosobjetos) config.outrosobjetos = body.outrosobjetos;
     }
 
     await config.save();

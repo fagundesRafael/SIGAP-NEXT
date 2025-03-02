@@ -135,7 +135,7 @@ export default function SectionBicicletas({ bicicletas, setBicicletas }) {
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
-        <h3 className="font-bold">Marcas e Modelos Registrados:</h3>
+        <h3 className="font-bold">Marcas e Modelos Registrados (Bicicletas):</h3>
         {bicicletas.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (

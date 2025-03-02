@@ -1,13 +1,13 @@
-// app/entorpecentes/page.js
+// app/outrosobjetos/page.js
 "use client";
 
 import { useState, useEffect } from "react";
-import EntorpecentesSearchBar from "@/components/EntorpecentesSearchBar";
-import EntorpecentesTable from "@/components/EntorpecentesTable";
+import OutrosObjetosSearchBar from "@/components/OutrosObjetosSearchBar";
+import OutrosObjetosTable from "@/components/OutrosObjetosTable";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
 
-export default function EntorpecentesPage() {
+export default function OutrosObjetosPage() {
   const [records, setRecords] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -15,6 +15,7 @@ export default function EntorpecentesPage() {
     procedimento: "",
     numero: "",
     tipo: "",
+    marca: "",
   });
   const limit = 16;
 
@@ -24,7 +25,7 @@ export default function EntorpecentesPage() {
         page: currentPage.toString(),
         ...searchObj,
       });
-      const res = await fetch(`/api/entorpecentes?${params.toString()}`);
+      const res = await fetch(`/api/outrosobjetos?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
         setRecords(data.records);
@@ -45,16 +46,16 @@ export default function EntorpecentesPage() {
   return (
     <div className="min-h-screen p-2 rounded-md bg-c_deep_black text-white border border-gray-500 shadow">
       <div className="flex justify-between items-start mb-2">
-        <EntorpecentesSearchBar searchParams={searchParams} setSearchParams={setSearchParams} />
+        <OutrosObjetosSearchBar searchParams={searchParams} setSearchParams={setSearchParams} />
         <Link
-          href="/entorpecentes/registrar"
+          href="/outrosobjetos/registrar"
           className="bg-green-500 text-white py-1 px-10 rounded hover:bg-green-600 transition duration-600"
-          title="Registrar novo entorpecente"
+          title="Registrar novo outro objeto"
         >
           +
         </Link>
       </div>
-      <EntorpecentesTable records={records} />
+      <OutrosObjetosTable records={records} />
       <Pagination
         page={page}
         totalPages={totalPages}

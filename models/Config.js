@@ -74,8 +74,62 @@ const ConfigSchema = new mongoose.Schema({
     ],
     default: [],
   },
+  // Novas categorias para eletroeletrônicos:
+  geladeiras: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  fogoes: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  computadores: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  notebooks: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  televisores: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
+  outroeletroeletronicos: {
+    type: [
+      {
+        marca: { type: String, required: true },
+        modelos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  },
   armas: {
-    // Agora, cada objeto possui arrays separados para modelos e calibres
     type: [
       {
         marca: { type: String, required: true },
@@ -86,7 +140,6 @@ const ConfigSchema = new mongoose.Schema({
     default: [],
   },
   municoes: {
-    // Estrutura similar para munições
     type: [
       {
         marca: { type: String, required: true },
@@ -114,7 +167,7 @@ const ConfigSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
-  outros: {
+  outrosobjetos: {
     type: [String],
     default: [],
   },

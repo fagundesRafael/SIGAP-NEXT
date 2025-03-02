@@ -164,7 +164,7 @@ export default function SessionArmas({ armas, setArmas }) {
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
-        <h3 className="font-bold">Marcas, modelos e calibres registrados:</h3>
+        <h3 className="font-bold">Marcas, modelos e calibres registrados (Armas):</h3>
         {armas.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (

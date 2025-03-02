@@ -138,7 +138,7 @@ export default function SectionOutrosAutomotores({ outrosautomotores, setOutrosA
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
-        <h3 className="font-bold">Marcas e Modelos Registrados:</h3>
+        <h3 className="font-bold">Marcas e Modelos Registrados (Outros automotores):</h3>
         {outrosautomotores.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (

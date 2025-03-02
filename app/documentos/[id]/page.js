@@ -1,15 +1,15 @@
-// app/belicos/[id]/page.js
+// app/documentos/[id]/page.js
 "use client";
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import BelicoForm from "@/components/BelicoForm";
+import DocumentosForm from "@/components/DocumentosForm";
 import Loading from "@/components/Loading";
 import NotificationModal from "@/components/NotificationModal";
 import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 
-export default function ArmaMunicaoDetalhes() {
+export default function DocumentoDetalhes() {
   const { id } = useParams();
   const router = useRouter();
   const { data: session } = useSession();
@@ -24,10 +24,9 @@ export default function ArmaMunicaoDetalhes() {
   useEffect(() => {
     async function fetchRecord() {
       try {
-        const res = await fetch(`/api/belicos/${id}`);
+        const res = await fetch(`/api/documentos/${id}`);
         if (res.ok) {
           const data = await res.json();
-          data.dataField = data.data ? new Date(data.data).toISOString().split("T")[0] : "";
           setInitialData(data);
           setIsLoadingData(false);
         } else {
@@ -43,57 +42,57 @@ export default function ArmaMunicaoDetalhes() {
     if (id) fetchRecord();
   }, [id]);
 
-  const onSubmit = async (formData) => {
+  async function handleUpdate(formData) {
     const payload = {
       ...formData,
       updatedBy: session?.user?.nome,
-      ...(formData.tipo === "Arma" && { aspecto: "Outro" }),
-      ...(formData.status !== "apreendido" && { destino: "outros", prateleira: "", secao: "" }),
     };
-
     try {
-      const res = await fetch(`/api/belicos/${id}`, {
+      const res = await fetch(`/api/documentos/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        setNotificationMessage("Registro atualizado com sucesso!");
+        setNotificationMessage("Documento atualizado com sucesso!");
         setShowNotification(true);
-        setTimeout(() => {
-          router.push("/belicos");
-        }, 2000);
+        setTimeout(() => router.push("/documentos"), 2000);
       } else {
         const data = await res.json();
-        setErrorMsg(data.error || "Erro ao atualizar material bélico");
+        setErrorMsg(data.error || "Erro ao atualizar documento");
       }
     } catch (error) {
-      console.error("Erro ao atualizar material bélico:", error);
-      setErrorMsg("Erro ao atualizar material bélico");
+      console.error("Erro ao atualizar documento:", error);
+      setErrorMsg("Erro ao atualizar documento");
     }
-  };
+  }
 
-  const handleDelete = () => {
+  async function handleDelete() {
     setShowDeleteModal(true);
-  };
+  }
 
-  const handleConfirmDelete = async () => {
+  async function handleConfirmDelete() {
     try {
-      const res = await fetch(`/api/belicos/${id}`, {
+      const res = await fetch(`/api/documentos/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        router.push("/belicos");
+        router.push("/documentos");
       } else {
         const data = await res.json();
-        setErrorMsg(data.error || "Erro ao excluir registro");
+        setErrorMsg(data.error || "Erro ao excluir documento");
       }
     } catch (error) {
-      console.error("Erro ao excluir registro:", error);
-      setErrorMsg("Erro ao excluir registro");
+      console.error("Erro ao excluir documento:", error);
+      setErrorMsg("Erro ao excluir documento");
     } finally {
       setShowDeleteModal(false);
     }
+  }
+
+  const closeNotification = () => {
+    setShowNotification(false);
+    setNotificationMessage("");
   };
 
   if (isLoadingData) return <Loading />;
@@ -101,11 +100,11 @@ export default function ArmaMunicaoDetalhes() {
 
   return (
     <div>
-      <BelicoForm
+      <DocumentosForm
         initialData={initialData}
-        onSubmit={onSubmit}
+        onSubmit={handleUpdate}
         isUpdating={true}
-        title="Detalhes e atualização de material bélico:"
+        title="Detalhes e Atualização do Documento:"
       />
       <div className="flex justify-between p-4">
         <button
@@ -113,7 +112,7 @@ export default function ArmaMunicaoDetalhes() {
           onClick={handleDelete}
           className="bg-red-500 text-white py-2 px-4 h-8 w-96 rounded hover:bg-red-600 transition"
         >
-          Excluir material bélico
+          Excluir Documento
         </button>
         <button
           type="button"
@@ -124,14 +123,11 @@ export default function ArmaMunicaoDetalhes() {
         </button>
       </div>
       {showNotification && (
-        <NotificationModal
-          message={notificationMessage}
-          onClose={() => setShowNotification(false)}
-        />
+        <NotificationModal message={notificationMessage} onClose={closeNotification} />
       )}
       {showDeleteModal && (
         <ConfirmDeleteModal
-          message="Deseja realmente excluir este registro permanentemente?"
+          message="Deseja realmente excluir este documento permanentemente?"
           onConfirm={handleConfirmDelete}
           onCancel={() => setShowDeleteModal(false)}
         />

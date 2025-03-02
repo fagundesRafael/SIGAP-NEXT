@@ -12,34 +12,58 @@ import SectionBicicletas from "@/components/SectionBicicletas";
 import SectionOutroNaoMotorizado from "@/components/SectionOutroNaoMotorizado";
 import SectionArmas from "@/components/SectionArmas";
 import SectionMunicao from "@/components/SectionMunicao";
-import SectionEntorpecentes from "@/components/SectionEntorpecentes";
-import SectionEletroeeletronicos from "@/components/SectionEletroeeletronicos";
-import SectionOutros from "@/components/SectionOutros";
 import SectionOutrosBelicos from "@/components/SectionOutrosBelicos";
+import SectionEntorpecentes from "@/components/SectionEntorpecentes";
+import SectionGeladeira from "@/components/SectionGeladeira";
+import SectionFogao from "@/components/SectionFogao";
+import SectionComputador from "@/components/SectionComputador";
+import SectionNotebook from "@/components/SectionNotebook";
+import SectionTelevisor from "@/components/SectionTelevisor";
+import SectionOutroEletroEletronico from "@/components/SectionOutroEletroEletronico";
+import SectionOutros from "@/components/SectionOutrosObjetos";
 import NotificationModal from "@/components/NotificationModal";
 
 export default function ConfigsPage() {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
+
+  // Automotores
   const [carros, setCarros] = useState([]);
   const [motos, setMotos] = useState([]);
   const [caminhonetes, setCaminhonetes] = useState([]);
   const [caminhoes, setCaminhoes] = useState([]);
-  const [tratores, SetTratores] = useState([]);
-  const [outrosautomotores, SetOutrosAutomotores] = useState([]);
+  const [tratores, setTratores] = useState([]);
+  const [outrosautomotores, setOutrosAutomotores] = useState([]);
+
+  // Veículos não motorizados
   const [bicicletas, setBicicletas] = useState([]);
   const [outronaomotorizado, setOutronaomotorizado] = useState([]);
+
+  // Bélicos
   const [armas, setArmas] = useState([]);
   const [municoes, setMunicoes] = useState([]);
   const [outrosbelicos, setOutrosBelicos] = useState([]);
+
+  // Eletroeletrônicos (novas categorias)
+  const [geladeiras, setGeladeiras] = useState([]);
+  const [fogoes, setFogoes] = useState([]);
+  const [computadores, setComputadores] = useState([]);
+  const [notebooks, setNotebooks] = useState([]);
+  const [televisores, setTelevisores] = useState([]);
+  const [outroeletroeletronicos, setOutroeletroeletronicos] = useState([]);
+
+  // Outras
   const [entorpecentes, setEntorpecentes] = useState([]);
   const [eletro, setEletro] = useState([]);
-  const [outros, setOutros] = useState([]);
+  const [outrosobjetos, setOutrosObjetos] = useState([]);
 
   useEffect(() => {
     async function fetchConfigs() {
       try {
-        const res = await fetch("/api/configs", { method: "GET" });
+        const res = await fetch("/api/configs", {
+          method: "GET",
+          cache: "no-store",
+        });
         if (res.ok) {
           const data = await res.json();
           if (data.length > 0) {
@@ -48,16 +72,22 @@ export default function ConfigsPage() {
             setMotos(config.motos || []);
             setCaminhonetes(config.caminhonetes || []);
             setCaminhoes(config.caminhoes || []);
-            SetTratores(config.tratores || []);
-            SetOutrosAutomotores(config.outrosautomotores || []);
+            setTratores(config.tratores || []);
+            setOutrosAutomotores(config.outrosautomotores || []);
             setBicicletas(config.bicicletas || []);
             setOutronaomotorizado(config.outronaomotorizado || []);
             setArmas(config.armas || []);
             setMunicoes(config.municoes || []);
             setOutrosBelicos(config.outrosbelicos || []);
+            setGeladeiras(config.geladeiras || []);
+            setFogoes(config.fogoes || []);
+            setComputadores(config.computadores || []);
+            setNotebooks(config.notebooks || []);
+            setTelevisores(config.televisores || []);
+            setOutroeletroeletronicos(config.outroeletroeletronicos || []);
             setEntorpecentes(config.entorpecentes || []);
             setEletro(config.eletro || []);
-            setOutros(config.outros || []);
+            setOutrosObjetos(config.outrosobjetos || []);
           }
         }
       } catch (error) {
@@ -91,9 +121,15 @@ export default function ConfigsPage() {
       armas,
       municoes,
       outrosbelicos,
+      geladeiras,
+      fogoes,
+      computadores,
+      notebooks,
+      televisores,
+      outroeletroeletronicos,
       entorpecentes,
       eletro,
-      outros,
+      outrosobjetos,
     };
     try {
       const res = await fetch("/api/configs", {
@@ -117,7 +153,8 @@ export default function ConfigsPage() {
     <div className="min-h-screen p-2 rounded-md bg-c_deep_black text-white border border-gray-500 shadow">
       <h1 className="text-sm font-bold mb-2">Configurações de Registros:</h1>
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-wrap gap-2 text-xs font-mono max-w-full">
+        <div className="flex flex-wrap justify-between text-xs font-mono max-w-full">
+          {/* Automotores */}
           <div className="mb-2 border border-slate-700 rounded p-2">
             <label>Automotores:</label>
             <SectionCarros carros={carros} setCarros={setCarros} />
@@ -130,37 +167,72 @@ export default function ConfigsPage() {
               caminhoes={caminhoes}
               setCaminhoes={setCaminhoes}
             />
-            <SectionTratores tratores={tratores} SetTratores={SetTratores} />
+            <SectionTratores tratores={tratores} SetTratores={setTratores} />
             <SectionOutrosAutomotores
               outrosautomotores={outrosautomotores}
-              setOutrosAutomotores={SetOutrosAutomotores}
+              setOutrosAutomotores={setOutrosAutomotores}
             />
           </div>
-
+          {/* Bélicos */}
           <div className="mb-2 border border-slate-700 rounded p-2">
             <label>Bélicos:</label>
             <SectionArmas armas={armas} setArmas={setArmas} />
             <SectionMunicao municoes={municoes} setMunicoes={setMunicoes} />
-            <SectionOutrosBelicos outrosbelicos={outrosbelicos} setOutrosBelicos={setOutrosBelicos} />
+            <SectionOutrosBelicos
+              outrosbelicos={outrosbelicos}
+              setOutrosBelicos={setOutrosBelicos}
+            />
           </div>
+          {/* Veículos não motorizados */}
           <div className="mb-2 border border-slate-700 rounded p-2">
             <label>Veículos não motorizados:</label>
-          <SectionBicicletas
-            bicicletas={bicicletas}
-            setBicicletas={setBicicletas}
-          />
-          <SectionOutroNaoMotorizado
-            outronaomotorizado={outronaomotorizado}
-            setOutronaomotorizado={setOutronaomotorizado}
-          />
+            <SectionBicicletas
+              bicicletas={bicicletas}
+              setBicicletas={setBicicletas}
+            />
+            <SectionOutroNaoMotorizado
+              outronaomotorizado={outronaomotorizado}
+              setOutronaomotorizado={setOutronaomotorizado}
+            />
           </div>
-
+          {/* Eletroeletrônicos */}
+          <div className="mb-2 border border-slate-700 rounded p-2">
+            <label>Eletroeletrônicos:</label>
+            <SectionGeladeira
+              geladeiras={geladeiras}
+              setGeladeiras={setGeladeiras}
+            />
+            <SectionFogao fogoes={fogoes} setFogoes={setFogoes} />
+            <SectionComputador
+              computadores={computadores}
+              setComputadores={setComputadores}
+            />
+            <SectionNotebook
+              notebooks={notebooks}
+              setNotebooks={setNotebooks}
+            />
+            <SectionTelevisor
+              televisores={televisores}
+              setTelevisores={setTelevisores}
+            />
+            <SectionOutroEletroEletronico
+              outroeletroeletronicos={outroeletroeletronicos}
+              setOutroeletroeletronicos={setOutroeletroeletronicos}
+            />
+          </div>
+          {/* Entorpecentes */}
           <SectionEntorpecentes
             entorpecentes={entorpecentes}
             setEntorpecentes={setEntorpecentes}
           />
-          <SectionEletroeeletronicos eletro={eletro} setEletro={setEletro} />
-          <SectionOutros outros={outros} setOutros={setOutros} />
+          {/* Outros objetos */}
+          <div className="mb-2 border border-slate-700 rounded p-2">
+            <label>Outros objetos:</label>
+            <SectionOutros
+              outrosobjetos={outrosobjetos}
+              setOutrosObjetos={setOutrosObjetos}
+            />
+          </div>
         </div>
         <div>
           <button

@@ -138,7 +138,7 @@ export default function SectionCaminhonetes({ caminhonetes, setCaminhonetes }) {
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
-        <h3 className="font-bold">Marcas e modelos registrados:</h3>
+        <h3 className="font-bold">Marcas e modelos registrados (Caminhonetes):</h3>
         {caminhonetes.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (

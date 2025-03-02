@@ -77,9 +77,9 @@ export default function Sidebar() {
           <li className="flex ml-2 items-center">
             <MdMonitor />
             <Link
-              href="/eletroeeletronicos"
+              href="/eletroeletronicos"
               className={`block p-1 rounded  ml-1 ${
-                isActive("/eletroeeletronicos")
+                isActive("/eletroeletronicos")
                   ? "bg-c_deep_gray_black py-1 text-white w-full"
                   : ""
               }`}
@@ -153,9 +153,9 @@ export default function Sidebar() {
           <li className="flex ml-2 items-center">
             <MdOutlineCheckBoxOutlineBlank />
             <Link
-              href="/outros"
+              href="/outrosobjetos"
               className={`block p-1 rounded  ml-1 ${
-                isActive("/outros")
+                isActive("/outrosobjetos")
                   ? "bg-c_deep_gray_black py-1 text-white w-full"
                   : ""
               }`}
@@ -165,7 +165,7 @@ export default function Sidebar() {
     after:h-px after:bg-current after:w-0 after:transition-all 
     after:duration-300 after:ease-in-out hover:after:w-full"
               >
-                Outros
+                Outros objetos
               </span>
             </Link>
           </li>

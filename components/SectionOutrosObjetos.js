@@ -1,4 +1,4 @@
-// components/SessionEletroeeletronicos.js
+// components/SessionOutrosObjetos.js
 "use client";
 
 import { useState } from "react";
@@ -6,19 +6,19 @@ import { IoIosAddCircle } from "react-icons/io";
 import { TiDeleteOutline } from "react-icons/ti";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
-export default function SessionEletroeeletronicos({ eletro, setEletro }) {
+export default function SessionOutrosObjetos({ outrosobjetos, setOutrosObjetos }) {
   const [brandInput, setBrandInput] = useState("");
   const [error, setError] = useState("");
   const [deleteModalData, setDeleteModalData] = useState(null);
 
   function handleAddBrand() {
     if (!brandInput.trim()) return;
-    if (eletro.find(item => item.toLowerCase() === brandInput.trim().toLowerCase())) {
+    if (outrosobjetos.find(item => item.toLowerCase() === brandInput.trim().toLowerCase())) {
       setError("Marca já existe.");
       return;
     }
     setError("");
-    setEletro([...eletro, brandInput.trim()]);
+    setOutrosObjetos([...outrosobjetos, brandInput.trim()]);
     setBrandInput("");
   }
 
@@ -29,7 +29,7 @@ export default function SessionEletroeeletronicos({ eletro, setEletro }) {
   function handleConfirmDelete() {
     if (!deleteModalData) return;
     if (deleteModalData.type === "brand") {
-      setEletro(eletro.filter(item => item !== deleteModalData.brand));
+      setOutrosObjetos(outrosobjetos.filter(item => item !== deleteModalData.brand));
     }
     setDeleteModalData(null);
   }
@@ -43,7 +43,7 @@ export default function SessionEletroeeletronicos({ eletro, setEletro }) {
       <div className="flex items-center gap-2">
         <input
           type="text"
-          placeholder="Inserir marca de Eletro/Eletrônicos"
+          placeholder="Inserir marca de OutrosObjetos"
           value={brandInput}
           onChange={(e) => setBrandInput(e.target.value)}
           className=" text-slate-200 bg-c_deep_gray_black p-1 rounded w-full border border-gray-500 shadow"
@@ -61,13 +61,13 @@ export default function SessionEletroeeletronicos({ eletro, setEletro }) {
       </div>
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
-        <h3 className="font-bold">Marcas Registradas:</h3>
-        {eletro.length === 0 ? (
+        <h3 className="font-bold">Marcas Registradas (Outros objetos):</h3>
+        {outrosobjetos.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (
           <ul>
-            {eletro.map((brand, idx) => (
-              <li key={idx} className="flex flex-wrap items-center gap-2">
+            {outrosobjetos.map((brand, idx) => (
+              <li key={idx} className="flex flex-wrap  text-[11px] items-center gap-2">
                 {brand}
                 <button type="button" onClick={() => requestDeleteBrand(brand)} className="text-red-500">
                   <TiDeleteOutline size={20} />

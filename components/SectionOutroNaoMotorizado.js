@@ -119,7 +119,7 @@ export default function SectionOutroNaoMotorizado({ outronaomotorizado, setOutro
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
-        <h3 className="font-bold">Marcas e Modelos Registrados:</h3>
+        <h3 className="font-bold">Marcas e Modelos Registrados (NÃO motorizados):</h3>
         {outronaomotorizado.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (
