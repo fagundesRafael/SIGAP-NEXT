@@ -10,6 +10,7 @@ import { GiHeavyBullets, GiPowder } from "react-icons/gi";
 import { MdMonitor, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import { IoDocumentOutline, IoStatsChart } from "react-icons/io5";
 import { PiGearSixBold } from "react-icons/pi";
+import TermosUso from "@/components/TermosUso";
 
 export default function HomePage() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +25,7 @@ export default function HomePage() {
     { icon: <FaCar />, label: "Automotores", href: "/automotores" },
     { icon: <GiHeavyBullets />, label: "Materiais bélicos", href: "/belicos" },
     { icon: <IoDocumentOutline />, label: "Documentos", href: "/documentos" },
-    { icon: <IoStatsChart />, label: "Logs", href: "/configs", disabled: true },
+    { icon: <IoStatsChart />, label: "Estatísticas", href: "/estatistica" },
     { icon: <GiPowder />, label: "Entorpecentes", href: "/entorpecentes" },
     { icon: <MdMonitor />, label: "Eletro-eletrônicos", href: "/eletroeletronicos" },
     { icon: <MdOutlineCheckBoxOutlineBlank />, label: "Outros objetos", href: "/outrosobjetos" },
@@ -89,6 +90,11 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-c_deep_black">
+      {/* Botão de download dos termos */}
+      <div className="absolute top-4 right-4">
+        <TermosUso />
+      </div>
+
       <div className="relative">
         {/* Container do cadeado */}
         <div 

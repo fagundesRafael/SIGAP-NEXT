@@ -220,17 +220,19 @@ export default function Sidebar() {
             <IoStatsChart />
             <Link
               href="/estatistica"
-              className={`block p-1 rounded  ml-1 cursor-pointer ${
+              className={`block p-1 rounded  ml-1 ${
                 isActive("/estatistica")
                   ? "bg-c_deep_gray_black py-1 text-white w-full"
                   : ""
               }`}
             >
-              <span className="relative inline-block after:content-[''] after:absolute after:bottom-0 after:left-0 
+              <span
+                className="relative inline-block after:content-[''] after:absolute after:bottom-0 after:left-0 
     after:h-px after:bg-current after:w-0 after:transition-all 
-    after:duration-300 after:ease-in-out hover:after:w-full">
-    Estatísticas
-  </span>
+    after:duration-300 after:ease-in-out hover:after:w-full"
+              >
+                Estatísticas
+              </span>
             </Link>
           </li>
         </ul>

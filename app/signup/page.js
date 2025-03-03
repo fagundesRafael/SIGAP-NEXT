@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
+import { gerarPDFTermos } from "@/components/TermosUso";
 
 export default function SignupPage() {
   const [nome, setNome] = useState("");
@@ -13,7 +14,21 @@ export default function SignupPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const router = useRouter();
+
+  const handleDownload = async () => {
+    try {
+      setDownloading(true);
+      const pdf = gerarPDFTermos();
+      pdf.save('termos-uso-sigap.pdf');
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      alert('Erro ao gerar o PDF. Por favor, tente novamente.');
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -96,14 +111,24 @@ export default function SignupPage() {
           required
         />
         {errorMsg && <p className="text-red-500 mx-auto text-sm">{errorMsg}</p>}
+        
+        {/* Link para download dos termos */}
+        <button
+          type="button"
+          onClick={handleDownload}
+          disabled={downloading}
+          className="text-blue-500 hover:underline text-xs mb-2 text-center"
+        >
+          {downloading ? 'Baixando...' : 'Clique aqui para ler os termos de uso e política de privacidade'}
+        </button>
+        
         <div className="flex mx-auto gap-1 text-white text-xs items-center">
-          {/* Checkbox */}
           <input
             type="checkbox"
             checked={checked}
             onChange={(e) => setChecked(e.target.checked)}
             className="border border-gray-500 rounded"
-          ></input>
+          />
           <p>Eu li e aceito os termos de uso e política de privacidade</p>
         </div>
         <button
