@@ -219,14 +219,18 @@ export default function Sidebar() {
           <li className="flex ml-2 items-center">
             <IoStatsChart />
             <Link
-              href="/configs"
-              className={`block p-1 rounded  ml-1 cursor-not-allowed ${
-                isActive("/logs")
+              href="/estatistica"
+              className={`block p-1 rounded  ml-1 cursor-pointer ${
+                isActive("/estatistica")
                   ? "bg-c_deep_gray_black py-1 text-white w-full"
                   : ""
               }`}
             >
-              logs
+              <span className="relative inline-block after:content-[''] after:absolute after:bottom-0 after:left-0 
+    after:h-px after:bg-current after:w-0 after:transition-all 
+    after:duration-300 after:ease-in-out hover:after:w-full">
+    Estatísticas
+  </span>
             </Link>
           </li>
         </ul>

@@ -61,13 +61,13 @@ export default function SessionOutrosObjetos({ outrosobjetos, setOutrosObjetos }
       </div>
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
-        <h3 className="font-bold">Marcas Registradas (Outros objetos):</h3>
+        <h3 className="font-bold text-white text-sm mb-1">Marcas Registradas (Outros objetos):</h3>
         {outrosobjetos.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (
           <ul>
             {outrosobjetos.map((brand, idx) => (
-              <li key={idx} className="flex flex-wrap  text-[11px] items-center gap-2">
+              <li key={idx} className="flex flex-wrap text-white text-[11px] items-center gap-2 border-b-[1px]">
                 {brand}
                 <button type="button" onClick={() => requestDeleteBrand(brand)} className="text-red-500">
                   <TiDeleteOutline size={20} />

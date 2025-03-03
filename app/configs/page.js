@@ -56,6 +56,45 @@ export default function ConfigsPage() {
   const [eletro, setEletro] = useState([]);
   const [outrosobjetos, setOutrosObjetos] = useState([]);
 
+  // Adicionar estado para controlar quais seções estão expandidas
+  const [expandedSections, setExpandedSections] = useState({
+    automotores: false,
+    belicos: false,
+    veiculosNaoMotorizados: false,
+    eletroeletronicos: false,
+    outrosObjetos: false
+  });
+
+  // Estado para controlar a visibilidade dos cards
+  const [visibleCards, setVisibleCards] = useState([]);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Função para alternar a expansão de uma seção
+  const toggleSection = (section) => {
+    setExpandedSections({
+      ...expandedSections,
+      [section]: !expandedSections[section]
+    });
+  };
+
+  useEffect(() => {
+    // Ativa a animação de fade-in após o componente ser montado
+    setIsVisible(true);
+
+    // Efeito cascata para os cards
+    const sectionCards = ['automotores', 'belicos', 'veiculosNaoMotorizados', 'eletroeletronicos', 'outrosObjetos'];
+    
+    // Limpa os cards visíveis
+    setVisibleCards([]);
+    
+    // Adiciona os cards um por um com um pequeno atraso
+    sectionCards.forEach((_, index) => {
+      setTimeout(() => {
+        setVisibleCards(prev => [...prev, index]);
+      }, index * 120); // 120ms de atraso entre cada card (total ~600ms)
+    });
+  }, []);
+
   useEffect(() => {
     async function fetchConfigs() {
       try {
@@ -106,7 +145,12 @@ export default function ConfigsPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) {
+      e.preventDefault();
+    }
+    
+    console.log("Função handleSubmit iniciada");
+    
     const configData = {
       carros,
       motos,
@@ -128,16 +172,22 @@ export default function ConfigsPage() {
       eletro,
       outrosobjetos,
     };
+    
     try {
+      console.log("Iniciando chamada à API");
       const res = await fetch("/api/configs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(configData),
       });
+      console.log("Resposta da API:", res.status);
+      
       if (res.ok) {
+        console.log("Configurações salvas com sucesso");
         showAlert("Configurações salvas com sucesso!");
       } else {
         const data = await res.json();
+        console.error("Erro na resposta da API:", data);
         showAlert("Erro: " + (data.error || "Erro ao salvar configuração."));
       }
     } catch (error) {
@@ -147,13 +197,33 @@ export default function ConfigsPage() {
   };
 
   return (
-    <div className="min-h-screen p-2 rounded-md bg-c_deep_black text-white border border-gray-500 shadow">
-      <h1 className="text-sm font-bold mb-2">Configurações de Registros:</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="flex flex-wrap justify-between text-xs font-mono max-w-full">
-          {/* Automotores */}
-          <div className="mb-2 border border-slate-700 rounded p-2">
-            <label>Automotores:</label>
+    <div className="container font-mono mx-auto p-2 bg-c_deep_black rounded-lg border border-gray-500">
+      <h1 className="text-xs font-bold text-white mb-2 text-primary">Configurações</h1>
+      
+      {/* Seção Automotores */}
+      <div 
+        className={`border border-gray-500 mb-1 rounded-sm transition-opacity duration-600 ease-in-out ${
+          isVisible && visibleCards.includes(0) ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <button 
+          type="button"
+          onClick={() => toggleSection('automotores')}
+          className="w-full flex justify-between items-center p-1 bg-blue-800 hover:bg-blue-700 text-slate-100 text-left text-xs font-medium text-primary"
+        >
+          <span>Automotores:</span>
+          <svg 
+            className={`w-5 h-5 transition-transform ${expandedSections.automotores ? 'transform rotate-180' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        
+        {expandedSections.automotores && (
+          <div className="p-4">
             <SectionCarros carros={carros} setCarros={setCarros} />
             <SectionMotos motos={motos} setMotos={setMotos} />
             <SectionCaminhonetes
@@ -170,9 +240,33 @@ export default function ConfigsPage() {
               setOutrosAutomotores={setOutrosAutomotores}
             />
           </div>
-          {/* Bélicos */}
-          <div className="mb-2 border border-slate-700 rounded p-2">
-            <label>Bélicos:</label>
+        )}
+      </div>
+      
+      {/* Seção Bélicos */}
+      <div 
+        className={`border border-gray-500 mb-1 rounded-sm transition-opacity duration-600 ease-in-out ${
+          isVisible && visibleCards.includes(1) ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <button 
+          type="button"
+          onClick={() => toggleSection('belicos')}
+          className="w-full flex justify-between items-center p-1 bg-blue-800 hover:bg-blue-700 text-slate-100 text-left text-xs font-medium text-primary"
+        >
+          <span>Bélicos:</span>
+          <svg 
+            className={`w-5 h-5 transition-transform ${expandedSections.belicos ? 'transform rotate-180' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        
+        {expandedSections.belicos && (
+          <div className="p-4">
             <SectionArmas armas={armas} setArmas={setArmas} />
             <SectionMunicao municoes={municoes} setMunicoes={setMunicoes} />
             <SectionOutrosBelicos
@@ -180,9 +274,33 @@ export default function ConfigsPage() {
               setOutrosBelicos={setOutrosBelicos}
             />
           </div>
-          {/* Veículos não motorizados */}
-          <div className="mb-2 border border-slate-700 rounded p-2">
-            <label>Veículos não motorizados:</label>
+        )}
+      </div>
+      
+      {/* Seção Veículos não motorizados */}
+      <div 
+        className={`border border-gray-500 mb-1 rounded-sm transition-opacity duration-600 ease-in-out ${
+          isVisible && visibleCards.includes(2) ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <button 
+          type="button"
+          onClick={() => toggleSection('veiculosNaoMotorizados')}
+          className="w-full flex justify-between items-center p-1 bg-blue-800 hover:bg-blue-700 text-slate-100 text-left text-xs font-medium text-primary"
+        >
+          <span>Veículos não motorizados:</span>
+          <svg 
+            className={`w-5 h-5 transition-transform ${expandedSections.veiculosNaoMotorizados ? 'transform rotate-180' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        
+        {expandedSections.veiculosNaoMotorizados && (
+          <div className="p-4">
             <SectionBicicletas
               bicicletas={bicicletas}
               setBicicletas={setBicicletas}
@@ -192,9 +310,33 @@ export default function ConfigsPage() {
               setOutronaomotorizado={setOutronaomotorizado}
             />
           </div>
-          {/* Eletroeletrônicos */}
-          <div className="mb-2 border border-slate-700 rounded p-2">
-            <label>Eletroeletrônicos:</label>
+        )}
+      </div>
+      
+      {/* Seção Eletroeletrônicos */}
+      <div 
+        className={`border border-gray-500 mb-1 rounded-sm transition-opacity duration-600 ease-in-out ${
+          isVisible && visibleCards.includes(3) ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <button 
+          type="button"
+          onClick={() => toggleSection('eletroeletronicos')}
+          className="w-full flex justify-between items-center p-1 bg-blue-800 hover:bg-blue-700 text-slate-100 text-left text-xs font-medium text-primary"
+        >
+          <span>Eletroeletrônicos:</span>
+          <svg 
+            className={`w-5 h-5 transition-transform ${expandedSections.eletroeletronicos ? 'transform rotate-180' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        
+        {expandedSections.eletroeletronicos && (
+          <div className="p-4">
             <SectionGeladeira
               geladeiras={geladeiras}
               setGeladeiras={setGeladeiras}
@@ -217,25 +359,54 @@ export default function ConfigsPage() {
               setOutroeletroeletronicos={setOutroeletroeletronicos}
             />
           </div>
-          {/* Outros objetos */}
-          <div className="mb-2 border border-slate-700 rounded p-2">
-            <label>Outros objetos:</label>
+        )}
+      </div>
+      
+      {/* Seção Outros objetos */}
+      <div 
+        className={`border border-gray-500 mb-1 rounded-sm transition-opacity duration-600 ease-in-out ${
+          isVisible && visibleCards.includes(4) ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <button 
+          type="button"
+          onClick={() => toggleSection('outrosObjetos')}
+          className="w-full flex justify-between items-center p-1 bg-blue-800 hover:bg-blue-700 text-slate-100 text-left text-xs font-medium text-primary"
+        >
+          <span>Outros objetos:</span>
+          <svg 
+            className={`w-5 h-5 transition-transform ${expandedSections.outrosObjetos ? 'transform rotate-180' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        
+        {expandedSections.outrosObjetos && (
+          <div className="p-4">
             <SectionOutros
               outrosobjetos={outrosobjetos}
               setOutrosObjetos={setOutrosObjetos}
             />
           </div>
-        </div>
-        <div>
-          <button
-            type="submit"
-            className="mt-4 p-2 bg-green-500 rounded hover:bg-green-600"
-          >
-            Salvar Configurações
-          </button>
-        </div>
-      </form>
-      <hr className="my-4 border-gray-300" />
+        )}
+      </div>
+      
+      <div className="flex justify-end mt-4">
+        <button 
+          type="button" 
+          onClick={() => {
+            console.log("Botão Salvar clicado");
+            handleSubmit();
+          }}
+          className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-500"
+        >
+          Salvar
+        </button>
+      </div>
+      
       {showNotification && (
         <NotificationModal
           message={notificationMessage}

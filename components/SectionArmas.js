@@ -164,13 +164,13 @@ export default function SessionArmas({ armas, setArmas }) {
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
-        <h3 className="font-bold">Marcas, modelos e calibres registrados (Armas):</h3>
+        <h3 className="font-bold text-white text-sm mb-1">Marcas, modelos e calibres registrados (Armas):</h3>
         {armas.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (
           <ul>
             {armas.map((item, idx) => (
-              <li key={idx} className="flex flex-wrap items-center gap-2 border-b-[1px]">
+              <li key={idx} className="flex text-white flex-wrap items-center gap-2 border-b-[1px]">
                 <strong>{item.marca}</strong>
                 <button onClick={() => requestDeleteBrand(item.marca)} className="text-red-500 ml-2">
                   <TiDeleteOutline size={14} />

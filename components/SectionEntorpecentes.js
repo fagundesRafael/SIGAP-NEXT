@@ -69,13 +69,13 @@ export default function SessionEntorpecentes({ entorpecentes, setEntorpecentes }
       </div>
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
-        <h3 className="font-bold">Tipos Registrados:</h3>
+        <h3 className="font-bold text-white text-sm mb-1">Tipos Registrados:</h3>
         {entorpecentes.length === 0 ? (
           <p>Nenhum tipo registrado.</p>
         ) : (
           <ul>
             {entorpecentes.map((tipo, idx) => (
-              <li key={idx} className="flex flex-wrap items-center gap-2">
+              <li key={idx} className="flex text-white flex-wrap items-center gap-2">
                 {tipo}
                 <button
                   type="button"

@@ -119,13 +119,13 @@ export default function SectionOutroEletroEletronico({ outroeletroeletronicos, s
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
-        <h3 className="font-bold">Marcas e Modelos Registrados (Outros Eletroeletrônicos):</h3>
+        <h3 className="font-bold text-white text-sm mb-1">Marcas e Modelos Registrados (Outros Eletroeletrônicos):</h3>
         {outroeletroeletronicos.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (
           <ul>
             {outroeletroeletronicos.map((item, idx) => (
-              <li key={idx} className="flex flex-wrap items-center gap-2 border-b-[1px]">
+              <li key={idx} className="flex text-white flex-wrap items-center gap-2 border-b-[1px]">
                 <strong>{item.marca}</strong>
                 <button onClick={() => requestDeleteBrand(item.marca)} className="text-red-500">
                   <TiDeleteOutline size={14} />

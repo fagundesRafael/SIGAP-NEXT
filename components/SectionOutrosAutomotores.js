@@ -138,13 +138,13 @@ export default function SectionOutrosAutomotores({ outrosautomotores, setOutrosA
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="mt-2 text-[11px]">
-        <h3 className="font-bold">Marcas e Modelos Registrados (Outros automotores):</h3>
+        <h3 className="font-bold text-white text-sm mb-1">Marcas e Modelos Registrados (Outros automotores):</h3>
         {outrosautomotores.length === 0 ? (
           <p>Nenhuma marca registrada.</p>
         ) : (
           <ul>
             {outrosautomotores.map((automotor, idx) => (
-              <li key={idx} className="flex flex-wrap items-center gap-2 border-b-[1px]">
+              <li key={idx} className="flex text-white flex-wrap items-center gap-2 border-b-[1px]">
                 <strong>{automotor.marca}</strong>
                 <button
                   onClick={() => requestDeleteBrand(automotor.marca)}
