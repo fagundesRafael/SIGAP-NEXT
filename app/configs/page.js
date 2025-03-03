@@ -13,7 +13,6 @@ import SectionOutroNaoMotorizado from "@/components/SectionOutroNaoMotorizado";
 import SectionArmas from "@/components/SectionArmas";
 import SectionMunicao from "@/components/SectionMunicao";
 import SectionOutrosBelicos from "@/components/SectionOutrosBelicos";
-import SectionEntorpecentes from "@/components/SectionEntorpecentes";
 import SectionGeladeira from "@/components/SectionGeladeira";
 import SectionFogao from "@/components/SectionFogao";
 import SectionComputador from "@/components/SectionComputador";
@@ -85,7 +84,6 @@ export default function ConfigsPage() {
             setNotebooks(config.notebooks || []);
             setTelevisores(config.televisores || []);
             setOutroeletroeletronicos(config.outroeletroeletronicos || []);
-            setEntorpecentes(config.entorpecentes || []);
             setEletro(config.eletro || []);
             setOutrosObjetos(config.outrosobjetos || []);
           }
@@ -127,7 +125,6 @@ export default function ConfigsPage() {
       notebooks,
       televisores,
       outroeletroeletronicos,
-      entorpecentes,
       eletro,
       outrosobjetos,
     };
@@ -220,11 +217,6 @@ export default function ConfigsPage() {
               setOutroeletroeletronicos={setOutroeletroeletronicos}
             />
           </div>
-          {/* Entorpecentes */}
-          <SectionEntorpecentes
-            entorpecentes={entorpecentes}
-            setEntorpecentes={setEntorpecentes}
-          />
           {/* Outros objetos */}
           <div className="mb-2 border border-slate-700 rounded p-2">
             <label>Outros objetos:</label>

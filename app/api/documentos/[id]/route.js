@@ -5,7 +5,7 @@ import Documentos from "@/models/Documentos";
 export async function GET(request, { params }) {
   try {
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
     const record = await Documentos.findById(id);
     if (!record) {
       return new Response(JSON.stringify({ error: "Registro não encontrado" }), { status: 404 });
@@ -20,7 +20,7 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     await dbConnect();
-    const { id } = params;
+    const { id } = awaitparams;
     const body = await request.json();
     
     // Validações para os campos obrigatórios

@@ -5,7 +5,7 @@ import EletroEletronicos from "@/models/EletroEletronicos";
 export async function GET(request, { params }) {
   try {
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
     const record = await EletroEletronicos.findById(id);
     if (!record) {
       return new Response(JSON.stringify({ error: "Registro não encontrado" }), { status: 404 });
@@ -20,7 +20,7 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
   try {
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     if (body.status === "apreendido" && !body.destino) {
       return new Response(JSON.stringify({ error: "Campo destino é obrigatório para status 'apreendido'" }), { status: 400 });
