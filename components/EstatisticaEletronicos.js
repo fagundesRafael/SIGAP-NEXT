@@ -31,8 +31,8 @@ ChartJS.register(
   Legend
 );
 
-export default function EstatisticaAutomotores() {
-  const [veiculos, setVeiculos] = useState([]);
+export default function EstatisticaEletronicos() {
+  const [eletronicos, setEletronicos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [gerando, setGerando] = useState(false);
@@ -41,7 +41,7 @@ export default function EstatisticaAutomotores() {
   const estatisticasRef = useRef(null);
 
   // Dados processados para os gráficos
-  const [totalApreendidosPatioCount, setTotalApreendidosPatioCount] = useState(0);
+  const [totalApreendidosCount, setTotalApreendidosCount] = useState(0);
   const [statusData, setStatusData] = useState({ labels: [], data: [] });
   const [tiposData, setTiposData] = useState({ labels: [], data: [] });
   const [marcasModelosData, setMarcasModelosData] = useState({ labels: [], datasets: [] });
@@ -49,47 +49,44 @@ export default function EstatisticaAutomotores() {
   const [procedimentosData, setProcedimentosData] = useState({ labels: [], data: [] });
 
   useEffect(() => {
-    async function fetchVeiculos() {
+    async function fetchEletronicos() {
       try {
         setLoading(true);
-        const res = await fetch('/api/automotores?limit=1000');
+        const res = await fetch('/api/eletroeletronicos?limit=1000');
         if (!res.ok) {
-          throw new Error('Falha ao buscar dados de automotores');
+          throw new Error('Falha ao buscar dados de eletroeletrônicos');
         }
         const data = await res.json();
-        setVeiculos(data.veiculos || []);
+        setEletronicos(data.records || []);
       } catch (err) {
-        console.error('Erro ao buscar veículos:', err);
+        console.error('Erro ao buscar eletroeletrônicos:', err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchVeiculos();
+    fetchEletronicos();
   }, []);
 
   useEffect(() => {
-    if (veiculos.length > 0) {
+    if (eletronicos.length > 0) {
       processarDados();
     }
-  }, [veiculos]);
+  }, [eletronicos]);
 
   const processarDados = () => {
-    // 1. Total de automotores apreendidos no pátio
-    const apreendidosNoPatio = veiculos.filter(v =>
-      v.classe === 'automotor' &&
-      v.status === 'apreendido' &&
-      v.destino === 'pátio'
+    // 1. Total de eletroeletrônicos apreendidos no depósito ou cartório
+    const apreendidosDepositoCartorio = eletronicos.filter(e =>
+      e.status === 'apreendido' &&
+      (e.destino === 'depósito' || e.destino === 'cartório')
     );
-    setTotalApreendidosPatioCount(apreendidosNoPatio.length);
+    setTotalApreendidosCount(apreendidosDepositoCartorio.length);
 
     // 2. Gráfico de pizza por status
     const statusCount = {};
-    veiculos.forEach(v => {
-      if (v.classe === 'automotor') {
-        statusCount[v.status] = (statusCount[v.status] || 0) + 1;
-      }
+    eletronicos.forEach(e => {
+      statusCount[e.status] = (statusCount[e.status] || 0) + 1;
     });
     setStatusData({
       labels: Object.keys(statusCount),
@@ -98,11 +95,12 @@ export default function EstatisticaAutomotores() {
 
     // 3. Gráfico de pizza por tipo/customTipo
     const tiposCount = {};
-    veiculos.forEach(v => {
-      if (v.classe === 'automotor') {
-        const tipo = v.customTipo || v.tipo;
-        tiposCount[tipo] = (tiposCount[tipo] || 0) + 1;
-      }
+    eletronicos.forEach(e => {
+      const tipo = e.customTipo || e.tipo;
+      const quantidade = parseFloat(e.quantidade) || 1;
+      const unidade = e.unidMedida || 'un';
+      const tipoKey = `${tipo} (${quantidade} ${unidade})`;
+      tiposCount[tipoKey] = (tiposCount[tipoKey] || 0) + 1;
     });
     setTiposData({
       labels: Object.keys(tiposCount),
@@ -111,13 +109,13 @@ export default function EstatisticaAutomotores() {
 
     // 4. Gráfico de barras por marca/modelo
     const marcasModelos = {};
-    veiculos.forEach(v => {
-      if (v.classe === 'automotor' && v.marca) {
-        if (!marcasModelos[v.marca]) {
-          marcasModelos[v.marca] = {};
+    eletronicos.forEach(e => {
+      if (e.marca) {
+        if (!marcasModelos[e.marca]) {
+          marcasModelos[e.marca] = {};
         }
-        const modelo = v.modelo || 'Não especificado';
-        marcasModelos[v.marca][modelo] = (marcasModelos[v.marca][modelo] || 0) + 1;
+        const modelo = e.modelo || 'Não especificado';
+        marcasModelos[e.marca][modelo] = (marcasModelos[e.marca][modelo] || 0) + 1;
       }
     });
 
@@ -164,9 +162,9 @@ export default function EstatisticaAutomotores() {
 
     // 5. Gráfico de linha para cronologia
     const dataRegistros = {};
-    veiculos.forEach(v => {
-      if (v.classe === 'automotor' && v.data) {
-        const data = new Date(v.data).toLocaleDateString();
+    eletronicos.forEach(e => {
+      if (e.data) {
+        const data = new Date(e.data).toLocaleDateString();
         dataRegistros[data] = (dataRegistros[data] || 0) + 1;
       }
     });
@@ -181,9 +179,9 @@ export default function EstatisticaAutomotores() {
 
     // 6. Gráfico de barras para procedimentos
     const procedimentosCount = {};
-    veiculos.forEach(v => {
-      if (v.classe === 'automotor' && v.procedimento) {
-        procedimentosCount[v.procedimento] = (procedimentosCount[v.procedimento] || 0) + 1;
+    eletronicos.forEach(e => {
+      if (e.procedimento) {
+        procedimentosCount[e.procedimento] = (procedimentosCount[e.procedimento] || 0) + 1;
       }
     });
 
@@ -226,7 +224,7 @@ export default function EstatisticaAutomotores() {
       pdf.setFillColor(29, 29, 27);
       pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
       pdf.setFontSize(18);
-      pdf.text('Relatório de Estatísticas - Automotores', pdfWidth / 2, 15, { align: 'center' });
+      pdf.text('Relatório de Estatísticas - Eletroeletrônicos', pdfWidth / 2, 15, { align: 'center' });
 
       // Adiciona a imagem dos gráficos
       const imgWidth = pdfWidth - 20;
@@ -241,8 +239,8 @@ export default function EstatisticaAutomotores() {
       pdf.setFontSize(12);
       let y = yPos + 10;
 
-      // Total de automotores apreendidos no pátio
-      pdf.text(`Total de automotores apreendidos no pátio: ${totalApreendidosPatioCount}`, 15, y);
+      // Total de eletroeletrônicos apreendidos
+      pdf.text(`Total de eletroeletrônicos apreendidos no depósito/cartório: ${totalApreendidosCount}`, 15, y);
       y += 8;
 
       // Distribuição por status
@@ -255,15 +253,27 @@ export default function EstatisticaAutomotores() {
       y += 2;
 
       // Distribuição por tipo
+      if (y > pdfHeight - 40) {
+        pdf.addPage();
+        pdf.setFillColor(29, 29, 27);
+        pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+        y = 20;
+      }
+
       pdf.text('Distribuição por Tipo:', 15, y);
       y += 6;
       tiposData.labels.forEach((label, index) => {
         pdf.text(`- ${label}: ${tiposData.data[index]}`, 20, y);
         y += 6;
+        if (y > pdfHeight - 20 && index < tiposData.labels.length - 1) {
+          pdf.addPage();
+          pdf.setFillColor(29, 29, 27);
+          pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+          y = 20;
+        }
       });
-      y += 2;
 
-      // Nova seção: Distribuição por Procedimento
+      // Distribuição por Procedimento
       if (y > pdfHeight - 40) {
         pdf.addPage();
         pdf.setFillColor(29, 29, 27);
@@ -289,7 +299,7 @@ export default function EstatisticaAutomotores() {
       pdf.text(`Relatório gerado em: ${new Date().toLocaleString()}`, pdfWidth / 2, pdfHeight - 10, { align: 'center' });
 
       // Salva o PDF
-      pdf.save('relatorio-automotores.pdf');
+      pdf.save('relatorio-eletroeletronicos.pdf');
     } catch (err) {
       console.error('Erro ao gerar PDF:', err);
       alert('Erro ao gerar o PDF. Por favor, tente novamente.');
@@ -408,7 +418,6 @@ export default function EstatisticaAutomotores() {
     }
   };
 
-  // Configuração específica para o gráfico de barras verticais
   const barVerticalOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -467,7 +476,7 @@ export default function EstatisticaAutomotores() {
   return (
     <div className="w-full">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold">Estatísticas de Automotores</h2>
+        <h2 className="text-lg font-bold">Estatísticas de Eletroeletrônicos</h2>
         <button 
           onClick={gerarPDF} 
           disabled={gerando}
@@ -485,9 +494,9 @@ export default function EstatisticaAutomotores() {
             {/* Card principal - Ocupa 45% da largura */}
             <div className="flex-1 min-w-[45%] h-[300px] bg-c_deep_middle_black rounded-lg shadow-lg p-4 border border-gray-700">
               <div className="flex flex-col h-full justify-center items-center">
-                <h2 className="text-xl font-semibold mb-2">Automotores Apreendidos no Pátio</h2>
-                <div className="text-5xl font-bold text-blue-400 mb-2">{totalApreendidosPatioCount}</div>
-                <p className="text-sm text-center text-gray-400">Total de veículos automotores com status "apreendido" e destino "pátio"</p>
+                <h2 className="text-xl font-semibold mb-2">Eletroeletrônicos Apreendidos no Depósito/Cartório</h2>
+                <div className="text-5xl font-bold text-blue-400 mb-2">{totalApreendidosCount}</div>
+                <p className="text-sm text-center text-gray-400">Total de eletroeletrônicos com status "apreendido" e destino "depósito" ou "cartório"</p>
               </div>
             </div>
 

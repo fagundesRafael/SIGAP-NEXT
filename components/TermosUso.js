@@ -5,8 +5,8 @@ import jsPDF from 'jspdf';
 
 export const textoTermos = {
   titulo: "Termos de Uso e Política de Privacidade - SIGAP",
-  subtitulo: "Sistema Integrado de Gestão e Acompanhamento Patrimonial",
-  sobre: `O SIGAP (Sistema Integrado de Gestão e Acompanhamento Patrimonial) é uma aplicação web desenvolvida para gerenciar e controlar o patrimônio apreendido ou custodiado por órgãos públicos ou empresas privadas. O sistema oferece funcionalidades abrangentes para o registro, acompanhamento, controle e geração de relatórios estatísticos sobre bens patrimoniais sob custódia institucional.`,
+  subtitulo: "Sistema Integrado de Gestão de Apreensões Policiais",
+  sobre: `O SIGAP (Sistema Integrado de Gestão de Apreensões Policiais) é uma aplicação web desenvolvida para gerenciar e controlar o patrimônio apreendido ou custodiado por órgãos públicos ou empresas privadas. O sistema oferece funcionalidades abrangentes para o registro, acompanhamento, controle e geração de relatórios estatísticos sobre bens patrimoniais sob custódia institucional.`,
   
   finalidade: `A aplicação tem como finalidade principal otimizar e digitalizar os processos de gestão patrimonial, garantindo maior transparência, eficiência e segurança no tratamento das informações relacionadas aos bens sob custódia institucional.`,
   
@@ -48,7 +48,69 @@ export function gerarPDFTermos() {
   const pdf = new jsPDF();
   const margemEsquerda = 20;
   const larguraMaxima = pdf.internal.pageSize.width - 40;
-  let posicaoY = 20;
+  const pdfWidth = pdf.internal.pageSize.width;
+  const pdfHeight = pdf.internal.pageSize.height;
+  let posicaoY = 70; // Aumentado para dar mais espaço ao cabeçalho
+
+  // Função para adicionar cabeçalho em cada página
+  const adicionarCabecalho = () => {
+    // Adiciona logo SIGAP grande
+    pdf.addImage('/sigap_full-logo.png', 'PNG', margemEsquerda, 15, 50, 20);
+    
+    // Adiciona texto empresarial
+    pdf.setFontSize(10);
+    pdf.setTextColor(100);
+    pdf.setFont(undefined, 'normal');
+    pdf.text('Soluções Integradas para Gestão de Apreensões Policiais', margemEsquerda + 55, 25);
+    
+    // Adiciona significado da sigla
+    pdf.setFontSize(8);
+    pdf.setTextColor(80);
+    pdf.text('SISTEMA INTEGRADO DE GESTÃO DE APREENSÕES POLICIAIS', margemEsquerda + 55, 32);
+    
+    // Linha divisória
+    pdf.setDrawColor(200);
+    pdf.line(margemEsquerda, 45, pdfWidth - margemEsquerda, 45);
+  };
+
+  // Função para adicionar rodapé em cada página
+  const adicionarRodape = (numeroPagina) => {
+    const rodapeY = pdfHeight - 25;
+    const rodapeHeight = 20;
+    
+    // Retângulo branco para o rodapé
+    pdf.setFillColor(255, 255, 255);
+    pdf.rect(0, pdfHeight - rodapeHeight, pdfWidth, rodapeHeight, 'F');
+    
+    // Linha divisória superior
+    pdf.setDrawColor(200);
+    pdf.line(margemEsquerda, pdfHeight - rodapeHeight, pdfWidth - margemEsquerda, pdfHeight - rodapeHeight);
+    
+    // Centraliza o conteúdo do rodapé
+    const centroX = pdfWidth / 2;
+    
+    // Adiciona logo do cadeado
+    pdf.addImage('/sigap_padlock.png', 'PNG', centroX - 20, rodapeY - 8, 6, 6);
+    
+    // Adiciona logo SIGAP
+    pdf.addImage('/sigap.png', 'PNG', centroX - 12, rodapeY - 9, 24, 8);
+    
+    // Texto SIGAP significado
+    pdf.setFontSize(6);
+    pdf.setTextColor(80);
+    pdf.text('SISTEMA INTEGRADO DE GESTÃO DE APREENSÕES POLICIAIS', centroX, rodapeY + 2, { align: 'center' });
+    
+    // Texto direitos reservados e created by
+    pdf.setFontSize(7);
+    pdf.setTextColor(200, 0, 0); // Vermelho similar ao text-c_logo_red
+    pdf.text('Todos os direitos reservados', centroX, rodapeY + 6, { align: 'center' });
+    pdf.text('created by: fagundesrafael', centroX, rodapeY + 10, { align: 'center' });
+    
+    // Número da página (discreto, no canto)
+    pdf.setTextColor(150);
+    pdf.setFontSize(8);
+    pdf.text(`${numeroPagina}`, pdfWidth - 15, pdfHeight - 10);
+  };
 
   // Função auxiliar para adicionar texto com quebra de linha
   const adicionarTextoComQuebra = (texto, tamanhoFonte = 12, espacamento = 7) => {
@@ -59,9 +121,14 @@ export function gerarPDFTermos() {
     posicaoY += 5; // Espaço extra entre seções
   };
 
+  // Adiciona primeira página
+  let numeroPagina = 1;
+  adicionarCabecalho();
+
   // Título
   pdf.setFontSize(16);
   pdf.setFont(undefined, 'bold');
+  pdf.setTextColor(0);
   adicionarTextoComQuebra(textoTermos.titulo, 16, 10);
 
   // Subtítulo
@@ -86,14 +153,17 @@ export function gerarPDFTermos() {
   ];
 
   secoes.forEach(secao => {
-    // Verifica se precisa de nova página
-    if (posicaoY > pdf.internal.pageSize.height - 40) {
+    if (posicaoY > pdfHeight - 50) { // Ajustado para dar mais espaço ao rodapé
+      adicionarRodape(numeroPagina);
       pdf.addPage();
-      posicaoY = 20;
+      numeroPagina++;
+      posicaoY = 70;
+      adicionarCabecalho();
     }
 
     // Título da seção
     pdf.setFont(undefined, 'bold');
+    pdf.setTextColor(0);
     adicionarTextoComQuebra(secao.titulo, 12, 7);
     
     // Conteúdo da seção
@@ -101,10 +171,13 @@ export function gerarPDFTermos() {
     adicionarTextoComQuebra(secao.conteudo, 12, 7);
   });
 
-  // Adiciona data de geração
-  pdf.setFontSize(10);
-  pdf.setTextColor(100);
-  pdf.text(`Documento gerado em: ${new Date().toLocaleString()}`, margemEsquerda, pdf.internal.pageSize.height - 20);
+  // Adiciona rodapé na última página
+  adicionarRodape(numeroPagina);
+
+  // Data de geração (agora mais discreta, acima do rodapé)
+  pdf.setFontSize(7);
+  pdf.setTextColor(130);
+  pdf.text(`Documento gerado em: ${new Date().toLocaleString()}`, margemEsquerda, pdfHeight - 30);
 
   return pdf;
 }

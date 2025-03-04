@@ -234,7 +234,7 @@ export default function ConfigsPage() {
               caminhoes={caminhoes}
               setCaminhoes={setCaminhoes}
             />
-            <SectionTratores tratores={tratores} SetTratores={setTratores} />
+            <SectionTratores tratores={tratores} setTratores={setTratores} />
             <SectionOutrosAutomotores
               outrosautomotores={outrosautomotores}
               setOutrosAutomotores={setOutrosAutomotores}

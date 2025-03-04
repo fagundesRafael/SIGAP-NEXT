@@ -31,7 +31,7 @@ ChartJS.register(
   Legend
 );
 
-export default function EstatisticaAutomotores() {
+export default function EstatisticaNaoMotorizados() {
   const [veiculos, setVeiculos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,9 +52,9 @@ export default function EstatisticaAutomotores() {
     async function fetchVeiculos() {
       try {
         setLoading(true);
-        const res = await fetch('/api/automotores?limit=1000');
+        const res = await fetch('/api/naomotorizados?limit=1000');
         if (!res.ok) {
-          throw new Error('Falha ao buscar dados de automotores');
+          throw new Error('Falha ao buscar dados de veículos não motorizados');
         }
         const data = await res.json();
         setVeiculos(data.veiculos || []);
@@ -76,9 +76,8 @@ export default function EstatisticaAutomotores() {
   }, [veiculos]);
 
   const processarDados = () => {
-    // 1. Total de automotores apreendidos no pátio
+    // 1. Total de veículos não motorizados apreendidos no pátio
     const apreendidosNoPatio = veiculos.filter(v =>
-      v.classe === 'automotor' &&
       v.status === 'apreendido' &&
       v.destino === 'pátio'
     );
@@ -87,9 +86,7 @@ export default function EstatisticaAutomotores() {
     // 2. Gráfico de pizza por status
     const statusCount = {};
     veiculos.forEach(v => {
-      if (v.classe === 'automotor') {
-        statusCount[v.status] = (statusCount[v.status] || 0) + 1;
-      }
+      statusCount[v.status] = (statusCount[v.status] || 0) + 1;
     });
     setStatusData({
       labels: Object.keys(statusCount),
@@ -99,10 +96,8 @@ export default function EstatisticaAutomotores() {
     // 3. Gráfico de pizza por tipo/customTipo
     const tiposCount = {};
     veiculos.forEach(v => {
-      if (v.classe === 'automotor') {
-        const tipo = v.customTipo || v.tipo;
-        tiposCount[tipo] = (tiposCount[tipo] || 0) + 1;
-      }
+      const tipo = v.customTipo || v.tipo;
+      tiposCount[tipo] = (tiposCount[tipo] || 0) + 1;
     });
     setTiposData({
       labels: Object.keys(tiposCount),
@@ -112,7 +107,7 @@ export default function EstatisticaAutomotores() {
     // 4. Gráfico de barras por marca/modelo
     const marcasModelos = {};
     veiculos.forEach(v => {
-      if (v.classe === 'automotor' && v.marca) {
+      if (v.marca) {
         if (!marcasModelos[v.marca]) {
           marcasModelos[v.marca] = {};
         }
@@ -163,26 +158,26 @@ export default function EstatisticaAutomotores() {
     });
 
     // 5. Gráfico de linha para cronologia
-    const dataRegistros = {};
+    const registrosPorData = {};
     veiculos.forEach(v => {
-      if (v.classe === 'automotor' && v.data) {
+      if (v.data) {
         const data = new Date(v.data).toLocaleDateString();
-        dataRegistros[data] = (dataRegistros[data] || 0) + 1;
+        registrosPorData[data] = (registrosPorData[data] || 0) + 1;
       }
     });
 
     // Ordenando as datas
-    const datasOrdenadas = Object.keys(dataRegistros).sort((a, b) => new Date(a) - new Date(b));
+    const datasOrdenadas = Object.keys(registrosPorData).sort((a, b) => new Date(a) - new Date(b));
 
     setCronologiaData({
       labels: datasOrdenadas,
-      data: datasOrdenadas.map(data => dataRegistros[data])
+      data: datasOrdenadas.map(data => registrosPorData[data])
     });
 
     // 6. Gráfico de barras para procedimentos
     const procedimentosCount = {};
     veiculos.forEach(v => {
-      if (v.classe === 'automotor' && v.procedimento) {
+      if (v.procedimento) {
         procedimentosCount[v.procedimento] = (procedimentosCount[v.procedimento] || 0) + 1;
       }
     });
@@ -226,7 +221,7 @@ export default function EstatisticaAutomotores() {
       pdf.setFillColor(29, 29, 27);
       pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
       pdf.setFontSize(18);
-      pdf.text('Relatório de Estatísticas - Automotores', pdfWidth / 2, 15, { align: 'center' });
+      pdf.text('Relatório de Estatísticas - Veículos Não Motorizados', pdfWidth / 2, 15, { align: 'center' });
 
       // Adiciona a imagem dos gráficos
       const imgWidth = pdfWidth - 20;
@@ -241,8 +236,8 @@ export default function EstatisticaAutomotores() {
       pdf.setFontSize(12);
       let y = yPos + 10;
 
-      // Total de automotores apreendidos no pátio
-      pdf.text(`Total de automotores apreendidos no pátio: ${totalApreendidosPatioCount}`, 15, y);
+      // Total de veículos não motorizados apreendidos no pátio
+      pdf.text(`Total de veículos não motorizados apreendidos no pátio: ${totalApreendidosPatioCount}`, 15, y);
       y += 8;
 
       // Distribuição por status
@@ -255,15 +250,48 @@ export default function EstatisticaAutomotores() {
       y += 2;
 
       // Distribuição por tipo
+      if (y > pdfHeight - 40) {
+        pdf.addPage();
+        pdf.setFillColor(29, 29, 27);
+        pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+        y = 20;
+      }
+
       pdf.text('Distribuição por Tipo:', 15, y);
       y += 6;
       tiposData.labels.forEach((label, index) => {
         pdf.text(`- ${label}: ${tiposData.data[index]}`, 20, y);
         y += 6;
+        if (y > pdfHeight - 20 && index < tiposData.labels.length - 1) {
+          pdf.addPage();
+          pdf.setFillColor(29, 29, 27);
+          pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+          y = 20;
+        }
       });
-      y += 2;
 
-      // Nova seção: Distribuição por Procedimento
+      // Distribuição por marcas e modelos
+      if (y > pdfHeight - 40) {
+        pdf.addPage();
+        pdf.setFillColor(29, 29, 27);
+        pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+        y = 20;
+      }
+
+      pdf.text('Distribuição por Marcas e Modelos:', 15, y);
+      y += 6;
+      marcasModelosData.labels.forEach((label, index) => {
+        pdf.text(`- ${label}: ${marcasModelosData.datasets[index].data[0]}`, 20, y);
+        y += 6;
+        if (y > pdfHeight - 20 && index < marcasModelosData.labels.length - 1) {
+          pdf.addPage();
+          pdf.setFillColor(29, 29, 27);
+          pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+          y = 20;
+        }
+      });
+
+      // Distribuição por Procedimento
       if (y > pdfHeight - 40) {
         pdf.addPage();
         pdf.setFillColor(29, 29, 27);
@@ -289,7 +317,7 @@ export default function EstatisticaAutomotores() {
       pdf.text(`Relatório gerado em: ${new Date().toLocaleString()}`, pdfWidth / 2, pdfHeight - 10, { align: 'center' });
 
       // Salva o PDF
-      pdf.save('relatorio-automotores.pdf');
+      pdf.save('relatorio-naomotorizados.pdf');
     } catch (err) {
       console.error('Erro ao gerar PDF:', err);
       alert('Erro ao gerar o PDF. Por favor, tente novamente.');
@@ -317,50 +345,6 @@ export default function EstatisticaAutomotores() {
         color: 'white',
         font: {
           size: 12
-        }
-      }
-    }
-  };
-
-  const barOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          color: 'white',
-          font: {
-            size: 12
-          }
-        }
-      },
-      title: {
-        display: true,
-        text: 'Distribuição por Marca e Modelo',
-        color: 'white',
-        font: {
-          size: 12
-        }
-      }
-    },
-    scales: {
-      x: {
-        stacked: true,
-        ticks: {
-          color: 'white'
-        },
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)'
-        }
-      },
-      y: {
-        stacked: true,
-        ticks: {
-          color: 'white'
-        },
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)'
         }
       }
     }
@@ -408,7 +392,6 @@ export default function EstatisticaAutomotores() {
     }
   };
 
-  // Configuração específica para o gráfico de barras verticais
   const barVerticalOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -467,7 +450,7 @@ export default function EstatisticaAutomotores() {
   return (
     <div className="w-full">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold">Estatísticas de Automotores</h2>
+        <h2 className="text-lg font-bold">Estatísticas de Veículos Não Motorizados</h2>
         <button 
           onClick={gerarPDF} 
           disabled={gerando}
@@ -485,9 +468,9 @@ export default function EstatisticaAutomotores() {
             {/* Card principal - Ocupa 45% da largura */}
             <div className="flex-1 min-w-[45%] h-[300px] bg-c_deep_middle_black rounded-lg shadow-lg p-4 border border-gray-700">
               <div className="flex flex-col h-full justify-center items-center">
-                <h2 className="text-xl font-semibold mb-2">Automotores Apreendidos no Pátio</h2>
+                <h2 className="text-xl font-semibold mb-2">Veículos Não Motorizados Apreendidos no Pátio</h2>
                 <div className="text-5xl font-bold text-blue-400 mb-2">{totalApreendidosPatioCount}</div>
-                <p className="text-sm text-center text-gray-400">Total de veículos automotores com status "apreendido" e destino "pátio"</p>
+                <p className="text-sm text-center text-gray-400">Total de veículos não motorizados com status "apreendido" e destino "pátio"</p>
               </div>
             </div>
 
@@ -593,7 +576,7 @@ export default function EstatisticaAutomotores() {
                       labels: marcasModelosData.labels,
                       datasets: marcasModelosData.datasets,
                     }}
-                    options={barOptions}
+                    options={barVerticalOptions}
                   />
                 </div>
               )}

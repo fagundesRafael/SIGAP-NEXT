@@ -296,6 +296,8 @@ export default function TermosDeUso() {
           Estes Termos de Uso e Política de Privacidade constituem o acordo integral entre as partes em relação ao uso do SIGAP. 
           Em caso de dúvidas ou esclarecimentos, o usuário deve contatar o administrador do sistema na entidade contratante.
         </p>
+        <img src="/images/logo_sigap.png" alt="Logo SIGAP" className="w-1/2 mx-auto" />
+        <span className="text-center block mt-4 text-gray-400">Created by: fagundesrafael</span>
         
         <p className="mt-8 text-right text-gray-400">
           Data da última atualização: {new Date().toLocaleDateString('pt-BR')}

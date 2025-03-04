@@ -31,8 +31,8 @@ ChartJS.register(
   Legend
 );
 
-export default function EstatisticaAutomotores() {
-  const [veiculos, setVeiculos] = useState([]);
+export default function EstatisticaOutrosObjetos() {
+  const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [gerando, setGerando] = useState(false);
@@ -41,55 +41,49 @@ export default function EstatisticaAutomotores() {
   const estatisticasRef = useRef(null);
 
   // Dados processados para os gráficos
-  const [totalApreendidosPatioCount, setTotalApreendidosPatioCount] = useState(0);
+  const [totalApreendidosCount, setTotalApreendidosCount] = useState(0);
   const [statusData, setStatusData] = useState({ labels: [], data: [] });
   const [tiposData, setTiposData] = useState({ labels: [], data: [] });
-  const [marcasModelosData, setMarcasModelosData] = useState({ labels: [], datasets: [] });
+  const [destinosData, setDestinosData] = useState({ labels: [], data: [] });
   const [cronologiaData, setCronologiaData] = useState({ labels: [], data: [] });
   const [procedimentosData, setProcedimentosData] = useState({ labels: [], data: [] });
 
   useEffect(() => {
-    async function fetchVeiculos() {
+    async function fetchRecords() {
       try {
         setLoading(true);
-        const res = await fetch('/api/automotores?limit=1000');
+        const res = await fetch('/api/outrosobjetos?limit=1000');
         if (!res.ok) {
-          throw new Error('Falha ao buscar dados de automotores');
+          throw new Error('Falha ao buscar dados de outros objetos');
         }
         const data = await res.json();
-        setVeiculos(data.veiculos || []);
+        setRecords(data.records || []);
       } catch (err) {
-        console.error('Erro ao buscar veículos:', err);
+        console.error('Erro ao buscar registros:', err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchVeiculos();
+    fetchRecords();
   }, []);
 
   useEffect(() => {
-    if (veiculos.length > 0) {
+    if (records.length > 0) {
       processarDados();
     }
-  }, [veiculos]);
+  }, [records]);
 
   const processarDados = () => {
-    // 1. Total de automotores apreendidos no pátio
-    const apreendidosNoPatio = veiculos.filter(v =>
-      v.classe === 'automotor' &&
-      v.status === 'apreendido' &&
-      v.destino === 'pátio'
-    );
-    setTotalApreendidosPatioCount(apreendidosNoPatio.length);
+    // 1. Total de outros objetos apreendidos
+    const apreendidos = records.filter(r => r.status === 'apreendido');
+    setTotalApreendidosCount(apreendidos.length);
 
     // 2. Gráfico de pizza por status
     const statusCount = {};
-    veiculos.forEach(v => {
-      if (v.classe === 'automotor') {
-        statusCount[v.status] = (statusCount[v.status] || 0) + 1;
-      }
+    records.forEach(r => {
+      statusCount[r.status] = (statusCount[r.status] || 0) + 1;
     });
     setStatusData({
       labels: Object.keys(statusCount),
@@ -98,75 +92,31 @@ export default function EstatisticaAutomotores() {
 
     // 3. Gráfico de pizza por tipo/customTipo
     const tiposCount = {};
-    veiculos.forEach(v => {
-      if (v.classe === 'automotor') {
-        const tipo = v.customTipo || v.tipo;
-        tiposCount[tipo] = (tiposCount[tipo] || 0) + 1;
-      }
+    records.forEach(r => {
+      const tipo = r.customTipo || r.tipo;
+      tiposCount[tipo] = (tiposCount[tipo] || 0) + 1;
     });
     setTiposData({
       labels: Object.keys(tiposCount),
       data: Object.values(tiposCount)
     });
 
-    // 4. Gráfico de barras por marca/modelo
-    const marcasModelos = {};
-    veiculos.forEach(v => {
-      if (v.classe === 'automotor' && v.marca) {
-        if (!marcasModelos[v.marca]) {
-          marcasModelos[v.marca] = {};
-        }
-        const modelo = v.modelo || 'Não especificado';
-        marcasModelos[v.marca][modelo] = (marcasModelos[v.marca][modelo] || 0) + 1;
-      }
+    // 4. Gráfico de pizza por destino
+    const destinosCount = {};
+    records.forEach(r => {
+      const destino = r.destino || 'Não especificado';
+      destinosCount[destino] = (destinosCount[destino] || 0) + 1;
     });
-
-    // Preparando dados para o gráfico de barras
-    const marcas = Object.keys(marcasModelos);
-    const datasets = [];
-
-    // Cores para os diferentes modelos
-    const coresPadrao = [
-      'rgba(255, 99, 132, 0.7)',
-      'rgba(54, 162, 235, 0.7)',
-      'rgba(255, 206, 86, 0.7)',
-      'rgba(75, 192, 192, 0.7)',
-      'rgba(153, 102, 255, 0.7)',
-      'rgba(255, 159, 64, 0.7)',
-      'rgba(199, 199, 199, 0.7)',
-      'rgba(83, 102, 255, 0.7)',
-      'rgba(40, 159, 64, 0.7)',
-      'rgba(210, 199, 199, 0.7)',
-    ];
-
-    // Coletando todos os modelos únicos
-    const todosModelos = new Set();
-    Object.values(marcasModelos).forEach(modelos => {
-      Object.keys(modelos).forEach(modelo => todosModelos.add(modelo));
-    });
-
-    // Criando um dataset para cada modelo
-    Array.from(todosModelos).forEach((modelo, index) => {
-      const data = marcas.map(marca => marcasModelos[marca][modelo] || 0);
-      datasets.push({
-        label: modelo,
-        data,
-        backgroundColor: coresPadrao[index % coresPadrao.length],
-        borderColor: coresPadrao[index % coresPadrao.length].replace('0.7', '1'),
-        borderWidth: 1,
-      });
-    });
-
-    setMarcasModelosData({
-      labels: marcas,
-      datasets
+    setDestinosData({
+      labels: Object.keys(destinosCount),
+      data: Object.values(destinosCount)
     });
 
     // 5. Gráfico de linha para cronologia
     const dataRegistros = {};
-    veiculos.forEach(v => {
-      if (v.classe === 'automotor' && v.data) {
-        const data = new Date(v.data).toLocaleDateString();
+    records.forEach(r => {
+      if (r.data) {
+        const data = new Date(r.data).toLocaleDateString();
         dataRegistros[data] = (dataRegistros[data] || 0) + 1;
       }
     });
@@ -181,9 +131,9 @@ export default function EstatisticaAutomotores() {
 
     // 6. Gráfico de barras para procedimentos
     const procedimentosCount = {};
-    veiculos.forEach(v => {
-      if (v.classe === 'automotor' && v.procedimento) {
-        procedimentosCount[v.procedimento] = (procedimentosCount[v.procedimento] || 0) + 1;
+    records.forEach(r => {
+      if (r.procedimento) {
+        procedimentosCount[r.procedimento] = (procedimentosCount[r.procedimento] || 0) + 1;
       }
     });
 
@@ -226,7 +176,7 @@ export default function EstatisticaAutomotores() {
       pdf.setFillColor(29, 29, 27);
       pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
       pdf.setFontSize(18);
-      pdf.text('Relatório de Estatísticas - Automotores', pdfWidth / 2, 15, { align: 'center' });
+      pdf.text('Relatório de Estatísticas - Outros Objetos', pdfWidth / 2, 15, { align: 'center' });
 
       // Adiciona a imagem dos gráficos
       const imgWidth = pdfWidth - 20;
@@ -241,8 +191,8 @@ export default function EstatisticaAutomotores() {
       pdf.setFontSize(12);
       let y = yPos + 10;
 
-      // Total de automotores apreendidos no pátio
-      pdf.text(`Total de automotores apreendidos no pátio: ${totalApreendidosPatioCount}`, 15, y);
+      // Total de outros objetos apreendidos
+      pdf.text(`Total de outros objetos apreendidos: ${totalApreendidosCount}`, 15, y);
       y += 8;
 
       // Distribuição por status
@@ -255,15 +205,48 @@ export default function EstatisticaAutomotores() {
       y += 2;
 
       // Distribuição por tipo
+      if (y > pdfHeight - 40) {
+        pdf.addPage();
+        pdf.setFillColor(29, 29, 27);
+        pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+        y = 20;
+      }
+
       pdf.text('Distribuição por Tipo:', 15, y);
       y += 6;
       tiposData.labels.forEach((label, index) => {
         pdf.text(`- ${label}: ${tiposData.data[index]}`, 20, y);
         y += 6;
+        if (y > pdfHeight - 20 && index < tiposData.labels.length - 1) {
+          pdf.addPage();
+          pdf.setFillColor(29, 29, 27);
+          pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+          y = 20;
+        }
       });
-      y += 2;
 
-      // Nova seção: Distribuição por Procedimento
+      // Distribuição por destino
+      if (y > pdfHeight - 40) {
+        pdf.addPage();
+        pdf.setFillColor(29, 29, 27);
+        pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+        y = 20;
+      }
+
+      pdf.text('Distribuição por Destino:', 15, y);
+      y += 6;
+      destinosData.labels.forEach((label, index) => {
+        pdf.text(`- ${label}: ${destinosData.data[index]}`, 20, y);
+        y += 6;
+        if (y > pdfHeight - 20 && index < destinosData.labels.length - 1) {
+          pdf.addPage();
+          pdf.setFillColor(29, 29, 27);
+          pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
+          y = 20;
+        }
+      });
+
+      // Distribuição por Procedimento
       if (y > pdfHeight - 40) {
         pdf.addPage();
         pdf.setFillColor(29, 29, 27);
@@ -289,7 +272,7 @@ export default function EstatisticaAutomotores() {
       pdf.text(`Relatório gerado em: ${new Date().toLocaleString()}`, pdfWidth / 2, pdfHeight - 10, { align: 'center' });
 
       // Salva o PDF
-      pdf.save('relatorio-automotores.pdf');
+      pdf.save('relatorio-outrosobjetos.pdf');
     } catch (err) {
       console.error('Erro ao gerar PDF:', err);
       alert('Erro ao gerar o PDF. Por favor, tente novamente.');
@@ -317,50 +300,6 @@ export default function EstatisticaAutomotores() {
         color: 'white',
         font: {
           size: 12
-        }
-      }
-    }
-  };
-
-  const barOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          color: 'white',
-          font: {
-            size: 12
-          }
-        }
-      },
-      title: {
-        display: true,
-        text: 'Distribuição por Marca e Modelo',
-        color: 'white',
-        font: {
-          size: 12
-        }
-      }
-    },
-    scales: {
-      x: {
-        stacked: true,
-        ticks: {
-          color: 'white'
-        },
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)'
-        }
-      },
-      y: {
-        stacked: true,
-        ticks: {
-          color: 'white'
-        },
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)'
         }
       }
     }
@@ -408,7 +347,6 @@ export default function EstatisticaAutomotores() {
     }
   };
 
-  // Configuração específica para o gráfico de barras verticais
   const barVerticalOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -467,7 +405,7 @@ export default function EstatisticaAutomotores() {
   return (
     <div className="w-full">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold">Estatísticas de Automotores</h2>
+        <h2 className="text-lg font-bold">Estatísticas de Outros Objetos</h2>
         <button 
           onClick={gerarPDF} 
           disabled={gerando}
@@ -485,9 +423,9 @@ export default function EstatisticaAutomotores() {
             {/* Card principal - Ocupa 45% da largura */}
             <div className="flex-1 min-w-[45%] h-[300px] bg-c_deep_middle_black rounded-lg shadow-lg p-4 border border-gray-700">
               <div className="flex flex-col h-full justify-center items-center">
-                <h2 className="text-xl font-semibold mb-2">Automotores Apreendidos no Pátio</h2>
-                <div className="text-5xl font-bold text-blue-400 mb-2">{totalApreendidosPatioCount}</div>
-                <p className="text-sm text-center text-gray-400">Total de veículos automotores com status "apreendido" e destino "pátio"</p>
+                <h2 className="text-xl font-semibold mb-2">Outros Objetos Apreendidos</h2>
+                <div className="text-5xl font-bold text-blue-400 mb-2">{totalApreendidosCount}</div>
+                <p className="text-sm text-center text-gray-400">Total de outros objetos com status "apreendido"</p>
               </div>
             </div>
 
@@ -533,7 +471,7 @@ export default function EstatisticaAutomotores() {
             </div>
           </div>
 
-          {/* Container da segunda linha - Tipos e Marcas/Modelos */}
+          {/* Container da segunda linha - Tipos e Destinos */}
           <div className="flex flex-wrap w-full gap-6 mb-6">
             {/* Gráfico de Pizza - Tipos */}
             <div className="flex-1 min-w-[45%] h-[300px] bg-c_deep_middle_black rounded-lg shadow-lg p-4 border border-gray-700">
@@ -584,16 +522,42 @@ export default function EstatisticaAutomotores() {
               )}
             </div>
 
-            {/* Gráfico de Barras - Marcas e Modelos */}
+            {/* Gráfico de Pizza - Destinos */}
             <div className="flex-1 min-w-[45%] h-[300px] bg-c_deep_middle_black rounded-lg shadow-lg p-4 border border-gray-700">
-              {marcasModelosData.labels.length > 0 && (
+              {destinosData.labels.length > 0 && (
                 <div className="h-full">
-                  <Bar
+                  <Pie
                     data={{
-                      labels: marcasModelosData.labels,
-                      datasets: marcasModelosData.datasets,
+                      labels: destinosData.labels,
+                      datasets: [
+                        {
+                          data: destinosData.data,
+                          backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                          ],
+                          borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                          ],
+                          borderWidth: 1,
+                        },
+                      ],
                     }}
-                    options={barOptions}
+                    options={{
+                      ...pieOptions,
+                      plugins: {
+                        ...pieOptions.plugins,
+                        title: {
+                          ...pieOptions.plugins.title,
+                          text: 'Distribuição por Destino'
+                        }
+                      }
+                    }}
                   />
                 </div>
               )}
